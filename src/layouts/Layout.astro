@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import type { CollectionEntry } from 'astro:content';
 import { real } from '../lib/placeholders';
 
@@ -61,6 +62,13 @@ const jsonLd: Record<string, unknown> = {
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
     <meta name="theme-color" content={themeColor} />
+
+    <!-- Smooth in-place navigation between pages (home ⇄ trgovina/servis/o-nama).
+         motion.ts rebuilds ScrollSmoother on astro:page-load and tears it down
+         on astro:before-swap. Falls back to a normal load where unsupported. -->
+    <ClientRouter />
+    <!-- Cross-page pinned palette flash guard: pinned pages set their theme-color
+         and data-theme in the merged head, so the swap keeps the right palette. -->
 
     <!-- Open Graph / social -->
     <meta property="og:type" content="website" />

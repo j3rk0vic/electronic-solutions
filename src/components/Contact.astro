@@ -117,7 +117,7 @@ const mailHref = mail ? `mailto:${mail}` : null;
     font-weight: 700;
   }
   .footer__info a {
-    transition: color 0.25s ease;
+    transition: color var(--dur-mid) var(--ease-out);
     width: fit-content;
   }
   .footer__info a:hover {
@@ -146,7 +146,16 @@ const mailHref = mail ? `mailto:${mail}` : null;
     display: flex;
     gap: 20px;
   }
+  .footer__links a {
+    transition: color var(--dur-mid) var(--ease-out);
+  }
   .footer__links a:hover {
     color: var(--accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .footer__info a,
+    .footer__links a {
+      transition: none;
+    }
   }
 </style>

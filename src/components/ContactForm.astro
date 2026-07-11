@@ -193,8 +193,9 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
     font-family: var(--font-body);
     font-size: 0.95rem;
     transition:
-      border-color 0.25s ease,
-      background-color 0.25s ease;
+      border-color var(--dur-mid) var(--ease-out),
+      background-color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
   }
   .field textarea {
     resize: vertical;
@@ -209,6 +210,8 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
   .field textarea:focus {
     border-color: var(--accent);
     background: color-mix(in srgb, var(--surface) 90%, transparent);
+    /* soft focus ring for clear affordance (complements :focus-visible outline) */
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
   }
   .field input:disabled,
   .field select:disabled,
@@ -252,15 +255,31 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
     color: var(--accent-ink);
     cursor: pointer;
     transition:
-      box-shadow 0.3s ease,
-      opacity 0.2s ease;
+      box-shadow var(--dur-slow) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out),
+      opacity var(--dur-fast) var(--ease-out);
   }
   .form__submit:hover:not(:disabled) {
     box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, black);
   }
+  .form__submit:active:not(:disabled) {
+    transform: scale(0.97);
+  }
   .form__submit:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .field input,
+    .field select,
+    .field textarea,
+    .form__submit {
+      transition: none;
+    }
+    .form__submit:active:not(:disabled) {
+      transform: none;
+    }
   }
 
   .form__status {

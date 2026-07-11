@@ -3,11 +3,19 @@
  *
  *  • Theme morph: global scroll progress lerps every CSS token from the GREEN
  *    (vrt) palette to the RED (dom) palette, concentrated in the middle third.
- *  • ScrollSmoother: weighted, buttery smooth scroll (+ orb parallax).
+ *  • ScrollSmoother: weighted, buttery smooth scroll (+ orb / heading parallax).
  *  • SplitText: hero headline reveals line-by-line on load.
  *  • Scroll reveals: staggered section/card/stat entrances.
  *  • Nav: Vrt⇄Dom toggle smooth-scrolls and stays in sync with the active world.
  *  • Magnetic CTAs.
+ *
+ * View Transitions: the site uses Astro's <ClientRouter>, so navigations swap
+ * the DOM in place without a full reload. This module therefore (re)builds all
+ * page-scoped motion on `astro:page-load` and tears it down on
+ * `astro:before-swap` — killing ScrollSmoother, disposing ScrollTriggers, and
+ * clearing the inline theme tokens so the next page's pinned palette isn't
+ * shadowed by leftovers from a morph page. Window/document-level wiring is
+ * bound once (see wireGlobalsOnce).
  *
  * prefers-reduced-motion: no smooth-scroll hijack, no ambient loops, no heavy
  * reveals, no SplitText. The theme still tints to scroll position (a gentle
@@ -18,13 +26,20 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollSmoother } from 'gsap/ScrollSmoother';
 import { SplitText } from 'gsap/SplitText';
 
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
+
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/**
- * Only the home page morphs green→red. Standalone pages pin a palette via
- * :root[data-theme] in global.css, so JS must not write inline tokens over it.
- */
-const morphs = (document.documentElement.dataset.theme ?? 'morph') === 'morph';
+/* Shared motion rhythm — the JS-side mirror of the CSS motion tokens in
+   global.css. Keeping reveals in one place means every entrance across the
+   site shares the same duration, easing and stagger cadence. Stagger sits at
+   the snappy end of the 30–50ms guidance so grids resolve quickly. */
+const ENTER = { dur: 0.7, ease: 'power3.out', stagger: 0.05 } as const;
+
+/** Is the *current* page the morphing home page? Recomputed each navigation:
+ *  standalone pages pin a palette via :root[data-theme] in global.css, so JS
+ *  must not write inline tokens over them. */
+const pageMorphs = () => (document.documentElement.dataset.theme ?? 'morph') === 'morph';
 
 /* ── theme palettes ─────────────────────────────────────────────────── */
 type Palette = Record<'bg' | 'surface' | 'text' | 'muted' | 'accent' | 'ink', [number, number, number]>;
@@ -54,6 +69,7 @@ const smoothstep = (e0: number, e1: number, x: number) => {
 };
 
 const root = document.documentElement.style;
+const THEME_VARS = ['--bg', '--surface', '--text', '--muted', '--accent', '--accent-ink', '--border', '--t-morph'];
 
 /** Paint the live tokens for a raw scroll progress p ∈ [0,1]. */
 function applyTheme(p: number) {
@@ -72,66 +88,19 @@ function applyTheme(p: number) {
   root.setProperty('--t-morph', String(t));
 }
 
-/* ── nav: toggle + smooth anchor scrolling ──────────────────────────── */
-function setupNav() {
-  // ScrollSmoother owns scrolling via a transform on a fixed wrapper, so native
-  // scrollIntoView/scrollTo desync on tall pages — use its own scrollTo. Reduced
-  // motion has no smoother, so fall back to native scrollIntoView (instant jump).
-  const scrollToId = (id: string) => {
-    const target = document.getElementById(id);
-    if (!target) return;
-    const smoother = ScrollSmoother.get();
-    if (smoother) smoother.scrollTo(target, true, 'top 88px');
-    else target.scrollIntoView({ block: 'start' });
-  };
-
-  document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
-    el.addEventListener('click', (e) => {
-      const id = el.dataset.scrollTo!;
-      if (!document.getElementById(id)) return;
-      e.preventDefault();
-      scrollToId(id);
-    });
-  });
-
-  // Other scripts (e.g. the shop dialog's "Pošalji upit") ask us to scroll.
-  window.addEventListener('es:scrollto', (e) => scrollToId((e as CustomEvent<string>).detail));
-
-  // Content that changes height at runtime (e.g. the shop category filter) must
-  // ask ScrollSmoother to re-measure, or its scroll range keeps the old height
-  // and leaves empty space below. No-op in reduced mode (no smoother).
-  window.addEventListener('es:refresh', () => ScrollTrigger.refresh());
-
-  setupMobileMenu();
+/** Remove any inline theme tokens so a pinned destination page (data-theme=
+ *  dom/vrt) paints from its stylesheet rules instead of a morph page's leftovers. */
+function clearInlineTheme() {
+  THEME_VARS.forEach((v) => root.removeProperty(v));
 }
 
-/* ── mobile hamburger menu (≤860px) ──────────────────────────────────── */
-function setupMobileMenu() {
-  const nav = document.querySelector<HTMLElement>('.nav');
-  const burger = document.querySelector<HTMLButtonElement>('[data-nav-burger]');
-  const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
-  if (!nav || !burger || !panel) return;
-
-  const setOpen = (open: boolean) => {
-    nav.classList.toggle('is-menu-open', open);
-    burger.setAttribute('aria-expanded', String(open));
-    burger.setAttribute('aria-label', open ? 'Zatvori izbornik' : 'Otvori izbornik');
-    if (open) panel.querySelector<HTMLElement>('a')?.focus();
-  };
-
-  burger.addEventListener('click', () => setOpen(!nav.classList.contains('is-menu-open')));
-
-  // Any link closes the menu (scroll links also trigger their own handler).
-  panel.querySelectorAll<HTMLElement>('[data-nav-panel-link]').forEach((link) => {
-    link.addEventListener('click', () => setOpen(false));
-  });
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && nav.classList.contains('is-menu-open')) {
-      setOpen(false);
-      burger.focus();
-    }
-  });
+/* ── smooth scroll to an id (works with or without ScrollSmoother) ────── */
+function scrollToId(id: string) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const smoother = ScrollSmoother.get();
+  if (smoother) smoother.scrollTo(target, true, 'top 88px');
+  else target.scrollIntoView({ block: 'start' });
 }
 
 /** Toggle the [aria-pressed] / active state of the Vrt/Dom pills. */
@@ -143,7 +112,68 @@ function setActiveWorld(world: 'vrt' | 'dom') {
   });
 }
 
-/* ── magnetic hover for CTAs ─────────────────────────────────────────── */
+/* ── mobile hamburger menu open/close ────────────────────────────────── */
+function setMenuOpen(open: boolean) {
+  const nav = document.querySelector<HTMLElement>('.nav');
+  const burger = document.querySelector<HTMLButtonElement>('[data-nav-burger]');
+  const panel = document.querySelector<HTMLElement>('[data-nav-panel]');
+  if (!nav || !burger || !panel) return;
+  nav.classList.toggle('is-menu-open', open);
+  burger.setAttribute('aria-expanded', String(open));
+  burger.setAttribute('aria-label', open ? 'Zatvori izbornik' : 'Otvori izbornik');
+  if (open) panel.querySelector<HTMLElement>('a')?.focus();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   ONE-TIME GLOBAL WIRING — window/document listeners that must survive View
+   Transitions (binding them per page would stack duplicates). They all query
+   live DOM / ScrollSmoother.get() at call time, so they keep working as pages
+   swap underneath them.
+   ═══════════════════════════════════════════════════════════════════════ */
+let globalsWired = false;
+function wireGlobalsOnce() {
+  if (globalsWired) return;
+  globalsWired = true;
+
+  // Other scripts (e.g. the shop dialog's "Pošalji upit") ask us to scroll.
+  window.addEventListener('es:scrollto', (e) => scrollToId((e as CustomEvent<string>).detail));
+
+  // Content that changes height at runtime (e.g. the shop filter) asks
+  // ScrollSmoother to re-measure so no dead scroll space is left below.
+  window.addEventListener('es:refresh', () => ScrollTrigger.refresh());
+
+  // Escape closes the mobile menu (elements queried live each time).
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const nav = document.querySelector<HTMLElement>('.nav');
+    if (nav?.classList.contains('is-menu-open')) {
+      setMenuOpen(false);
+      document.querySelector<HTMLButtonElement>('[data-nav-burger]')?.focus();
+    }
+  });
+}
+
+/* ── per-page nav wiring (elements are replaced on every navigation) ──── */
+function setupNavPage() {
+  document.querySelectorAll<HTMLElement>('[data-scroll-to]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      const id = el.dataset.scrollTo!;
+      if (!document.getElementById(id)) return;
+      e.preventDefault();
+      scrollToId(id);
+    });
+  });
+
+  const burger = document.querySelector<HTMLButtonElement>('[data-nav-burger]');
+  const nav = document.querySelector<HTMLElement>('.nav');
+  burger?.addEventListener('click', () => setMenuOpen(!nav?.classList.contains('is-menu-open')));
+
+  document.querySelectorAll<HTMLElement>('[data-nav-panel-link]').forEach((link) => {
+    link.addEventListener('click', () => setMenuOpen(false));
+  });
+}
+
+/* ── magnetic hover for CTAs (element listeners; die with the page) ───── */
 function setupMagnetic() {
   document.querySelectorAll<HTMLElement>('.magnetic').forEach((el) => {
     const strength = 0.35;
@@ -160,39 +190,42 @@ function setupMagnetic() {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
-   REDUCED MOTION — minimal, static, but keep identity (color + toggle).
+   PER-PAGE LIFECYCLE
    ═══════════════════════════════════════════════════════════════════════ */
+let split: SplitText | null = null; // kept so we can revert before a swap
+let reducedScrollHandler: (() => void) | null = null;
+
+/** Reduced-motion: minimal, static, but keep identity (color + toggle). */
 function initReduced() {
   const dom = document.getElementById('dom');
-  if (morphs && dom) {
+  if (pageMorphs() && dom) {
     const onScroll = () => {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       applyTheme(max > 0 ? window.scrollY / max : 0);
-      // Dom active once its top crosses 55% of the viewport, and for everything below.
+      // Dom active once its top crosses 55% of the viewport, and below.
       setActiveWorld(dom.getBoundingClientRect().top <= window.innerHeight * 0.55 ? 'dom' : 'vrt');
     };
-    window.addEventListener('scroll', () => requestAnimationFrame(onScroll), { passive: true });
+    reducedScrollHandler = () => requestAnimationFrame(onScroll);
+    window.addEventListener('scroll', reducedScrollHandler, { passive: true });
     onScroll();
   }
-  setupNav();
+  setupNavPage();
 }
 
-/* ═══════════════════════════════════════════════════════════════════════
-   FULL MOTION
-   ═══════════════════════════════════════════════════════════════════════ */
+/** Full motion path. */
 function initFull() {
-  gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
-
+  // Defensive: never run two smoothers at once if a swap raced the teardown.
+  ScrollSmoother.get()?.kill();
   ScrollSmoother.create({
     wrapper: '#smooth-wrapper',
     content: '#smooth-content',
     smooth: 1.15,
-    effects: true, // enables data-speed parallax (orbs / images)
+    effects: true, // enables data-speed parallax (orbs / section headings)
     normalizeScroll: true,
   });
 
   // Theme morph driven by the smoothed scroll position (home page only).
-  if (morphs) {
+  if (pageMorphs()) {
     ScrollTrigger.create({
       start: 0,
       end: 'max',
@@ -202,13 +235,12 @@ function initFull() {
     applyTheme(0);
   }
 
-  setupNav();
+  setupNavPage();
   setupMagnetic();
 
   // Toggle follows the active world: Dom once its heading crosses mid-screen,
-  // and stays Dom for everything below it (tv / value / contact); back to Vrt
-  // only when scrolling above the Dom section again. Standalone pages have no
-  // #dom section and render plain links instead of the toggle.
+  // and stays Dom for everything below it; back to Vrt only when scrolling
+  // above the Dom section again. Standalone pages have no #dom section.
   if (document.getElementById('dom')) {
     ScrollTrigger.create({
       trigger: '#dom',
@@ -218,8 +250,7 @@ function initFull() {
     });
   }
 
-  // Arriving from another page with a hash (e.g. /trgovina → /#vrt): the native
-  // jump happens before ScrollSmoother exists, so re-seek once it's measured.
+  // Arriving with a hash (e.g. /trgovina → /#vrt): re-seek once measured.
   if (location.hash) {
     const target = document.querySelector<HTMLElement>(location.hash);
     if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
@@ -231,8 +262,8 @@ function initFull() {
     gsap.to(el, {
       opacity: 1,
       y: 0,
-      duration: 0.9,
-      ease: 'power3.out',
+      duration: ENTER.dur,
+      ease: ENTER.ease,
       scrollTrigger: { trigger: el, start: 'top 88%' },
     });
   });
@@ -240,13 +271,13 @@ function initFull() {
   // Staggered reveals for grouped items (cards / stats / brands).
   gsap.utils.toArray<HTMLElement>('[data-reveal-group]').forEach((group) => {
     const items = group.querySelectorAll<HTMLElement>('[data-reveal-item]');
-    gsap.set(items, { opacity: 0, y: 34 });
+    gsap.set(items, { opacity: 0, y: 28 });
     gsap.to(items, {
       opacity: 1,
       y: 0,
-      duration: 0.8,
-      ease: 'power3.out',
-      stagger: 0.09,
+      duration: ENTER.dur,
+      ease: ENTER.ease,
+      stagger: ENTER.stagger,
       scrollTrigger: { trigger: group, start: 'top 82%' },
     });
   });
@@ -268,10 +299,11 @@ function initFull() {
   // ── hero intro (after fonts so SplitText measures lines correctly) ──
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const runHeroIntro = () => {
+    if (!document.body.contains(hero)) return; // page may have swapped away
     const tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
     const h1 = hero?.querySelector<HTMLElement>('[data-hero-title]');
     if (h1) {
-      const split = new SplitText(h1, { type: 'lines', mask: 'lines', linesClass: 'split-line' });
+      split = new SplitText(h1, { type: 'lines', mask: 'lines', linesClass: 'split-line' });
       gsap.set(split.lines, { yPercent: 110 });
       tl.to(split.lines, { yPercent: 0, duration: 1.1, stagger: 0.12 }, 0.1);
     }
@@ -286,10 +318,33 @@ function initFull() {
     else runHeroIntro();
   }
 
-  // Recalculate once everything (images/fonts) settles.
-  window.addEventListener('load', () => ScrollTrigger.refresh());
+  // Recalculate once the current view's images/fonts settle.
+  requestAnimationFrame(() => ScrollTrigger.refresh());
 }
 
-/* ── boot ────────────────────────────────────────────────────────────── */
-if (reduce) initReduced();
-else initFull();
+/** Build all page-scoped motion for the freshly-shown page. */
+function initPage() {
+  wireGlobalsOnce();
+  if (reduce) initReduced();
+  else initFull();
+}
+
+/** Dispose everything page-scoped so the next page starts from a clean slate. */
+function teardown() {
+  split?.revert();
+  split = null;
+  if (reducedScrollHandler) {
+    window.removeEventListener('scroll', reducedScrollHandler);
+    reducedScrollHandler = null;
+  }
+  ScrollTrigger.getAll().forEach((t) => t.kill());
+  ScrollSmoother.get()?.kill();
+  clearInlineTheme();
+}
+
+/* ── boot: driven by the View Transitions lifecycle ──────────────────────
+   astro:page-load fires on the initial load AND after every navigation, so it
+   is our single init entry point. astro:before-swap fires before the old DOM
+   is replaced — the moment to tear ScrollSmoother down. */
+document.addEventListener('astro:page-load', initPage);
+document.addEventListener('astro:before-swap', teardown);

@@ -35,12 +35,14 @@ const { blocks } = Astro.props;
     border-radius: 20px;
     background: color-mix(in srgb, var(--surface) 72%, transparent);
     transition:
-      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      border-color 0.35s ease;
+      transform var(--dur-slow) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
   }
   .info__card:hover {
     transform: translateY(-6px);
     border-color: var(--accent);
+    box-shadow: 0 26px 55px -30px color-mix(in srgb, var(--accent) 50%, black);
   }
   .info__num {
     font-family: var(--font-mono);

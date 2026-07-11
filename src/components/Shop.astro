@@ -192,18 +192,33 @@ const shopLd = {
     color: var(--muted);
     cursor: pointer;
     transition:
-      background-color 0.25s ease,
-      color 0.25s ease,
-      border-color 0.25s ease;
+      background-color var(--dur-mid) var(--ease-out),
+      color var(--dur-mid) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
   }
   .shop__filter:hover {
     color: var(--text);
     border-color: var(--accent);
   }
+  .shop__filter:active {
+    transform: scale(0.95);
+  }
   .shop__filter.is-on {
     background: var(--accent);
     border-color: var(--accent);
     color: var(--accent-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .shop__filter {
+      transition:
+        background-color var(--dur-mid) var(--ease-out),
+        color var(--dur-mid) var(--ease-out),
+        border-color var(--dur-mid) var(--ease-out);
+    }
+    .shop__filter:active {
+      transform: none;
+    }
   }
 
   .shop__empty {

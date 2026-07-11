@@ -25,7 +25,12 @@
       "Bash(echo \"[exit $?]\")",
       "Bash(echo \" [exit $?]\")",
       "Bash(printf '%s' '{\"tool_input\":{\"file_path\":\"src\\\\\\\\content\\\\\\\\shop\\\\\\\\products.json\"}}')",
-      "Bash(echo \"[suite exit $?]\")"
+      "Bash(echo \"[suite exit $?]\")",
+      "Bash(python .claude/skills/ui-ux-pro-max/scripts/search.py \"scroll reveal parallax hover transition performance hydration\" --stack astro -n 14)",
+      "Bash(curl -s -o /dev/null -w \"home HTTP %{http_code}\\\\n\" http://localhost:4323/)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:4323/)",
+      "Bash(curl -s -o /dev/null -w \"home HTTP %{http_code}\\\\n\" \"http://localhost:4323/\")",
+      "Bash(curl -s -o /dev/null -w \"motion.ts bundle HTTP %{http_code}\\\\n\" \"http://localhost:4323/src/scripts/motion.ts\")"
     ]
   }
 }

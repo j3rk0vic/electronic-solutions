@@ -55,9 +55,9 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
     overflow: hidden;
     box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
     transition:
-      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      border-color 0.35s ease,
-      box-shadow 0.35s ease;
+      transform var(--dur-slow) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
   }
   .card:hover,
   .card:focus-within {
@@ -91,6 +91,22 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
     height: 100%;
     object-fit: contain;
     padding: 12% 14%;
+    /* Contained zoom on hover — the tile clips (overflow:hidden) so nothing
+       shifts. Reads as the product leaning toward the viewer. */
+    transition: transform var(--dur-slow) var(--ease-out);
+    will-change: transform;
+  }
+  .card:hover .card__img,
+  .card:focus-within .card__img {
+    transform: scale(1.06);
+  }
+  /* placeholder monogram gets the same subtle lean */
+  .card__mark {
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
+  .card:hover .card__mark,
+  .card:focus-within .card__mark {
+    transform: scale(1.06);
   }
 
   /* graceful placeholder for imageless products (Solar, Servis) */
@@ -152,7 +168,13 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
 
   @media (prefers-reduced-motion: reduce) {
     .card,
-    .card:hover {
+    .card:hover,
+    .card__img,
+    .card:hover .card__img,
+    .card:focus-within .card__img,
+    .card__mark,
+    .card:hover .card__mark,
+    .card:focus-within .card__mark {
       transition: none;
       transform: none;
     }

@@ -34,7 +34,7 @@ const menuItems = [
 ];
 ---
 
-<nav class="nav" aria-label="Glavna navigacija">
+<nav class="nav" aria-label="Glavna navigacija" transition:name="site-nav">
   <a class="nav__logo" href="#top" data-scroll-to="top" aria-label={`${site.company} — početna`}>
     <!-- Same lockup twice, differing only in the "E" colour. The green one is
          the in-flow base (always opaque); the red one fades in over it with the
@@ -193,12 +193,29 @@ const menuItems = [
     color: var(--muted);
     cursor: pointer;
     transition:
-      background-color 0.35s ease,
-      color 0.35s ease;
+      background-color var(--dur-slow) var(--ease-out),
+      color var(--dur-slow) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .nav__toggle button:not(.is-on):hover {
+    color: var(--text);
+  }
+  .nav__toggle button:active {
+    transform: scale(0.95);
   }
   .nav__toggle button.is-on {
     background: var(--accent);
     color: var(--accent-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav__toggle button {
+      transition:
+        background-color var(--dur-slow) var(--ease-out),
+        color var(--dur-slow) var(--ease-out);
+    }
+    .nav__toggle button:active {
+      transform: none;
+    }
   }
 
   .nav__right {
@@ -211,18 +228,47 @@ const menuItems = [
     gap: 20px;
   }
   .nav__link {
+    position: relative;
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--muted);
-    transition: color 0.25s ease;
+    transition: color var(--dur-mid) var(--ease-out);
+  }
+  /* underline wipes in from the left on hover/focus; pseudo-element so it
+     never nudges layout. Rests under the text at the accent colour. */
+  .nav__link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 1.5px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform var(--dur-mid) var(--ease-out);
   }
   .nav__link:hover {
     color: var(--text);
   }
+  .nav__link:hover::after,
+  .nav__link:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
   .nav__link[aria-current='page'] {
     color: var(--accent);
+  }
+  .nav__link[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav__link,
+    .nav__link::after {
+      transition: none;
+    }
   }
   .nav__cta {
     display: inline-block;
@@ -234,13 +280,15 @@ const menuItems = [
     border-radius: 100px;
     color: var(--accent);
     transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
+      background-color var(--dur-mid) var(--ease-out),
+      color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
     will-change: transform;
   }
   .nav__cta:hover {
     background: var(--accent);
     color: var(--accent-ink);
+    box-shadow: 0 10px 26px -10px color-mix(in srgb, var(--accent) 70%, black);
   }
 
   /* ── hamburger (hidden on desktop) ────────────────────────────────── */

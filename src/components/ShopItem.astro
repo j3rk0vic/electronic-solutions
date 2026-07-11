@@ -133,9 +133,9 @@ const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opc
     color: inherit;
     box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
     transition:
-      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
-      border-color 0.35s ease,
-      box-shadow 0.35s ease;
+      transform var(--dur-slow) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
   }
   .scard__btn:hover,
   .scard__btn:focus-visible {
@@ -148,6 +148,7 @@ const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opc
     position: relative;
     display: block;
     aspect-ratio: 4 / 5;
+    overflow: hidden; /* clip the hover zoom to the tile */
     background: radial-gradient(circle at 50% 40%, #ffffff 0%, #ffffff 55%, #f1f1ee 100%);
   }
   .scard__img {
@@ -157,6 +158,17 @@ const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opc
     height: 100%;
     object-fit: contain;
     padding: 11% 12%;
+    transition: transform var(--dur-slow) var(--ease-out);
+    will-change: transform;
+  }
+  .scard__btn:hover .scard__img,
+  .scard__btn:focus-visible .scard__img,
+  .scard__btn:hover .scard__mark,
+  .scard__btn:focus-visible .scard__mark {
+    transform: scale(1.06);
+  }
+  .scard__mark {
+    transition: transform var(--dur-slow) var(--ease-out);
   }
   .scard__mark {
     position: absolute;
@@ -214,15 +226,27 @@ const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opc
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--muted);
-    transition: color 0.25s ease;
+    transition:
+      color var(--dur-mid) var(--ease-out),
+      transform var(--dur-mid) var(--ease-out);
   }
-  .scard__btn:hover .scard__cue {
-    color: var(--text);
+  .scard__btn:hover .scard__cue,
+  .scard__btn:focus-visible .scard__cue {
+    color: var(--accent);
+    transform: translateX(3px);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .scard__btn,
-    .scard__btn:hover {
+    .scard__btn:hover,
+    .scard__img,
+    .scard__mark,
+    .scard__btn:hover .scard__img,
+    .scard__btn:focus-visible .scard__img,
+    .scard__btn:hover .scard__mark,
+    .scard__btn:focus-visible .scard__mark,
+    .scard__cue,
+    .scard__btn:hover .scard__cue {
       transition: none;
       transform: none;
     }

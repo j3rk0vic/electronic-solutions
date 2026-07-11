@@ -14,7 +14,10 @@ const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
 ---
 
 <section class="section wrap world" id={id} data-world={section.world}>
-  <div class="world__head">
+  <!-- data-speed <1 makes the heading block drift a touch slower than the
+       cards below it as you scroll — a subtle depth cue. ScrollSmoother owns
+       this (effects:true); it's a no-op under reduced motion (no smoother). -->
+  <div class="world__head" data-speed="0.94">
     {section.num && <p class="world__num" data-reveal>{section.num}</p>}
     <h2 class="world__title" data-reveal>{section.title}</h2>
     {section.lead && <p class="world__lead" data-reveal>{section.lead}</p>}

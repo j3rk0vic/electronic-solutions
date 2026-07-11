@@ -90,6 +90,10 @@ function highlight(text: string): string {
   .hero__brand {
     position: relative;
     color: var(--text);
+    transition: color var(--dur-mid) var(--ease-out);
+  }
+  .hero__brand:hover {
+    color: var(--accent);
   }
 
   .hero__scroll {
@@ -103,15 +107,30 @@ function highlight(text: string): string {
     text-transform: uppercase;
     color: var(--muted);
     width: fit-content;
+    transition: color var(--dur-mid) var(--ease-out);
+  }
+  .hero__scroll:hover,
+  .hero__scroll:focus-visible {
+    color: var(--accent);
   }
   .hero__scroll svg {
     animation: nudge 1.8s ease-in-out infinite;
+    transition: transform var(--dur-mid) var(--ease-out);
+  }
+  /* on hover, hand the motion to the user's intent: settle the loop and
+     nudge a touch further down toward the target section */
+  .hero__scroll:hover svg,
+  .hero__scroll:focus-visible svg {
+    transform: translateY(3px);
   }
   @keyframes nudge {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(4px); }
   }
   @media (prefers-reduced-motion: reduce) {
+    .hero__brand,
+    .hero__scroll,
+    .hero__scroll svg { transition: none; }
     .hero__scroll svg { animation: none; }
   }
 </style>

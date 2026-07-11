@@ -19,6 +19,20 @@
   --accent-ink: rgb(6, 16, 8);
   /* 0 = green world, 1 = red world. Drives the nav logo cross-fade. */
   --t-morph: 0;
+
+  /* ── MOTION SYSTEM ───────────────────────────────────────────────────
+     One rhythm for the whole site. Every transition/animation reads these
+     so hovers, reveals and micro-interactions feel like one hand made them.
+     Durations follow the 150–300ms micro-interaction band; entrances use
+     ease-out, exits are shorter (see --dur-exit) and use ease-in. */
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1); /* entrances, hovers, expands */
+  --ease-in: cubic-bezier(0.5, 0, 0.75, 0); /* exits, collapses */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* press/pop feedback */
+  --dur-fast: 0.16s; /* color / opacity micro-changes */
+  --dur-mid: 0.24s; /* standard hover + state changes */
+  --dur-slow: 0.34s; /* larger surface transitions */
+  --dur-exit: 0.18s; /* exits: ~70% of enter, feels responsive */
+  --lift: -6px; /* shared hover-lift distance (no layout shift) */
 }
 
 /* Standalone pages pin one end of the scale instead of morphing. Declaring
@@ -184,6 +198,72 @@ a {
 .line-mask > * {
   display: block;
   will-change: transform;
+}
+
+/* ── shared micro-interaction utilities ───────────────────────────────
+   Reusable, token-driven, and all GPU-safe (transform/opacity only).
+   Every one degrades to no-op under prefers-reduced-motion (bottom rule). */
+
+/* Tactile press feedback for buttons / clickable cards. Pairs with any
+   hover style; the scale is tiny so it reads as "give", not bounce. */
+.press {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Animated underline that wipes in from the left on hover/focus. Put on
+   inline links; uses a pseudo-element so it never affects layout. */
+.u-underline {
+  position: relative;
+}
+.u-underline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-mid) var(--ease-out);
+}
+.u-underline:hover::after,
+.u-underline:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* Hover-lift for surfaces (cards, tiles). Shadow + optional accent border
+   are left to the component; this just owns the lift + its rhythm. */
+.u-lift {
+  transition:
+    transform var(--dur-slow) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out),
+    box-shadow var(--dur-mid) var(--ease-out);
+}
+.u-lift:hover,
+.u-lift:focus-within {
+  transform: translateY(var(--lift));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .press,
+  .u-underline::after,
+  .u-lift {
+    transition: none;
+  }
+  .press:active,
+  .u-lift:hover,
+  .u-lift:focus-within {
+    transform: none;
+  }
+  .u-underline:hover::after,
+  .u-underline:focus-visible::after {
+    transform: scaleX(1);
+  }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
