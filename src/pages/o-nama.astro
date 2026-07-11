@@ -1,0 +1,125 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Contact from '../components/Contact.astro';
+
+const site = (await getEntry('settings', 'site'))!.data;
+const entry = (await getEntry('pages', 'o-nama'))!;
+const page = entry.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+
+// The body of o-nama.md is prose — rendered as Markdown so the owner can edit it.
+const { Content } = await render(entry);
+---
+
+<Layout site={site} theme={page.theme} seo={page.seo}>
+  <Nav slot="nav" site={site} current="/o-nama" />
+
+  <PageHeader page={page} />
+
+  <section class="section wrap about">
+    <div class="about__prose" data-reveal>
+      <Content />
+    </div>
+
+    <aside class="about__side">
+      {
+        page.stats.length > 0 && (
+          <div class="about__stats" data-reveal-group>
+            {page.stats.map((s) => (
+              <div data-reveal-item>
+                <div class="about__value">{s.value}</div>
+                <div class="about__label">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        )
+      }
+
+      <div class="about__brands" data-reveal>
+        <p class="eyebrow">Zastupamo</p>
+        <ul>{site.brands.map((b) => <li>{b}</li>)}</ul>
+      </div>
+    </aside>
+  </section>
+
+  <Contact contact={contact} site={site} />
+</Layout>
+
+<style>
+  .about {
+    padding-top: clamp(24px, 4vw, 40px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: clamp(40px, 7vw, 90px);
+    align-items: start;
+  }
+  @media (max-width: 860px) {
+    .about {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* Markdown body — styled globally because <Content /> emits unscoped HTML. */
+  .about__prose :global(p) {
+    font-size: clamp(1rem, 1.5vw, 1.12rem);
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .about__prose :global(p + p) {
+    margin-top: 22px;
+  }
+  .about__prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .about__side {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding-top: 6px;
+  }
+  .about__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px 44px;
+  }
+  .about__value {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 4.5vw, 3.2rem);
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .about__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+
+  .about__brands .eyebrow {
+    display: block;
+    margin-bottom: 18px;
+  }
+  .about__brands ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none;
+    padding: 0;
+  }
+  .about__brands li {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.15rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+</style>

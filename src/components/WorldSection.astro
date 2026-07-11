@@ -1,0 +1,117 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ProductCard from './ProductCard.astro';
+
+interface Props {
+  section: CollectionEntry<'sections'>['data'];
+  products: CollectionEntry<'products'>[];
+  id: string;
+  /** compact = TV-style strip (fewer items, tighter) */
+  compact?: boolean;
+}
+const { section, products, id, compact = false } = Astro.props;
+const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
+---
+
+<section class="section wrap world" id={id} data-world={section.world}>
+  <div class="world__head">
+    {section.num && <p class="world__num" data-reveal>{section.num}</p>}
+    <h2 class="world__title" data-reveal>{section.title}</h2>
+    {section.lead && <p class="world__lead" data-reveal>{section.lead}</p>}
+  </div>
+
+  <div class:list={['world__grid', { 'world__grid--compact': compact }]} data-reveal-group>
+    {sorted.map((p, i) => <ProductCard product={p.data} index={i} />)}
+  </div>
+
+  {
+    section.stats && section.stats.length > 0 && (
+      <div class="world__stats" data-reveal-group>
+        {section.stats.map((s) => (
+          <div class="stat" data-reveal-item>
+            <div class="stat__value">{s.value}</div>
+            <div class="stat__label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .world__num {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 18px;
+  }
+  .world__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h2);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+  }
+  .world__lead {
+    max-width: 540px;
+    margin-top: 24px;
+    font-size: clamp(1rem, 1.6vw, 1.1rem);
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .world__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-top: 60px;
+  }
+  /* garden has 6, home 5 → 3-up desktop reads best; compact (TV) centers */
+  .world__grid--compact {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 720px;
+  }
+  @media (min-width: 1080px) {
+    .world__grid:not(.world__grid--compact) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 900px) {
+    .world__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .world__grid,
+    .world__grid--compact {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .world__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 56px;
+    margin-top: 68px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .stat__value {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+</style>

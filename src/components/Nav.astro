@@ -1,0 +1,360 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import greenLogo from '../assets/logo/green_logo_lockup.png';
+import redLogo from '../assets/logo/red_logo.png';
+
+interface Props {
+  site: CollectionEntry<'settings'>['data'];
+  /** The home page owns the Vrt⇄Dom scroll toggle; other pages link back to it. */
+  home?: boolean;
+  /** Pathname of the current page, for aria-current. */
+  current?: string;
+  /** Set when the page has its own #vrt / #dom sections (trgovina) — scroll to
+   *  them instead of navigating home. */
+  localWorlds?: boolean;
+}
+const { site, home = false, current, localWorlds = false } = Astro.props;
+
+// #vrt / #dom sections live on this page when it's the home page or the shop;
+// elsewhere the world links point back to the home page's sections.
+const sameWorlds = home || localWorlds;
+const worlds = (['vrt', 'dom'] as const).map((id) => ({
+  id,
+  label: id === 'vrt' ? 'Vrt' : 'Dom',
+  href: sameWorlds ? `#${id}` : `/#${id}`,
+  scroll: sameWorlds,
+}));
+
+// Full link set for the mobile panel: worlds + pages + Kontakt.
+const menuItems = [
+  ...worlds,
+  ...site.nav.map((n) => ({ id: undefined, label: n.label, href: n.href, scroll: false, current: n.href === current })),
+  { id: 'kontakt', label: 'Kontakt', href: '#kontakt', scroll: true, current: false },
+];
+---
+
+<nav class="nav" aria-label="Glavna navigacija">
+  <a class="nav__logo" href="#top" data-scroll-to="top" aria-label={`${site.company} — početna`}>
+    <!-- Same lockup twice, differing only in the "E" colour. The green one is
+         the in-flow base (always opaque); the red one fades in over it with the
+         theme morph, so the result is an exact colour lerp on the "E" while the
+         white wordmark never dips in opacity. -->
+    <span class="nav__logo-stack">
+      <Image
+        src={greenLogo}
+        alt=""
+        widths={[200, 249]}
+        sizes="200px"
+        loading="eager"
+        layout="none"
+        class="nav__logo-img"
+      />
+      <Image
+        src={redLogo}
+        alt=""
+        widths={[200, 249]}
+        sizes="200px"
+        loading="eager"
+        layout="none"
+        class="nav__logo-img nav__logo-img--red"
+      />
+    </span>
+  </a>
+
+  {
+    home ? (
+      /* Vrt ⇄ Dom world toggle (syncs with scroll position) */
+      <div class="nav__toggle" role="group" aria-label="Odabir svijeta">
+        <button type="button" data-world-btn="vrt" data-scroll-to="vrt" class="is-on" aria-pressed="true">
+          Vrt
+        </button>
+        <button type="button" data-world-btn="dom" data-scroll-to="dom" aria-pressed="false">
+          Dom
+        </button>
+      </div>
+    ) : (
+      <div class="nav__links nav__links--worlds">
+        {worlds.map((w) => (
+          <a href={w.href} class="nav__link" data-scroll-to={w.scroll ? w.id : undefined}>
+            {w.label}
+          </a>
+        ))}
+      </div>
+    )
+  }
+
+  <div class="nav__right">
+    <div class="nav__links">
+      {
+        site.nav.map((n) => (
+          <a href={n.href} class="nav__link" aria-current={n.href === current ? 'page' : undefined}>
+            {n.label}
+          </a>
+        ))
+      }
+    </div>
+    <a class="nav__cta magnetic" href="#kontakt" data-scroll-to="kontakt">Kontakt</a>
+  </div>
+
+  <!-- Mobile menu trigger (shown ≤860px in place of the inline items) -->
+  <button
+    type="button"
+    class="nav__burger"
+    data-nav-burger
+    aria-label="Otvori izbornik"
+    aria-expanded="false"
+    aria-controls="nav-panel"
+  >
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Full-screen mobile panel -->
+<div class="nav__panel" id="nav-panel" data-nav-panel>
+  <ul class="nav__panel-list">
+    {
+      menuItems.map((m) => (
+        <li>
+          <a
+            href={m.href}
+            class="nav__panel-link"
+            data-nav-panel-link
+            data-scroll-to={m.scroll ? m.id : undefined}
+            aria-current={m.current ? 'page' : undefined}
+          >
+            {m.label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</div>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px clamp(20px, 5vw, 32px);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--bg) 82%, transparent),
+      color-mix(in srgb, var(--bg) 20%, transparent)
+    );
+  }
+  /* Logo: identical lockups stacked, cross-faded by the --t-morph scroll factor.
+     The base sits in flow and sets the box size, so nothing can shift as the
+     red one fades over it. Without JS, --t-morph is 0 and the green shows. */
+  .nav__logo {
+    display: block;
+    flex: 0 0 auto;
+  }
+  .nav__logo-stack {
+    position: relative;
+    display: block;
+    width: clamp(144px, 30vw, 200px);
+  }
+  .nav__logo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* fade only — no transition needed; --t-morph updates every frame */
+  }
+  .nav__logo-img--red {
+    position: absolute;
+    inset: 0;
+    opacity: var(--t-morph, 0);
+  }
+
+  .nav__toggle {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+  }
+  .nav__toggle button {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 8px 18px;
+    border: 0;
+    border-radius: 100px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      background-color 0.35s ease,
+      color 0.35s ease;
+  }
+  .nav__toggle button.is-on {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .nav__right {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+  }
+  .nav__links {
+    display: flex;
+    gap: 20px;
+  }
+  .nav__link {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.25s ease;
+  }
+  .nav__link:hover {
+    color: var(--text);
+  }
+  .nav__link[aria-current='page'] {
+    color: var(--accent);
+  }
+  .nav__cta {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    padding: 10px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 100px;
+    color: var(--accent);
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+    will-change: transform;
+  }
+  .nav__cta:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* ── hamburger (hidden on desktop) ────────────────────────────────── */
+  .nav__burger {
+    display: none;
+    position: relative;
+    z-index: 60; /* above the panel so it stays tappable to close */
+    width: 44px;
+    height: 44px;
+    padding: 11px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    cursor: pointer;
+  }
+  .nav__burger span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    margin: 4px 0;
+    border-radius: 2px;
+    background: var(--text);
+    transition:
+      transform 0.3s ease,
+      opacity 0.2s ease;
+  }
+  /* three bars → X when open */
+  .nav.is-menu-open .nav__burger span:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+  .nav.is-menu-open .nav__burger span:nth-child(2) {
+    opacity: 0;
+  }
+  .nav.is-menu-open .nav__burger span:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* ── mobile panel (full-screen overlay under the nav bar) ─────────── */
+  .nav__panel {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 88px clamp(24px, 8vw, 56px) 56px;
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+      visibility 0s linear 0.32s;
+  }
+  .nav.is-menu-open ~ .nav__panel {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.32s ease,
+      transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+      visibility 0s;
+  }
+  .nav__panel-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(14px, 3vh, 26px);
+  }
+  .nav__panel-link {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(2rem, 9vw, 3rem);
+    letter-spacing: -0.02em;
+    color: var(--text);
+    transition: color 0.2s ease;
+  }
+  .nav__panel-link:hover,
+  .nav__panel-link:focus-visible {
+    color: var(--accent);
+  }
+  .nav__panel-link[aria-current='page'] {
+    color: var(--accent);
+  }
+
+  @media (max-width: 860px) {
+    .nav__toggle,
+    .nav__links--worlds,
+    .nav__right {
+      display: none;
+    }
+    .nav__burger {
+      display: block;
+    }
+  }
+  @media (min-width: 861px) {
+    /* keep the panel fully inert on desktop regardless of stray state */
+    .nav__panel {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav__panel,
+    .nav.is-menu-open ~ .nav__panel {
+      transition: visibility 0s;
+    }
+    .nav__burger span {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Electronic Solution — demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg: rgb(8,19,12);
+  --surface: rgb(14,32,21);
+  --text: rgb(238,245,236);
+  --muted: rgb(150,178,150);
+  --accent: rgb(108,226,76);
+  --border: rgba(238,245,236,0.10);
+  --maxw: 1200px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:auto}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Inter",sans-serif;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  transition:background .1s linear;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 32px}
+a{color:inherit;text-decoration:none}
+
+/* ambient orb */
+.orb{
+  position:fixed;top:-20vh;right:-10vw;width:70vw;height:70vw;
+  background:radial-gradient(circle at center, var(--accent), transparent 62%);
+  opacity:.16;filter:blur(40px);pointer-events:none;z-index:0;
+  transform:translateZ(0);
+  animation:float 14s ease-in-out infinite alternate;
+}
+.orb.two{top:auto;bottom:-25vh;left:-15vw;right:auto;width:55vw;height:55vw;opacity:.12;animation-delay:-6s}
+@keyframes float{from{transform:translate(0,0) scale(1)}to{transform:translate(-4vw,6vh) scale(1.12)}}
+
+/* nav */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:20px 32px;
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  background:linear-gradient(to bottom, color-mix(in srgb, var(--bg) 78%, transparent), transparent);
+}
+.logo{font-family:"Space Mono",monospace;font-weight:700;font-size:14px;letter-spacing:.14em}
+.logo b{color:var(--accent)}
+.toggle{display:flex;gap:4px;padding:4px;border:1px solid var(--border);border-radius:100px;background:color-mix(in srgb,var(--surface) 60%, transparent)}
+.toggle button{
+  font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.1em;
+  padding:8px 16px;border:0;border-radius:100px;background:transparent;color:var(--muted);
+  cursor:pointer;transition:.35s;text-transform:uppercase
+}
+.toggle button.on{background:var(--accent);color:#0a1109}
+.nav .kontakt{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.08em;padding:10px 18px;border:1px solid var(--accent);border-radius:100px;color:var(--accent);transition:.3s}
+.nav .kontakt:hover{background:var(--accent);color:#0a1109}
+@media(max-width:720px){.nav .kontakt{display:none}.nav{padding:16px 20px}.wrap{padding:0 20px}}
+
+/* hero */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 0 80px}
+.eyebrow{font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-bottom:28px}
+.hero h1{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:clamp(52px,9vw,132px);line-height:.94;letter-spacing:-.03em;
+}
+.hero h1 .g{color:var(--accent);transition:color .1s linear}
+.hero .lead{max-width:560px;margin-top:34px;font-size:clamp(16px,2vw,20px);line-height:1.6;color:var(--muted)}
+.hero .brands{display:flex;flex-wrap:wrap;gap:22px 34px;margin-top:48px;font-family:"Space Mono",monospace;font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.line-mask{overflow:hidden;display:block}
+.line-mask>span{display:block;will-change:transform}
+
+/* worlds */
+.world{position:relative;z-index:1;padding:120px 0}
+.world .num{font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.2em;color:var(--accent);margin-bottom:20px}
+.world h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(38px,6vw,84px);line-height:1;letter-spacing:-.02em;max-width:12ch}
+.world .desc{max-width:520px;margin-top:26px;font-size:17px;line-height:1.65;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:64px}
+@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+.card{
+  background:color-mix(in srgb,var(--surface) 70%, transparent);
+  border:1px solid var(--border);border-radius:18px;padding:26px 22px;min-height:180px;
+  display:flex;flex-direction:column;justify-content:space-between;
+  transition:transform .5s cubic-bezier(.2,.7,.2,1), border-color .3s, background .3s;
+}
+.card:hover{transform:translateY(-8px);border-color:var(--accent);background:color-mix(in srgb,var(--surface) 92%, transparent)}
+.card .k{font-family:"Space Mono",monospace;font-size:11px;color:var(--accent);letter-spacing:.1em}
+.card h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:22px;margin-top:auto;letter-spacing:-.01em}
+.card p{font-size:13px;color:var(--muted);margin-top:8px;line-height:1.5}
+
+/* stats row */
+.stats{display:flex;flex-wrap:wrap;gap:48px;margin-top:72px;padding-top:40px;border-top:1px solid var(--border)}
+.stat .big{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(36px,5vw,60px);letter-spacing:-.02em;color:var(--accent)}
+.stat .lab{font-family:"Space Mono",monospace;font-size:12px;color:var(--muted);letter-spacing:.08em;margin-top:6px;text-transform:uppercase}
+
+/* value strip */
+.strip{position:relative;z-index:1;padding:100px 0;text-align:center}
+.strip h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(32px,5.5vw,72px);line-height:1.02;letter-spacing:-.02em;max-width:16ch;margin:0 auto}
+.strip .sub{margin-top:24px;color:var(--muted);font-size:17px;max-width:44ch;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* footer */
+.footer{position:relative;z-index:1;padding:90px 0 50px;border-top:1px solid var(--border)}
+.footer .top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:40px}
+.footer h4{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:clamp(30px,4vw,50px);letter-spacing:-.02em;max-width:14ch}
+.footer .info{font-family:"Space Mono",monospace;font-size:14px;line-height:2.1;color:var(--muted);letter-spacing:.03em}
+.footer .info a:hover{color:var(--accent)}
+.footer .bottom{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:64px;font-family:"Space Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.footer .cta-big{display:inline-block;margin-top:22px;font-family:"Space Mono",monospace;font-size:13px;letter-spacing:.08em;padding:14px 26px;border-radius:100px;background:var(--accent);color:#0a1109;transition:.3s}
+.footer .cta-big:hover{transform:translateY(-3px)}
+
+[data-reveal]{opacity:0;transform:translateY(30px)}
+.demo-tag{position:fixed;bottom:16px;left:16px;z-index:60;font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.1em;color:var(--muted);opacity:.55;text-transform:uppercase}
+
+@media(prefers-reduced-motion:reduce){
+  .orb{animation:none}
+  [data-reveal]{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<div class="orb"></div>
+<div class="orb two"></div>
+
+<nav class="nav">
+  <div class="logo">ELECTRONIC<b>·</b>SOLUTION</div>
+  <div class="toggle">
+    <button data-go="vrt" class="on">Vrt</button>
+    <button data-go="dom">Dom</button>
+  </div>
+  <a class="kontakt" data-go="kontakt">Kontakt</a>
+</nav>
+
+<header class="hero wrap" id="top">
+  <div class="eyebrow" data-reveal>Metković · Prodaja &amp; servis</div>
+  <h1>
+    <span class="line-mask"><span>Snaga za <span class="g">vrt</span>.</span></span>
+    <span class="line-mask"><span>Toplina za <span class="g">dom</span>.</span></span>
+  </h1>
+  <p class="lead" data-reveal>Jedan servisni centar, dva svijeta. Bežični EGO Power+ vrtni alat, klima uređaji, dizalice topline i Viessmann sustavi grijanja — sve na jednom mjestu.</p>
+  <div class="brands" data-reveal>
+    <span>EGO Power+</span><span>Viessmann</span><span>Fujitsu</span><span>Samsung</span><span>LG</span>
+  </div>
+</header>
+
+<!-- WORLD 1: VRT / EGO -->
+<section class="world wrap" id="vrt">
+  <div class="num" data-reveal>01 — VRT · EGO POWER+</div>
+  <h2 data-reveal>Snaga benzina. Tišina struje.</h2>
+  <p class="desc" data-reveal>56 V ARC Lithium™ baterija pokreće cijeli set alata — jedna baterija, svi uređaji. Ista snaga kao benzinac, bez buke, bez ispušnih plinova, bez odlaska na servis zbog paljenja.</p>
+  <div class="grid">
+    <div class="card" data-reveal><span class="k">01</span><h3>Kosilice</h3><p>Samohodne i ručne, za svaki teren.</p></div>
+    <div class="card" data-reveal><span class="k">02</span><h3>Puhači lišća</h3><p>Do 1000 m³/h protoka zraka.</p></div>
+    <div class="card" data-reveal><span class="k">03</span><h3>Trimeri</h3><p>Precizno oko rubova i staza.</p></div>
+    <div class="card" data-reveal><span class="k">04</span><h3>Pile i škare</h3><p>Za orezivanje i sitnu sječu.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat" data-reveal><div class="big">1</div><div class="lab">baterija · svi alati</div></div>
+    <div class="stat" data-reveal><div class="big">5 god</div><div class="lab">jamstvo na alate</div></div>
+    <div class="stat" data-reveal><div class="big">0</div><div class="lab">emisija &amp; buke</div></div>
+  </div>
+</section>
+
+<!-- WORLD 2: DOM / KLIME & GRIJANJE -->
+<section class="world wrap" id="dom">
+  <div class="num" data-reveal>02 — DOM · KLIMA &amp; GRIJANJE</div>
+  <h2 data-reveal>Ugodno cijele godine.</h2>
+  <p class="desc" data-reveal>Od hlađenja ljeti do topline zimi — klima uređaji Fujitsu, Samsung i LG, Viessmann dizalice topline zrak-voda, sustavi grijanja i solarni paneli. Prodaja, ugradnja i servis na jednom mjestu.</p>
+  <div class="grid">
+    <div class="card" data-reveal><span class="k">01</span><h3>Klima uređaji</h3><p>Fujitsu · Samsung · LG inverteri.</p></div>
+    <div class="card" data-reveal><span class="k">02</span><h3>Dizalice topline</h3><p>Viessmann zrak-voda sustavi.</p></div>
+    <div class="card" data-reveal><span class="k">03</span><h3>Solarni paneli</h3><p>Energetska neovisnost i ušteda.</p></div>
+    <div class="card" data-reveal><span class="k">04</span><h3>Servis</h3><p>Održavanje i brza podrška.</p></div>
+  </div>
+  <div class="stats">
+    <div class="stat" data-reveal><div class="big">A+++</div><div class="lab">energetska klasa</div></div>
+    <div class="stat" data-reveal><div class="big">Zadar→DBK</div><div class="lab">lokalna prisutnost</div></div>
+    <div class="stat" data-reveal><div class="big">24/7</div><div class="lab">podrška po dogovoru</div></div>
+  </div>
+</section>
+
+<section class="strip wrap">
+  <h2 data-reveal>Sve za dom i vrt — na jednom mjestu.</h2>
+  <p class="sub" data-reveal>Prodaja, ugradnja i servis provjerenih brendova. Od Zadra do Dubrovnika, iz Metkovića.</p>
+</section>
+
+<footer class="footer wrap" id="kontakt">
+  <div class="top">
+    <div>
+      <h4 data-reveal>Javi se. Rado ćemo pomoći.</h4>
+      <a class="cta-big" href="#" data-reveal>Kontaktiraj nas</a>
+    </div>
+    <div class="info" data-reveal>
+      Electronic Solution<br>
+      Splitska ul., Metković<br>
+      <a href="tel:+385915722622">+385 91 572 2622</a><br>
+      <a href="mailto:info@electronic-solution.hr">info@electronic-solution.hr</a><br>
+      Pon–Pet · 08:00–16:00
+    </div>
+  </div>
+  <div class="bottom">
+    <span>© 2026 Electronic Solution</span>
+    <span>Demo · dizajn u izradi</span>
+  </div>
+</footer>
+
+<div class="demo-tag">demo — koncept "dva svijeta"</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lenis/1.1.14/lenis.min.js"></script>
+<script>
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- theme morph: green (vrt) -> red (dom) ---------- */
+const GREEN = {bg:[8,19,12], surface:[14,32,21], text:[238,245,236], muted:[150,178,150], accent:[108,226,76], border:[238,245,236]};
+const RED   = {bg:[20,8,7],  surface:[33,17,16], text:[245,234,231], muted:[186,150,146], accent:[226,74,44], border:[245,234,231]};
+const lerp=(a,b,t)=>Math.round(a+(b-a)*t);
+const rgb=(c)=>`rgb(${c[0]},${c[1]},${c[2]})`;
+const smoothstep=(e0,e1,x)=>{const t=Math.min(1,Math.max(0,(x-e0)/(e1-e0)));return t*t*(3-2*t);};
+
+function applyTheme(p){
+  const t=smoothstep(0.18,0.82,p);
+  const mix=(k)=>GREEN[k].map((v,i)=>lerp(v,RED[k][i],t));
+  const r=document.documentElement.style;
+  r.setProperty('--bg',rgb(mix('bg')));
+  r.setProperty('--surface',rgb(mix('surface')));
+  r.setProperty('--text',rgb(mix('text')));
+  r.setProperty('--muted',rgb(mix('muted')));
+  r.setProperty('--accent',rgb(mix('accent')));
+  const b=mix('border');
+  r.setProperty('--border',`rgba(${b[0]},${b[1]},${b[2]},0.12)`);
+}
+function morphFromScroll(){
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  applyTheme(max>0?window.scrollY/max:0);
+}
+
+/* ---------- smooth scroll (Lenis, with graceful fallback) ---------- */
+let lenis=null;
+if(!reduce && window.Lenis){
+  lenis=new Lenis({duration:1.15, easing:t=>Math.min(1,1.001-Math.pow(2,-10*t))});
+  function raf(time){lenis.raf(time);requestAnimationFrame(raf);}
+  requestAnimationFrame(raf);
+  lenis.on('scroll',morphFromScroll);
+}else{
+  window.addEventListener('scroll',()=>requestAnimationFrame(morphFromScroll),{passive:true});
+}
+morphFromScroll();
+
+function goTo(id){
+  const el=document.getElementById(id);
+  if(!el)return;
+  if(lenis){lenis.scrollTo(el,{offset:-70});}
+  else{el.scrollIntoView({behavior:reduce?'auto':'smooth'});}
+}
+document.querySelectorAll('[data-go]').forEach(b=>{
+  b.addEventListener('click',e=>{e.preventDefault();goTo(b.dataset.go);});
+});
+
+/* toggle active state follows scroll */
+const btnVrt=document.querySelector('[data-go="vrt"]');
+const btnDom=document.querySelector('[data-go="dom"]');
+
+/* ---------- reveals + hero intro (GSAP) ---------- */
+if(!reduce && window.gsap){
+  gsap.registerPlugin(ScrollTrigger);
+
+  // hero headline lines
+  gsap.set('.line-mask>span',{yPercent:110});
+  gsap.to('.line-mask>span',{yPercent:0,duration:1.1,ease:'expo.out',stagger:.12,delay:.15});
+  gsap.to('.hero [data-reveal]',{opacity:1,y:0,duration:1,ease:'power3.out',stagger:.12,delay:.5});
+
+  // scroll reveals
+  gsap.utils.toArray('[data-reveal]').forEach(el=>{
+    if(el.closest('.hero'))return;
+    gsap.to(el,{opacity:1,y:0,duration:.9,ease:'power3.out',
+      scrollTrigger:{trigger:el,start:'top 88%'}});
+  });
+
+  // toggle sync
+  ScrollTrigger.create({trigger:'#dom',start:'top center',end:'bottom center',
+    onToggle:self=>{btnDom.classList.toggle('on',self.isActive);btnVrt.classList.toggle('on',!self.isActive);}});
+
+  // keep morph in sync with ScrollTrigger's scroll handling too
+  ScrollTrigger.create({start:0,end:'max',onUpdate:morphFromScroll});
+}else{
+  // no-GSAP fallback: show everything
+  document.querySelectorAll('[data-reveal]').forEach(el=>{el.style.opacity=1;el.style.transform='none';});
+}
+</script>
+</body>
+</html>

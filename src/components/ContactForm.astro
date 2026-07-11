@@ -1,0 +1,277 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { real } from '../lib/placeholders';
+
+interface Props {
+  site: CollectionEntry<'settings'>['data'];
+}
+const { site } = Astro.props;
+
+// The form can only post somewhere once the owner fills in formEndpoint (and,
+// for Web3Forms, formAccessKey) in site.md. Until then we render the fields
+// read-only with a clear notice rather than a button that silently does nothing.
+const endpoint = real(site.formEndpoint);
+const accessKey = real(site.formAccessKey);
+const mail = real(site.email);
+const ready = Boolean(endpoint);
+
+const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', 'Solarni sustavi', 'Servis', 'Ostalo'];
+---
+
+<form
+  class="form"
+  method="POST"
+  action={endpoint}
+  data-contact-form
+  data-mail={mail}
+  aria-describedby={ready ? undefined : 'form-disabled'}
+>
+  {accessKey && <input type="hidden" name="access_key" value={accessKey} />}
+  <input type="hidden" name="subject" value={`Nova poruka s ${site.company} web stranice`} />
+
+  {/* Honeypots — real users never fill these. Names cover Web3Forms + Formspree. */}
+  <input type="checkbox" name="botcheck" class="form__hp" tabindex="-1" autocomplete="off" />
+  <input type="text" name="_gotcha" class="form__hp" tabindex="-1" autocomplete="off" />
+
+  {
+    !ready && (
+      <p class="form__notice" id="form-disabled">
+        ⚠️ Obrazac još nije spojen. Postavite <code>formEndpoint</code> u{' '}
+        <code>src/content/settings/site.md</code>.
+      </p>
+    )
+  }
+
+  <div class="form__row">
+    <div class="field">
+      <label for="cf-name">Ime i prezime</label>
+      <input id="cf-name" name="name" type="text" required autocomplete="name" disabled={!ready} />
+    </div>
+    <div class="field">
+      <label for="cf-email">E-mail</label>
+      <input id="cf-email" name="email" type="email" required autocomplete="email" disabled={!ready} />
+    </div>
+  </div>
+
+  <div class="form__row">
+    <div class="field">
+      <label for="cf-phone">Telefon <span class="field__opt">(nije obavezno)</span></label>
+      <input id="cf-phone" name="phone" type="tel" autocomplete="tel" disabled={!ready} />
+    </div>
+    <div class="field">
+      <label for="cf-topic">Tema</label>
+      <select id="cf-topic" name="topic" disabled={!ready}>
+        {topics.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="cf-message">Poruka</label>
+    <textarea id="cf-message" name="message" rows="5" required disabled={!ready}></textarea>
+  </div>
+
+  <label class="consent">
+    <input type="checkbox" name="consent" required disabled={!ready} />
+    <span>Slažem se da me kontaktirate u vezi ovog upita.</span>
+  </label>
+
+  <div class="form__foot">
+    <button type="submit" class="form__submit" disabled={!ready}>Pošalji poruku</button>
+    <p class="form__status" role="status" aria-live="polite" data-form-status></p>
+  </div>
+</form>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+  const status = document.querySelector<HTMLElement>('[data-form-status]');
+
+  if (form && status && form.action) {
+    const button = form.querySelector<HTMLButtonElement>('.form__submit')!;
+    const mail = form.dataset.mail;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      // Let the browser surface its own validation messages first.
+      if (!form.reportValidity()) return;
+
+      button.disabled = true;
+      status.textContent = 'Šaljem…';
+      status.dataset.state = 'busy';
+
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        form.reset();
+        status.textContent = 'Hvala! Poruka je poslana — javljamo se uskoro.';
+        status.dataset.state = 'ok';
+      } catch {
+        status.dataset.state = 'error';
+        status.textContent = mail
+          ? `Slanje nije uspjelo. Pišite nam izravno na ${mail}.`
+          : 'Slanje nije uspjelo. Pokušajte ponovno ili nas nazovite.';
+      } finally {
+        button.disabled = false;
+      }
+    });
+  }
+</script>
+
+<style>
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* off-screen, not display:none — bots skip hidden inputs */
+  .form__hp {
+    position: absolute;
+    left: -9999px;
+    opacity: 0;
+    height: 0;
+    width: 0;
+  }
+
+  .form__notice {
+    padding: 14px 16px;
+    border: 1px dashed var(--accent);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+    font-size: 0.86rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+  .form__notice code {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent);
+  }
+
+  .form__row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 620px) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .field label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .field__opt {
+    text-transform: none;
+    letter-spacing: 0.02em;
+    opacity: 0.7;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    transition:
+      border-color 0.25s ease,
+      background-color 0.25s ease;
+  }
+  .field textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+  .field select {
+    /* keep the native dropdown list readable in the dark theme */
+    color-scheme: dark;
+  }
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+  }
+  .field input:disabled,
+  .field select:disabled,
+  .field textarea:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .consent input {
+    margin-top: 2px;
+    accent-color: var(--accent);
+    width: 16px;
+    height: 16px;
+    flex: 0 0 auto;
+  }
+
+  .form__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 22px;
+    margin-top: 4px;
+  }
+  .form__submit {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 14px 30px;
+    border: 0;
+    border-radius: 100px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+    transition:
+      box-shadow 0.3s ease,
+      opacity 0.2s ease;
+  }
+  .form__submit:hover:not(:disabled) {
+    box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, black);
+  }
+  .form__submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .form__status {
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+  .form__status[data-state='ok'] {
+    color: var(--accent);
+  }
+  .form__status[data-state='error'] {
+    color: #ff8a7a;
+  }
+</style>

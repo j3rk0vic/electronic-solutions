@@ -1,0 +1,73 @@
+---
+interface Props {
+  blocks: { num: string; title: string; body: string }[];
+}
+const { blocks } = Astro.props;
+---
+
+<div class="info" data-reveal-group>
+  {
+    blocks.map((b) => (
+      <article class="info__card" data-reveal-item>
+        <span class="info__num">{b.num}</span>
+        <h2 class="info__title">{b.title}</h2>
+        <p class="info__body">{b.body}</p>
+      </article>
+    ))
+  }
+</div>
+
+<style>
+  .info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 760px) {
+    .info {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .info__card {
+    padding: 32px 30px 34px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.35s ease;
+  }
+  .info__card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent);
+  }
+  .info__num {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .info__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    margin-top: 16px;
+  }
+  .info__body {
+    margin-top: 12px;
+    font-size: 0.94rem;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .info__card,
+    .info__card:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

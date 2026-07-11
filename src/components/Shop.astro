@@ -1,0 +1,236 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { getImage } from 'astro:assets';
+import ShopItem from './ShopItem.astro';
+import { resolveShopImage } from '../lib/images';
+
+interface Props {
+  products: CollectionEntry<'shop'>[];
+}
+const { products } = Astro.props;
+const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
+
+// Filter bar: "Sve" + the categories that actually have products, in a sensible
+// order. Any category not listed here still shows, appended after the known ones.
+const ORDER = ['Kosilice', 'Trimeri', 'Pile', 'Puhači i usisavači', 'Škare za živicu', 'Baterije i energija', 'Pribor'];
+const present = [...new Set(sorted.map((p) => p.data.category))];
+const categories = [
+  ...ORDER.filter((c) => present.includes(c)),
+  ...present.filter((c) => !ORDER.includes(c)),
+];
+
+// ── Product structured data (schema.org ItemList of Products) ──────────
+// Lets Google show product names + prices as rich results. Prices are parsed
+// from the display string; a range becomes an AggregateOffer.
+const SITE = Astro.site ?? new URL('https://electronic-solution.hr');
+const priceNums = (s: string) =>
+  [...s.matchAll(/\d[\d.,]*/g)].map((m) => parseFloat(m[0].replace(/,/g, ''))).filter((n) => !isNaN(n));
+
+const listItems = await Promise.all(
+  sorted.map(async (p, i) => {
+    const meta = resolveShopImage(p.data.image);
+    let image: string | undefined;
+    if (meta) {
+      const built = await getImage({ src: meta, width: 600, format: 'webp' });
+      image = new URL(built.src, SITE).href;
+    }
+    const prices = priceNums(p.data.price);
+    const product: Record<string, unknown> = {
+      '@type': 'Product',
+      name: p.data.name,
+      category: p.data.category,
+      ...(image ? { image } : {}),
+      ...(p.data.description ? { description: p.data.description } : {}),
+    };
+    if (prices.length === 1) {
+      product.offers = {
+        '@type': 'Offer',
+        priceCurrency: 'EUR',
+        price: prices[0].toFixed(2),
+        availability: 'https://schema.org/InStock',
+      };
+    } else if (prices.length >= 2) {
+      product.offers = {
+        '@type': 'AggregateOffer',
+        priceCurrency: 'EUR',
+        lowPrice: Math.min(...prices).toFixed(2),
+        highPrice: Math.max(...prices).toFixed(2),
+        offerCount: p.data.variants.length || prices.length,
+        availability: 'https://schema.org/InStock',
+      };
+    }
+    return { '@type': 'ListItem', position: i + 1, item: product };
+  })
+);
+
+const shopLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Trgovina — Electronic Solution',
+  numberOfItems: listItems.length,
+  itemListElement: listItems,
+};
+---
+
+<section class="section wrap shop" id="trgovina-grid">
+  <div class="shop__filters" role="group" aria-label="Filtriraj proizvode" data-shop-filters>
+    <button type="button" class="shop__filter is-on" data-filter="*" aria-pressed="true">Sve</button>
+    {
+      categories.map((c) => (
+        <button type="button" class="shop__filter" data-filter={c} aria-pressed="false">
+          {c}
+        </button>
+      ))
+    }
+  </div>
+
+  <div class="shop__grid" data-reveal-group>
+    {sorted.map((p) => <ShopItem product={p.data} id={p.id} />)}
+  </div>
+
+  <p class="shop__empty" data-shop-empty hidden>Nema proizvoda u ovoj kategoriji.</p>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(shopLd)} is:inline />
+
+<script>
+  // ── category filter ────────────────────────────────────────────────
+  const filterBar = document.querySelector<HTMLElement>('[data-shop-filters]');
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('.scard[data-category]'));
+  const emptyMsg = document.querySelector<HTMLElement>('[data-shop-empty]');
+
+  if (filterBar) {
+    filterBar.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      const want = btn.dataset.filter!;
+
+      filterBar.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+
+      let shown = 0;
+      cards.forEach((card) => {
+        const match = want === '*' || card.dataset.category === want;
+        card.hidden = !match;
+        if (match) {
+          shown++;
+          // Clear any reveal offset so filtered-in cards are always visible.
+          card.style.opacity = '1';
+          card.style.transform = 'none';
+        }
+      });
+      if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+      // The grid just changed height — let ScrollSmoother re-measure so there's
+      // no dead scroll space (or missing space) below the shortened grid.
+      requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('es:refresh')));
+    });
+  }
+
+  // Wire each card to its <dialog>. Native showModal() gives us the top layer,
+  // focus trapping and Esc-to-close; we add backdrop-click and the inquiry jump.
+  const modals = document.querySelectorAll<HTMLDialogElement>('dialog.pmodal');
+
+  document.querySelectorAll<HTMLButtonElement>('[data-shop-open]').forEach((btn) => {
+    const dlg = document.getElementById(btn.getAttribute('aria-controls') ?? '');
+    if (dlg instanceof HTMLDialogElement) {
+      btn.addEventListener('click', () => dlg.showModal());
+    }
+  });
+
+  modals.forEach((dlg) => {
+    dlg.querySelector('[data-shop-close]')?.addEventListener('click', () => dlg.close());
+
+    // A click whose target is the dialog element itself landed on the backdrop.
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg) dlg.close();
+    });
+
+    // "Pošalji upit" → close, prefill the contact message, scroll to it.
+    dlg.querySelector<HTMLAnchorElement>('[data-shop-inquire]')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      const name = dlg.querySelector<HTMLElement>('[data-shop-name]')?.dataset.shopName ?? '';
+      const msg = document.querySelector<HTMLTextAreaElement>('#cf-message');
+      if (msg) {
+        msg.value = `Upit za proizvod: ${name}`;
+        msg.dispatchEvent(new Event('input'));
+      }
+      // The dialog keeps the top layer during its exit animation (overlay
+      // allow-discrete), which blocks a background scroll. So wait for the
+      // close to finish, then ask motion.ts (owner of ScrollSmoother) to scroll.
+      const scroll = () => window.dispatchEvent(new CustomEvent('es:scrollto', { detail: 'kontakt' }));
+      dlg.addEventListener('transitionend', scroll, { once: true });
+      // Fallback if transitions are disabled (reduced motion / no support).
+      setTimeout(scroll, 420);
+      dlg.close();
+    });
+  });
+</script>
+
+<style>
+  .shop {
+    padding-top: clamp(24px, 4vw, 40px);
+  }
+
+  .shop__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 36px;
+  }
+  .shop__filter {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 9px 16px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease,
+      border-color 0.25s ease;
+  }
+  .shop__filter:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+  .shop__filter.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  .shop__empty {
+    margin-top: 40px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .shop__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 1080px) {
+    .shop__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  @media (max-width: 760px) {
+    .shop__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 440px) {
+    .shop__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

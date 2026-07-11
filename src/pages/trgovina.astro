@@ -1,0 +1,24 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Shop from '../components/Shop.astro';
+import Contact from '../components/Contact.astro';
+
+const site = (await getEntry('settings', 'site'))!.data;
+const page = (await getEntry('pages', 'trgovina'))!.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+
+const products = await getCollection('shop');
+---
+
+<Layout site={site} theme={page.theme} seo={page.seo}>
+  <Nav slot="nav" site={site} current="/trgovina" />
+
+  <PageHeader page={page} />
+
+  <Shop products={products} />
+
+  <Contact contact={contact} site={site} />
+</Layout>

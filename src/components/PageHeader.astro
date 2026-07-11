@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  page: CollectionEntry<'pages'>['data'];
+}
+const { page } = Astro.props;
+---
+
+<header class="wrap page-head" id="top">
+  <p class="eyebrow" data-reveal>{page.eyebrow}</p>
+  <h1 class="page-head__title" data-reveal>{page.title}</h1>
+  <p class="page-head__lead" data-reveal>{page.lead}</p>
+</header>
+
+<style>
+  /* Extra top padding clears the fixed nav. */
+  .page-head {
+    padding-top: clamp(130px, 17vw, 190px);
+    padding-bottom: clamp(40px, 6vw, 64px);
+  }
+  .page-head .eyebrow {
+    display: block;
+    margin-bottom: 20px;
+  }
+  .page-head__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h2);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+  }
+  .page-head__lead {
+    max-width: 58ch;
+    margin-top: 28px;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--muted);
+  }
+</style>

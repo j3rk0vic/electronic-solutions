@@ -1,0 +1,399 @@
+[
+  {
+    "id": "baterija",
+    "order": 0,
+    "name": "Lithium baterija",
+    "image": "baterija.png",
+    "category": "Baterije i energija",
+    "price": "€132.00 – €530.50",
+    "description": "Lithium baterija s kapacitetom 560Wh. Stalna snaga bez gubitka performansi, brzo punjenje i dugi vijek trajanja.",
+    "variants": [
+      {
+        "label": "jačina baterije - 56V, 2.5Ah(1P, 140Wh)",
+        "price": "€132.00"
+      },
+      {
+        "label": "jačina baterije - 56V, 5.0Ah(2P, 280Wh)",
+        "price": "€265.00"
+      },
+      {
+        "label": "jačina baterije - 56V, 7.5Ah(3P, 420Wh)",
+        "price": "€398.00"
+      },
+      {
+        "label": "jačina baterije - 56V, 10.0Ah(4P, 560Wh)",
+        "price": "€530.50"
+      }
+    ]
+  },
+  {
+    "id": "kosilica",
+    "order": 1,
+    "name": "Baterijska kosilica 52 cm",
+    "image": "kosilica.png",
+    "category": "Kosilice",
+    "price": "€691.50 – €1,327.00",
+    "description": "snaga, učinkovitost i sloboda bez goriva",
+    "variants": [
+      {
+        "label": "kosilica 55 cm",
+        "price": "€1,327.00"
+      },
+      {
+        "label": "kosilica 52 cm",
+        "price": "€710.00"
+      },
+      {
+        "label": "kosilica 47 cm",
+        "price": "€757.00"
+      },
+      {
+        "label": "kosilica 42 cm",
+        "price": "€691.50"
+      }
+    ]
+  },
+  {
+    "id": "komplet_za_malciranje",
+    "order": 2,
+    "name": "Komplet za malčiranje",
+    "image": "komplet_za_malciranje.png",
+    "category": "Kosilice",
+    "price": "€57.00",
+    "description": "Komplet za malčiranje (nož i čep za malčiranje) idealno je rješenje za vlasnike kosilica koji žele pretvoriti svoju standardnu kosilicu u uređaj za prirodnu i održivu njegu travnjaka. Kompatibilan s modelima kosilica LM1900E i LM1900E-SP, omogućuje učinkovito usitnjavanje pokošene trave u sitne čestice koje se vraćaju natrag na tlo za gušći, zdraviji i prirodno zelen travnjak.",
+    "variants": []
+  },
+  {
+    "id": "nit_za_trimer",
+    "order": 3,
+    "name": "Nit za trimer",
+    "image": "nit_za_trimer.png",
+    "category": "Trimeri",
+    "price": "€11.50 – €31.00",
+    "description": "Dizajnirana je za košnju trave, korova i niskog raslinja te je prikladna za sve vrste trimera – od kućnih do profesionalnih modela.",
+    "variants": [
+      {
+        "label": "debljina niti 2.0mm / duljina 15m",
+        "price": "€12.00"
+      },
+      {
+        "label": "debljina niti 2.4mm / duljina 15m",
+        "price": "€12.00"
+      },
+      {
+        "label": "debljina niti 2.7mm / duljina 15m",
+        "price": "€11.50"
+      },
+      {
+        "label": "debljina niti 2.0mm / duljina 50m",
+        "price": "€20.50"
+      },
+      {
+        "label": "debljina niti 2.7mm / duljina 60m",
+        "price": "€24.80"
+      },
+      {
+        "label": "debljina niti 2.4mm / duljina 75m",
+        "price": "€31.00"
+      }
+    ]
+  },
+  {
+    "id": "noz_za_malciranje",
+    "order": 4,
+    "name": "Dvostruki nož za malčiranje",
+    "image": "noz_za_malciranje.png",
+    "category": "Kosilice",
+    "price": "€41.00 – €42.50",
+    "description": "Dvostruki nož za malčiranje pruža iznimnu preciznost i učinkovitost prilikom košnje, uz istovremeno usitnjavanje trave u sitne čestice koje se vraćaju natrag na tlo kao prirodno gnojivo. Dvostruka oštrica omogućuje bržu, ravnomjerniju i ekološki prihvatljiviju obradu travnate površine.",
+    "variants": [
+      {
+        "label": "dužina 52 cm",
+        "price": "€41.00"
+      },
+      {
+        "label": "dužina 55 cm",
+        "price": "€42.50"
+      }
+    ]
+  },
+  {
+    "id": "ostrica",
+    "order": 5,
+    "name": "Oštrica motorne kose",
+    "image": "ostrica.png",
+    "category": "Trimeri",
+    "price": "€25.50",
+    "description": "Oštrica motorne kose ključni je dio svakog alata za košnju trave, guste vegetacije ili korova. Zamjenjivi rezni element koji se pričvršćuje na glavu kose i omogućuje rezanje deblje trave, grmlja, korova pa čak i tankih grana, uz čistu i brzu košnju te profesionalne rezultate.",
+    "variants": []
+  },
+  {
+    "id": "pila",
+    "order": 6,
+    "name": "Baterijska lančana pila",
+    "image": "pila.png",
+    "category": "Pile",
+    "price": "€284.00 – €540.00",
+    "description": "Snaga i preciznost za profesionalce – baterijska lančana pila s brushless motorom, brzinom lanca 20 m/s i Lithium™ baterijom.",
+    "variants": [
+      {
+        "label": "dužina 30 cm",
+        "price": "€284.00"
+      },
+      {
+        "label": "dužina 35 cm",
+        "price": "€426.00"
+      },
+      {
+        "label": "dužina 40 cm",
+        "price": "€540.00"
+      },
+      {
+        "label": "dužina 50 cm",
+        "price": "€474.00"
+      }
+    ]
+  },
+  {
+    "id": "prijenosni_reflektor",
+    "order": 7,
+    "name": "Prijenosni reflektor",
+    "image": "prijenosni_reflektor.png",
+    "category": "Baterije i energija",
+    "price": "€274.00",
+    "description": "Prijenosni reflektor predstavlja najmoćnije rješenje bežične rasvjete na svijetu, savršeno prilagođeno svim vanjskim i unutarnjim uvjetima.",
+    "variants": []
+  },
+  {
+    "id": "prijernosni_inverter",
+    "order": 8,
+    "name": "Prijenosni inverter",
+    "image": "prijernosni_inverter.png",
+    "category": "Baterije i energija",
+    "price": "€199.00 – €336.00",
+    "description": "Prijenosni inverter Nexus Escape – s AC utičnicom i 3 USB porta. Lagan, kompaktan i snažan, 400W – idealan za kampiranje, putovanja i kućnu upotrebu.",
+    "variants": [
+      {
+        "label": "model PAD5000E",
+        "price": "€199.00"
+      },
+      {
+        "label": "model PAD5001E",
+        "price": "€336.00"
+      }
+    ]
+  },
+  {
+    "id": "prikljucak_za_teleskopski_komplet",
+    "order": 9,
+    "name": "Priključak za teleskopski komplet",
+    "image": "prikljucak_za_teleskopski_komplet.png",
+    "category": "Pribor",
+    "price": "€758.00",
+    "description": "Priključak za teleskopski komplet omogućuje vam da dosegnete i najviše grane i visoke živice, bez korištenja ljestava ili platformi.",
+    "variants": []
+  },
+  {
+    "id": "prikljucak_za_trimer",
+    "order": 10,
+    "name": "Priključak za trimer",
+    "image": "prikljucak_za_trimer.png",
+    "category": "Trimeri",
+    "price": "€151.00",
+    "description": "Priključak za trimer omogućuje brzo i uredno podrezivanje trave uz ograde, zidove i staze. Dizajniran je za savršenu kontrolu i jednostavno rukovanje, čak i pri dužem radu. Dužine je 40 cm.",
+    "variants": []
+  },
+  {
+    "id": "puhac_lisca",
+    "order": 11,
+    "name": "Baterijski puhač lišća",
+    "image": "puhac_lisca.png",
+    "category": "Puhači i usisavači",
+    "price": "€190.00 – €274.00",
+    "description": "Snažan baterijski puhač lišća s protokom zraka 1045 – 1300 m³/h. Tiši, čišći i učinkovitiji od benzinskih modela. Idealno rješenje za profesionalnu upotrebu.",
+    "variants": [
+      {
+        "label": "jačina puhača lišća 1045 m³/h",
+        "price": "€190.00"
+      },
+      {
+        "label": "jačina puhača lišća 1300 m³/h",
+        "price": "€274.00"
+      }
+    ]
+  },
+  {
+    "id": "puhac_usisavac",
+    "order": 12,
+    "name": "Baterijski puhač usisavač",
+    "image": "puhac_usisavac.png",
+    "category": "Puhači i usisavači",
+    "price": "€494.00",
+    "description": "Baterijski puhač usisavač predstavlja idealno rješenje za brzo i jednostavno održavanje okućnice, dvorišta i vrtova.",
+    "variants": []
+  },
+  {
+    "id": "punjac_za_baterije",
+    "order": 13,
+    "name": "Brzi punjač za baterije",
+    "image": "punjac_za_baterije.png",
+    "category": "Baterije i energija",
+    "price": "€104.00 – €151.00",
+    "description": "Brzi punjač za baterije s LED indikatorom i hlađenjem ventilatorom. Pametno upravljanje, sigurno punjenje i puna baterija za manje od 30 minuta.",
+    "variants": [
+      {
+        "label": "jačina punjača 500W",
+        "price": "€104.00"
+      },
+      {
+        "label": "jačina punjača 700W",
+        "price": "€151.00"
+      }
+    ]
+  },
+  {
+    "id": "robotska_kosilica",
+    "order": 14,
+    "name": "Robotska kosilica",
+    "image": "robotska_kosilica.png",
+    "category": "Kosilice",
+    "price": "€2,471.00",
+    "description": "Robotska kosilica znači uštedu vremena, energije i živaca. Prepustite posao pametnoj tehnologiji koja osigurava uvijek uredan travnjak, kombinirajući snagu, sigurnost i praktičnost u jednom uređaju.",
+    "variants": []
+  },
+  {
+    "id": "rotocut_glava_za_rezanje",
+    "order": 15,
+    "name": "Rotocut glava za rezanje",
+    "image": "rotocut_glava_za_rezanje.png",
+    "category": "Trimeri",
+    "price": "€296.00",
+    "description": "Rotocut glava za rezanje precizno uklanja travu, korov i mahovinu uz siguran rad u skučenim prostorima. Ima čelične oštrice otporne na habanje, širinu reza 23 cm i brzinu 450 rpm, kompatibilna je s EGO multi-tool uređajima te radi bez buke i goriva.",
+    "variants": []
+  },
+  {
+    "id": "skare_za_zivicu",
+    "order": 16,
+    "name": "Baterijske škare za živicu",
+    "image": "skare_za_zivicu.png",
+    "category": "Škare za živicu",
+    "price": "€284.00 – €395.00",
+    "description": "Baterijske škare za živicu HT6500E s laserski brušenom oštricom, brushless motorom i 56V ARC Lithium™ baterijom. Tihe i snažne.",
+    "variants": [
+      {
+        "label": "dužina 51 cm",
+        "price": "€284.00"
+      },
+      {
+        "label": "dužina 61 cm",
+        "price": "€360.00"
+      },
+      {
+        "label": "dužina 65 cm",
+        "price": "€303.00"
+      },
+      {
+        "label": "dužina 66 cm",
+        "price": "€395.00"
+      }
+    ]
+  },
+  {
+    "id": "suho_mokro_usisivac",
+    "order": 17,
+    "name": "Suho/Mokro Usisavač",
+    "image": "suho_mokro_usisivac.png",
+    "category": "Puhači i usisavači",
+    "price": "€378.50",
+    "description": "Suho/mokro usisavač s 250 mbar snage, 56V brushless motorom, 3 načina rada i do 60 min autonomije. Idealno za kuću, radionicu ili profesionalnu upotrebu.",
+    "variants": []
+  },
+  {
+    "id": "trimer_33_cm",
+    "order": 18,
+    "name": "Baterijski Trimer 33 cm",
+    "image": "trimer_33_cm.png",
+    "category": "Trimeri",
+    "price": "€170.00",
+    "description": "Baterijski trimer 33 cm s moćnom 56 V ARC Lithium™ baterijom. Dvije brzine, brushless motor i samo 2,7 kg težine za savršeno šišanje bez napora.",
+    "variants": []
+  },
+  {
+    "id": "trimer_35_cm",
+    "order": 19,
+    "name": "Baterijski Trimer 35cm",
+    "image": "trimer_35_cm.png",
+    "category": "Trimeri",
+    "price": "€359.50",
+    "description": "Baterijski trimer 35 cm s Powerload™ tehnologijom omogućuje namatanje niti u 10 sekundi. Dolazi s 2,5Ah baterijom i punjačem za do 60 min rada, brushless motorom i teleskopskom aluminijskom osovinom.",
+    "variants": []
+  },
+  {
+    "id": "trimer_38_cm",
+    "order": 20,
+    "name": "Baterijski trimer 38 cm",
+    "image": "trimer_38_cm.png",
+    "category": "Trimeri",
+    "price": "€435.00",
+    "description": "Baterijski trimer 38 cm s Powerload™ tehnologijom, 2,5Ah baterijom i punjačem pruža do 60 minuta rada. Brushless motor, dvije brzine i teleskopska osovina za profesionalne rezultate u svakom vrtu.",
+    "variants": []
+  },
+  {
+    "id": "trimer_40_cm",
+    "order": 21,
+    "name": "Baterijski trimer 40 cm",
+    "image": "trimer_40_cm.png",
+    "category": "Trimeri",
+    "price": "€492.50",
+    "description": "Baterijski trimer 40 cm s Line IQ™ i Powerload™ tehnologijom, 4,0Ah baterijom i punjačem osigurava do 90 minuta rada. Brushless motor, dvije brzine i teleskopska osovina za profesionalno održavanje vrta.",
+    "variants": []
+  },
+  {
+    "id": "zamjenske_ostrice_rotocut",
+    "order": 22,
+    "name": "Zamjenske oštrice ROTOCUT",
+    "image": "zamjenske_ostrice_rotocut.png",
+    "category": "Trimeri",
+    "price": "€105.00",
+    "description": "Zamjenske oštrice ROTOCUT – čelične zamjenske oštrice za Rotocut glavu za rezanje, otporne na habanje za precizno i dugotrajno uklanjanje trave, korova i mahovine.",
+    "variants": []
+  },
+  {
+    "id": "zamjenski_lanac_za_motornu_pilu",
+    "order": 23,
+    "name": "Zamjenski lanac za motornu pilu",
+    "image": "zamjenski_lanac_za_motornu_pilu.png",
+    "category": "Pile",
+    "price": "€18.00 – €32.50",
+    "description": "Zamjenski lanac za motornu pilu izrađen je od visokokvalitetnog čelika koji jamči iznimnu oštrinu, dugotrajnost i sigurnost pri radu.",
+    "variants": [
+      {
+        "label": "dužina lanca 30 cm",
+        "price": "€27.50"
+      },
+      {
+        "label": "dužina lanca 35 cm",
+        "price": "€18.00"
+      },
+      {
+        "label": "dužina lanca 40 cm",
+        "price": "€20.50"
+      },
+      {
+        "label": "dužina lanca 50 cm",
+        "price": "€32.50"
+      }
+    ]
+  },
+  {
+    "id": "prikljucak_za_teleskopsku_pilu",
+    "order": 24,
+    "name": "Priključak za teleskopsku pilu",
+    "image": "prikljucak_za_teleskopsku_pilu.png",
+    "category": "Pile",
+    "price": "Cijena na upit",
+    "description": "",
+    "variants": [],
+    "needsInfo": true
+  }
+]

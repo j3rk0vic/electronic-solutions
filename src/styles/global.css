@@ -1,0 +1,416 @@
+@import 'tailwindcss';
+
+/* ═══════════════════════════════════════════════════════════════════════
+   THEME TOKENS — the whole page reads from these CSS variables.
+   JS lerps them from the GREEN (vrt) palette to the RED (dom) palette as a
+   function of global scroll progress (see Layout.astro). Everything —
+   background, nav, cards, buttons, orbs — consumes the same variables, so
+   the entire site morphs together as one.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+  /* Live theme (start = green world). Overwritten each frame while scrolling. */
+  --bg: rgb(8, 19, 12);
+  --surface: rgb(14, 32, 21);
+  --text: rgb(238, 245, 236);
+  --muted: rgb(150, 178, 150);
+  --accent: rgb(108, 226, 76);
+  --border: rgba(238, 245, 236, 0.1);
+  /* Readable "ink" color for text sitting on an --accent fill. Also lerped. */
+  --accent-ink: rgb(6, 16, 8);
+  /* 0 = green world, 1 = red world. Drives the nav logo cross-fade. */
+  --t-morph: 0;
+}
+
+/* Standalone pages pin one end of the scale instead of morphing. Declaring
+   them in CSS (not JS) means the page paints correctly on first frame — no
+   green flash before the script runs. JS leaves these alone; it only writes
+   inline tokens on data-theme="morph" pages. */
+:root[data-theme='dom'] {
+  --bg: rgb(20, 8, 7);
+  --surface: rgb(33, 17, 16);
+  --text: rgb(245, 234, 231);
+  --muted: rgb(186, 150, 146);
+  --accent: rgb(226, 74, 44);
+  --border: rgba(245, 234, 231, 0.12);
+  --accent-ink: rgb(22, 6, 4);
+  --t-morph: 1;
+}
+
+/* Expose the runtime tokens to Tailwind (v4) so `bg-bg`, `text-accent`,
+   `border-border`, `font-display` … all track the live morph. `inline`
+   means utilities emit `var(--…)` rather than baking a fixed value. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+
+  --font-display: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  /* Fluid type scale */
+  --text-eyebrow: clamp(0.72rem, 0.9vw, 0.8rem);
+  --text-display: clamp(3.25rem, 9vw, 8.25rem);
+  --text-h2: clamp(2.4rem, 6vw, 5.25rem);
+  --text-h3: clamp(1.7rem, 3vw, 2.2rem);
+}
+
+/* ── base ──────────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: auto; /* GSAP/ScrollSmoother owns scrolling */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* tiny linear fade smooths any coarse per-frame token steps */
+  transition: background-color 0.12s linear;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+/* Visible keyboard focus everywhere (a11y). */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Smooth-scroll targets clear the fixed nav (used by scrollIntoView in motion.ts). */
+:where(#top, #vrt, #dom, #kontakt) {
+  scroll-margin-top: 88px;
+}
+
+/* ── layout helpers ───────────────────────────────────────────────── */
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 32px);
+}
+.section {
+  position: relative;
+  padding-block: clamp(80px, 12vw, 130px);
+}
+
+/* shared eyebrow / kicker label */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-eyebrow);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── ambient orbs — the "something always floating" layer ──────────────
+   Fixed, blurred radial blobs in the live accent color. GPU-only transforms
+   (translate/scale) loop forever; a subtle parallax is added on scroll in JS. */
+.orb {
+  position: fixed;
+  width: 70vw;
+  height: 70vw;
+  max-width: 900px;
+  max-height: 900px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, var(--accent), transparent 62%);
+  opacity: 0.16;
+  filter: blur(40px);
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform;
+  transform: translateZ(0);
+}
+.orb--1 {
+  top: -20vh;
+  right: -10vw;
+  animation: orbFloat 15s ease-in-out infinite alternate;
+}
+.orb--2 {
+  bottom: -25vh;
+  left: -15vw;
+  width: 55vw;
+  height: 55vw;
+  opacity: 0.12;
+  animation: orbFloat 19s ease-in-out -6s infinite alternate;
+}
+.orb--3 {
+  top: 40vh;
+  left: 45vw;
+  width: 40vw;
+  height: 40vw;
+  opacity: 0.08;
+  animation: orbFloat 23s ease-in-out -11s infinite alternate;
+}
+@keyframes orbFloat {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(-4vw, 6vh, 0) scale(1.15);
+  }
+}
+
+/* ── ScrollSmoother scaffolding ────────────────────────────────────── */
+#smooth-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── reveal defaults (JS animates these in; static if no JS / reduced) ─ */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.line-mask {
+  display: block;
+  overflow: hidden;
+}
+.line-mask > * {
+  display: block;
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SHOP PRODUCT DIALOG (/trgovina) — native <dialog>, so we get the top layer,
+   focus trapping and Esc-to-close for free. Kept global (not Astro-scoped) so
+   ::backdrop and the open/close transitions apply reliably.
+   ═══════════════════════════════════════════════════════════════════════ */
+.pmodal {
+  width: min(940px, 92vw);
+  max-height: 90vh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: var(--surface);
+  color: var(--text);
+  overflow: hidden;
+  /* enter/exit animation (progressive; static where unsupported) */
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition:
+    opacity 0.32s ease,
+    transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+    overlay 0.32s ease allow-discrete,
+    display 0.32s ease allow-discrete;
+}
+.pmodal[open] {
+  opacity: 1;
+  transform: none;
+}
+@starting-style {
+  .pmodal[open] {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+.pmodal::backdrop {
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  transition:
+    opacity 0.32s ease,
+    overlay 0.32s ease allow-discrete,
+    display 0.32s ease allow-discrete;
+}
+.pmodal[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .pmodal[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.pmodal__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  max-height: 90vh;
+}
+@media (max-width: 720px) {
+  .pmodal__inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    overflow-y: auto;
+  }
+}
+
+.pmodal__close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 80%, black);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background-color 0.25s ease,
+    transform 0.25s ease;
+}
+.pmodal__close:hover {
+  background: var(--accent);
+  color: var(--accent-ink);
+  transform: rotate(90deg);
+}
+
+.pmodal__media {
+  position: relative;
+  background: radial-gradient(circle at 50% 40%, #ffffff 0%, #ffffff 58%, #f1f1ee 100%);
+  min-height: 260px;
+}
+.pmodal__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 9%;
+}
+.pmodal__mark {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 5rem;
+  color: color-mix(in srgb, var(--accent) 60%, #333);
+}
+
+.pmodal__body {
+  padding: clamp(24px, 4vw, 40px);
+  overflow-y: auto;
+}
+.pmodal__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.5rem, 3vw, 2.1rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.pmodal__price {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+.pmodal__desc {
+  margin-top: 20px;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.pmodal__variants {
+  margin-top: 26px;
+}
+.pmodal__vhead {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.pmodal__vlist {
+  list-style: none;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.pvar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 16px;
+  border-top: 1px solid var(--border);
+}
+.pvar:first-child {
+  border-top: 0;
+}
+.pvar__label {
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text);
+}
+.pvar__price {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.pmodal__cta {
+  display: inline-block;
+  margin-top: 28px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  padding: 13px 26px;
+  border-radius: 100px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  will-change: transform;
+  transition: box-shadow 0.3s ease;
+}
+.pmodal__cta:hover {
+  box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, black);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pmodal,
+  .pmodal::backdrop {
+    transition: none;
+  }
+  .pmodal__close:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   REDUCED MOTION — no scroll hijack, no loops, no reveal offsets.
+   Content renders fully and statically; the nav toggle still works.
+   ═══════════════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .orb {
+    animation: none;
+  }
+  [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  body {
+    transition: none;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}

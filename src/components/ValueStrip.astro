@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  value: CollectionEntry<'sections'>['data'];
+  region: string;
+}
+const { value, region } = Astro.props;
+---
+
+<section class="section wrap strip" id="usluge">
+  <p class="eyebrow" data-reveal>{value.eyebrow}</p>
+  <h2 class="strip__title" data-reveal>{value.title}</h2>
+  {value.lead && <p class="strip__sub" data-reveal>{value.lead}</p>}
+  <p class="strip__region" data-reveal>{region}</p>
+</section>
+
+<style>
+  .strip {
+    text-align: center;
+  }
+  .strip .eyebrow {
+    display: block;
+    margin-bottom: 22px;
+  }
+  .strip__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h2);
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    max-width: 16ch;
+    margin-inline: auto;
+  }
+  .strip__sub {
+    margin: 24px auto 0;
+    max-width: 46ch;
+    font-size: clamp(1rem, 1.6vw, 1.1rem);
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .strip__region {
+    margin-top: 28px;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+</style>

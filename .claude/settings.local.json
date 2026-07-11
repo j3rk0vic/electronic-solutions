@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" http://localhost:4321/)",
+      "Bash(node -e \"let s='';process.stdin.on\\('data',d=>s+=d\\).on\\('end',\\(\\)=>console.log\\(JSON.stringify\\(JSON.parse\\(s\\),null,2\\)\\)\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(npx astro *)",
+      "Bash(curl -s localhost:4321/o-nama)",
+      "Bash(node *)",
+      "Bash(rm -rf .astro)",
+      "Bash(powershell -NoProfile -Command 'Get-NetTCPConnection -LocalPort 8787 -State Listen -ErrorAction SilentlyContinue | Select-Object -Expand OwningProcess -Unique | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }')",
+      "Bash(grep -oE '.{0,12}disabled.{0,12}' dist/index.html)",
+      "Bash(node scripts/parse-shop.mjs)",
+      "Bash(node scripts/gen-og.mjs)",
+      "Bash(node -e \"const s=require\\('fs'\\).statSync\\('public/og.png'\\); console.log\\('size:', Math.round\\(s.size/1024\\)+'KB'\\)\")",
+      "Bash(awk '{print $5, $NF}')",
+      "Bash(curl -s -o /dev/null -w '%{http_code}\\\\n' http://localhost:4324/)",
+      "Bash(node -e \"const p=require\\('./src/content/shop/products.json'\\); const c={}; p.forEach\\(x=>c[x.category]=\\(c[x.category]||0\\)+1\\); console.log\\(c\\);\")",
+      "Bash(node -e \"const p=require\\('./src/content/shop/products.json'\\); ['baterija','puhac_lisca','punjac_za_baterije','pila','skare_za_zivicu','zamjenski_lanac_za_motornu_pilu'].forEach\\(id=>{const x=p.find\\(v=>v.id===id\\); console.log\\(id+':', x.variants.map\\(v=>v.label\\).join\\(' | '\\)\\);}\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\);const html=fs.readFileSync\\('dist/index.html','utf8'\\);const b=[...html.matchAll\\(/<script type=\\\\\"application\\\\/ld\\\\+json\\\\\">\\([\\\\s\\\\S]*?\\)<\\\\/script>/g\\)].map\\(m=>m[1]\\);b.forEach\\(\\(x,i\\)=>{try{const j=JSON.parse\\(x\\);console.log\\(' OK:',Array.isArray\\(j['@type']\\)?j['@type'].join\\('+'\\):j['@type'],'| priceRange',j.priceRange,'| image?',!!j.image\\);}catch\\(e\\){console.log\\(' INVALID',e.message\\)}}\\)\")",
+      "Skill(update-config)",
+      "Bash(echo '{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"C:\\\\\\\\Users\\\\\\\\ijerk\\\\\\\\desktop\\\\\\\\biz\\\\\\\\electronic-solutions\\\\\\\\src\\\\\\\\content\\\\\\\\shop\\\\\\\\products.json\"}}')",
+      "Bash(echo \"[exit $?]\")",
+      "Bash(echo \" [exit $?]\")",
+      "Bash(printf '%s' '{\"tool_input\":{\"file_path\":\"src\\\\\\\\content\\\\\\\\shop\\\\\\\\products.json\"}}')",
+      "Bash(echo \"[suite exit $?]\")"
+    ]
+  }
+}

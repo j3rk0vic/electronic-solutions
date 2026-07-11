@@ -1,0 +1,41 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import WorldSection from '../components/WorldSection.astro';
+import ValueStrip from '../components/ValueStrip.astro';
+import Contact from '../components/Contact.astro';
+
+// ── load editable content ────────────────────────────────────────────
+const site = (await getEntry('settings', 'site'))!.data;
+
+const sectionEntries = await getCollection('sections');
+const section = (id: string) => sectionEntries.find((s) => s.id === id)!.data;
+
+const products = await getCollection('products');
+const byWorld = (world: 'vrt' | 'dom' | 'tv') => products.filter((p) => p.data.world === world);
+
+const gardenProducts = byWorld('vrt');
+const homeProducts = byWorld('dom');
+const tvProducts = byWorld('tv');
+
+// The TV strip renders ONLY if TV product images actually exist (brief §5).
+const showTv = tvProducts.some((p) => Boolean(p.data.image));
+---
+
+<Layout site={site} theme="morph">
+  <Nav slot="nav" site={site} home current="/" />
+
+  <Hero hero={section('hero')} brands={site.brands} />
+
+  <WorldSection id="vrt" section={section('vrt')} products={gardenProducts} />
+
+  <WorldSection id="dom" section={section('dom')} products={homeProducts} />
+
+  {showTv && <WorldSection id="tv" section={section('tv')} products={tvProducts} compact />}
+
+  <ValueStrip value={section('value')} region={site.region} />
+
+  <Contact contact={section('contact')} site={site} />
+</Layout>

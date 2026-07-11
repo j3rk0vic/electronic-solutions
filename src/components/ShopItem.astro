@@ -1,0 +1,230 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { resolveShopImage } from '../lib/images';
+
+interface Props {
+  product: CollectionEntry<'shop'>['data'];
+  id: string;
+}
+const { product, id } = Astro.props;
+const img = resolveShopImage(product.image);
+const dialogId = `p-${id}`;
+const alt = product.name;
+
+// Croatian number agreement for the "N opcija/opcije" badge:
+// 2–4 → "opcije", everything else (incl. 5, 6 …) → "opcija".
+const n = product.variants.length;
+const hasVariants = n > 0;
+const d = n % 10;
+const dd = n % 100;
+const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opcija';
+---
+
+<article class="scard" data-reveal-item data-category={product.category}>
+  <button
+    type="button"
+    class="scard__btn"
+    data-shop-open
+    aria-haspopup="dialog"
+    aria-controls={dialogId}
+  >
+    <span class="scard__tile">
+      {
+        img ? (
+          <Image
+            src={img}
+            alt={alt}
+            widths={[220, 320, 440]}
+            sizes="(max-width:520px) 82vw, (max-width:900px) 44vw, 22vw"
+            loading="lazy"
+            layout="none"
+            class="scard__img"
+          />
+        ) : (
+          <span class="scard__mark" aria-hidden="true">{product.name.charAt(0)}</span>
+        )
+      }
+      {hasVariants && <span class="scard__opts">{n} {opcijeWord}</span>}
+    </span>
+    <span class="scard__info">
+      <span class="scard__name">{product.name}</span>
+      <span class="scard__foot">
+        <span class="scard__price">{product.price}</span>
+        <span class="scard__cue">Detalji</span>
+      </span>
+    </span>
+  </button>
+</article>
+
+<dialog id={dialogId} class="pmodal" aria-labelledby={`${dialogId}-title`}>
+  <div class="pmodal__inner">
+    <button type="button" class="pmodal__close" data-shop-close aria-label="Zatvori">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"
+        ><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+      /></svg>
+    </button>
+
+    <div class="pmodal__media">
+      {
+        img ? (
+          <Image
+            src={img}
+            alt={alt}
+            widths={[360, 540, 760]}
+            sizes="(max-width:760px) 88vw, 420px"
+            loading="lazy"
+            layout="none"
+            class="pmodal__img"
+          />
+        ) : (
+          <span class="pmodal__mark" aria-hidden="true">{product.name.charAt(0)}</span>
+        )
+      }
+    </div>
+
+    <div class="pmodal__body">
+      <h3 class="pmodal__title" id={`${dialogId}-title`} data-shop-name={product.name}>
+        {product.name}
+      </h3>
+      <p class="pmodal__price">{product.price}</p>
+
+      {product.description && <p class="pmodal__desc">{product.description}</p>}
+
+      {
+        hasVariants && (
+          <div class="pmodal__variants">
+            <p class="pmodal__vhead">Odaberite opciju</p>
+            <ul class="pmodal__vlist">
+              {product.variants.map((v) => (
+                <li class="pvar">
+                  <span class="pvar__label">{v.label}</span>
+                  <span class="pvar__price">{v.price}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+
+      {product.needsInfo && <p class="pmodal__desc">Detalji i cijena na upit — javite nam se za više informacija.</p>}
+
+      <a class="pmodal__cta magnetic" href="#kontakt" data-shop-inquire>Pošalji upit</a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* ── card ─────────────────────────────────────────────────────────── */
+  .scard {
+    display: flex;
+  }
+  .scard__btn {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    text-align: left;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    cursor: pointer;
+    color: inherit;
+    box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
+    transition:
+      transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1),
+      border-color 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+  .scard__btn:hover,
+  .scard__btn:focus-visible {
+    transform: translateY(-8px);
+    border-color: var(--accent);
+    box-shadow: 0 26px 55px -28px color-mix(in srgb, var(--accent) 55%, black);
+  }
+
+  .scard__tile {
+    position: relative;
+    display: block;
+    aspect-ratio: 4 / 5;
+    background: radial-gradient(circle at 50% 40%, #ffffff 0%, #ffffff 55%, #f1f1ee 100%);
+  }
+  .scard__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 11% 12%;
+  }
+  .scard__mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 3.5rem;
+    color: color-mix(in srgb, var(--accent) 60%, #333);
+  }
+  .scard__opts {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+    border-radius: 100px;
+    color: var(--accent-ink);
+    background: var(--accent);
+  }
+
+  .scard__info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 18px 18px;
+  }
+  .scard__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .scard__foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+  }
+  .scard__price {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .scard__cue {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.25s ease;
+  }
+  .scard__btn:hover .scard__cue {
+    color: var(--text);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scard__btn,
+    .scard__btn:hover {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

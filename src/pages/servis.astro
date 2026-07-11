@@ -1,0 +1,67 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHeader from '../components/PageHeader.astro';
+import InfoGrid from '../components/InfoGrid.astro';
+import Contact from '../components/Contact.astro';
+
+const site = (await getEntry('settings', 'site'))!.data;
+const page = (await getEntry('pages', 'servis'))!.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+---
+
+<Layout site={site} theme={page.theme} seo={page.seo}>
+  <Nav slot="nav" site={site} current="/servis" />
+
+  <PageHeader page={page} />
+
+  <section class="section wrap servis">
+    <InfoGrid blocks={page.blocks} />
+
+    {
+      page.stats.length > 0 && (
+        <div class="page-stats" data-reveal-group>
+          {page.stats.map((s) => (
+            <div data-reveal-item>
+              <div class="page-stats__value">{s.value}</div>
+              <div class="page-stats__label">{s.label}</div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </section>
+
+  <Contact contact={contact} site={site} />
+</Layout>
+
+<style>
+  .servis {
+    padding-top: clamp(24px, 4vw, 40px);
+  }
+  .page-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px 56px;
+    margin-top: 68px;
+    padding-top: 40px;
+    border-top: 1px solid var(--border);
+  }
+  .page-stats__value {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    letter-spacing: -0.02em;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .page-stats__label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+</style>

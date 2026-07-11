@@ -1,0 +1,152 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import ContactForm from './ContactForm.astro';
+import { real } from '../lib/placeholders';
+
+interface Props {
+  contact: CollectionEntry<'sections'>['data'];
+  site: CollectionEntry<'settings'>['data'];
+}
+const { contact, site } = Astro.props;
+const year = new Date().getFullYear();
+
+// Only build tel:/mailto: links when the placeholder has been replaced.
+const phoneHref = real(site.phoneHref);
+const telHref = phoneHref ? `tel:${phoneHref.replace(/\s+/g, '')}` : null;
+const mail = real(site.email);
+const mailHref = mail ? `mailto:${mail}` : null;
+---
+
+<footer class="section wrap footer" id="kontakt">
+  <div class="footer__lead">
+    <p class="eyebrow" data-reveal>{contact.eyebrow}</p>
+    <h2 class="footer__title" data-reveal>{contact.title}</h2>
+    {contact.lead && <p class="footer__sub" data-reveal>{contact.lead}</p>}
+  </div>
+
+  <div class="footer__top">
+    <div class="footer__form" data-reveal>
+      <ContactForm site={site} />
+    </div>
+
+    <address class="footer__info" data-reveal>
+      <strong>{site.company}</strong>
+      <span>{site.address}</span>
+      {telHref ? <a href={telHref}>{site.phone}</a> : <span>{site.phone}</span>}
+      {mailHref ? <a href={mailHref}>{site.email}</a> : <span>{site.email}</span>}
+      <span>{site.hours}</span>
+      <span class="footer__region">{site.region}</span>
+      {telHref && <a class="footer__cta magnetic" href={telHref}>Nazovi nas</a>}
+    </address>
+  </div>
+
+  <div class="footer__bottom">
+    <span>© {year} {site.company}</span>
+    <nav class="footer__links" aria-label="Stranice">
+      {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    border-top: 1px solid var(--border);
+  }
+  /* form gets the room; contact details sit alongside it */
+  .footer__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 80px);
+    align-items: start;
+    margin-top: 56px;
+  }
+  @media (max-width: 860px) {
+    .footer__top {
+      grid-template-columns: 1fr;
+    }
+  }
+  .footer .eyebrow {
+    display: block;
+    margin-bottom: 18px;
+  }
+  .footer__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 4.4vw, 3.1rem);
+    letter-spacing: -0.02em;
+    line-height: 1.02;
+    max-width: 15ch;
+  }
+  .footer__sub {
+    margin-top: 20px;
+    max-width: 42ch;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+  .footer__cta {
+    display: inline-block;
+    align-self: start;
+    margin-top: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.08em;
+    padding: 14px 28px;
+    border-radius: 100px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    will-change: transform;
+    transition: box-shadow 0.3s ease;
+  }
+  .footer__cta:hover {
+    box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, black);
+  }
+
+  .footer__info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.86rem;
+    line-height: 1.9;
+    font-style: normal;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+  .footer__info strong {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .footer__info a {
+    transition: color 0.25s ease;
+    width: fit-content;
+  }
+  .footer__info a:hover {
+    color: var(--accent);
+  }
+  .footer__region {
+    color: var(--accent);
+    margin-top: 4px;
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 60px;
+    padding-top: 26px;
+    border-top: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .footer__links {
+    display: flex;
+    gap: 20px;
+  }
+  .footer__links a:hover {
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,176 @@
+naziv slike: baterija.png
+puni naziv za web: Lithium baterija
+cijena: €132.00 – €530.50
+jačina baterije - 56V, 2.5Ah(1P, 140Wh) -> €132.00
+jačina baterije - 56V, 5.0Ah(2P, 280Wh) -> €265.00
+jačina baterije - 56V, 7.5Ah(3P, 420Wh) -> €398.00
+jačina baterije - 56V, 10.0Ah(4P, 560Wh) -> €530.50
+opis: Lithium baterija s kapacitetom 560Wh. Stalna snaga bez gubitka performansi, brzo punjenje i dugi vijek trajanja.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: kosilica.png
+puni naziv za web: Baterijska kosilica 52 cm
+cijena: €691.50 – €1,327.00
+kosilica 55 cm - €1,327.00
+kosilica 52 cm - €710.00
+kosilica 47 cm - €757.00
+kosilica 42 cm - €691.50
+opis: snaga, učinkovitost i sloboda bez goriva
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: komplet_za_malciranje.png
+puni naziv za web: Komplet za malčiranje
+cijena: €57.00
+opis: Komplet za malčiranje (nož i čep za malčiranje) idealno je rješenje za vlasnike kosilica koji žele pretvoriti svoju standardnu kosilicu u uređaj za prirodnu i održivu njegu travnjaka. Kompatibilan s modelima kosilica LM1900E i LM1900E-SP, omogućuje učinkovito usitnjavanje pokošene trave u sitne čestice koje se vraćaju natrag na tlo za gušći, zdraviji i prirodno zelen travnjak.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: nit_za_trimer.png
+puni naziv za web: Nit za trimer
+cijena: €11.50 – €31.00
+debljina niti 2.0mm / duljina 15m -> €12.00
+debljina niti 2.4mm / duljina 15m -> €12.00
+debljina niti 2.7mm / duljina 15m -> €11.50
+debljina niti 2.0mm / duljina 50m -> €20.50
+debljina niti 2.7mm / duljina 60m -> €24.80
+debljina niti 2.4mm / duljina 75m -> €31.00
+opis: Dizajnirana je za košnju trave, korova i niskog raslinja te je prikladna za sve vrste trimera – od kućnih do profesionalnih modela.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: noz_za_malciranje.png
+puni naziv za web: Dvostruki nož za malčiranje
+cijena: €41.00 – €42.50
+dužina 52 cm -> €41.00
+dužina 55 cm -> €42.50
+opis: Dvostruki nož za malčiranje pruža iznimnu preciznost i učinkovitost prilikom košnje, uz istovremeno usitnjavanje trave u sitne čestice koje se vraćaju natrag na tlo kao prirodno gnojivo. Dvostruka oštrica omogućuje bržu, ravnomjerniju i ekološki prihvatljiviju obradu travnate površine.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: ostrica.png
+puni naziv za web: Oštrica motorne kose
+cijena: €25.50
+opis: Oštrica motorne kose ključni je dio svakog alata za košnju trave, guste vegetacije ili korova. Zamjenjivi rezni element koji se pričvršćuje na glavu kose i omogućuje rezanje deblje trave, grmlja, korova pa čak i tankih grana, uz čistu i brzu košnju te profesionalne rezultate.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: pila.png
+puni naziv za web: Baterijska lančana pila
+cijena: €284.00 – €540.00
+dužina 30 cm -> €284.00
+dužina 35 cm -> €426.00
+dužina 40 cm -> €540.00
+dužina 50 cm -> €474.00
+opis: Snaga i preciznost za profesionalce – baterijska lančana pila s brushless motorom, brzinom lanca 20 m/s i Lithium™ baterijom.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: prijenosni_reflektor.png
+puni naziv za web: Prijenosni reflektor
+cijena: €274.00
+opis: Prijenosni reflektor predstavlja najmoćnije rješenje bežične rasvjete na svijetu, savršeno prilagođeno svim vanjskim i unutarnjim uvjetima.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: prijenosni_interter.png
+puni naziv za web: Prijenosni inverter
+cijena: €199.00 – €336.00
+model PAD5000E -> €199.00
+model PAD5001E -> €336.00
+opis: Prijenosni inverter Nexus Escape – s AC utičnicom i 3 USB porta. Lagan, kompaktan i snažan, 400W – idealan za kampiranje, putovanja i kućnu upotrebu.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: prikljucak_za_teleskopski_komplet.png
+puni naziv za web: Priključak za teleskopski komplet
+cijena: €758.00
+opis: Priključak za teleskopski komplet omogućuje vam da dosegnete i najviše grane i visoke živice, bez korištenja ljestava ili platformi.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: prikljucak_za_trimer.png
+puni naziv za web: Priključak za trimer
+cijena: €151.00
+opis: Priključak za trimer omogućuje brzo i uredno podrezivanje trave uz ograde, zidove i staze. Dizajniran je za savršenu kontrolu i jednostavno rukovanje, čak i pri dužem radu. Dužine je 40 cm.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: puhac_lisca.png
+puni naziv za web: Baterijski puhač lišća
+cijena: €190.00 – €274.00
+jačina puhača lišća 1045 m³/h -> €190.00
+jačina puhača lišća 1300 m³/h -> €274.00
+opis: Snažan baterijski puhač lišća s protokom zraka 1045 – 1300 m³/h. Tiši, čišći i učinkovitiji od benzinskih modela. Idealno rješenje za profesionalnu upotrebu.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: puhac_usisavac.png
+puni naziv za web: Baterijski puhač usisavač
+cijena: €494.00
+opis: Baterijski puhač usisavač predstavlja idealno rješenje za brzo i jednostavno održavanje okućnice, dvorišta i vrtova.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: punjac_za_baterije.png
+puni naziv za web: Brzi punjač za baterije
+cijena: €104.00 – €151.00
+jačina punjača 500W -> €104.00
+jačina punjača 700W -> €151.00
+opis: Brzi punjač za baterije s LED indikatorom i hlađenjem ventilatorom. Pametno upravljanje, sigurno punjenje i puna baterija za manje od 30 minuta.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: robotska_kosilica.png
+puni naziv za web: Robotska kosilica
+cijena: €2,471.00
+opis: Robotska kosilica znači uštedu vremena, energije i živaca. Prepustite posao pametnoj tehnologiji koja osigurava uvijek uredan travnjak, kombinirajući snagu, sigurnost i praktičnost u jednom uređaju.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: rotocut_glava_za_rezanje.png
+puni naziv za web: Rotocut glava za rezanje
+cijena: €296.00
+opis: Rotocut glava za rezanje precizno uklanja travu, korov i mahovinu uz siguran rad u skučenim prostorima. Ima čelične oštrice otporne na habanje, širinu reza 23 cm i brzinu 450 rpm, kompatibilna je s EGO multi-tool uređajima te radi bez buke i goriva.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: skare_za_zivicu.png
+puni naziv za web: Baterijske škare za živicu
+cijena: €284.00 – €395.00
+dužina 51 cm -> €284.00
+dužina 61 cm -> €360.00
+dužina 65 cm -> €303.00
+dužina 66 cm -> €395.00
+opis: Baterijske škare za živicu HT6500E s laserski brušenom oštricom, brushless motorom i 56V ARC Lithium™ baterijom. Tihe i snažne.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: suho_mokro_usisivac.png
+puni naziv za web: Suho/Mokro Usisavač
+cijena: €378.50
+opis: Suho/mokro usisavač s 250 mbar snage, 56V brushless motorom, 3 načina rada i do 60 min autonomije. Idealno za kuću, radionicu ili profesionalnu upotrebu.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: trimer_33_cm.png
+puni naziv za web: Baterijski Trimer 33 cm
+cijena: €170.00
+opis: Baterijski trimer 33 cm s moćnom 56 V ARC Lithium™ baterijom. Dvije brzine, brushless motor i samo 2,7 kg težine za savršeno šišanje bez napora.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: trimer_35_cm.png
+puni naziv za web: Baterijski Trimer 35cm
+cijena: €359.50
+opis: Baterijski trimer 35 cm s Powerload™ tehnologijom omogućuje namatanje niti u 10 sekundi. Dolazi s 2,5Ah baterijom i punjačem za do 60 min rada, brushless motorom i teleskopskom aluminijskom osovinom.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: trimer_38_cm.png
+puni naziv za web: Baterijski trimer 38 cm
+cijena: €435.00
+opis: Baterijski trimer 38 cm s Powerload™ tehnologijom, 2,5Ah baterijom i punjačem pruža do 60 minuta rada. Brushless motor, dvije brzine i teleskopska osovina za profesionalne rezultate u svakom vrtu.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: trimer_40_cm.png
+puni naziv za web: Baterijski trimer 40 cm
+cijena: €492.50
+opis: Baterijski trimer 40 cm s Line IQ™ i Powerload™ tehnologijom, 4,0Ah baterijom i punjačem osigurava do 90 minuta rada. Brushless motor, dvije brzine i teleskopska osovina za profesionalno održavanje vrta.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: zamjenske_ostrice_rotocut.png
+puni naziv za web: Zamjenske oštrice ROTOCUT
+cijena: €105.00
+opis: Zamjenske oštrice ROTOCUT – čelične zamjenske oštrice za Rotocut glavu za rezanje, otporne na habanje za precizno i dugotrajno uklanjanje trave, korova i mahovine.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: zamjenski_lanac_za_motornu_pilu.png
+puni naziv za web: Zamjenski lanac za motornu pilu
+cijena: €18.00 – €32.50
+dužina lanca 30 cm -> €27.50
+dužina lanca 35 cm -> €18.00
+dužina lanca 40 cm -> €20.50
+dužina lanca 50 cm -> €32.50
+opis: Zamjenski lanac za motornu pilu izrađen je od visokokvalitetnog čelika koji jamči iznimnu oštrinu, dugotrajnost i sigurnost pri radu.
