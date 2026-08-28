@@ -19,6 +19,10 @@ const { site, home = false, current, localWorlds = false } = Astro.props;
 // #vrt / #dom sections live on this page when it's the home page or the shop;
 // elsewhere the world links point back to the home page's sections.
 const sameWorlds = home || localWorlds;
+
+// The logo is the way back to the start. On the home page there is nowhere to
+// navigate, so it scrolls to the top; anywhere else it goes home for real.
+const logoHref = home ? '#top' : '/';
 const worlds = (['vrt', 'dom'] as const).map((id) => ({
   id,
   label: id === 'vrt' ? 'Vrt' : 'Dom',
@@ -35,7 +39,12 @@ const menuItems = [
 ---
 
 <nav class="nav" aria-label="Glavna navigacija" transition:name="site-nav">
-  <a class="nav__logo" href="#top" data-scroll-to="top" aria-label={`${site.company} — početna`}>
+  <a
+    class="nav__logo"
+    href={logoHref}
+    data-scroll-to={home ? 'top' : undefined}
+    aria-label={`${site.company} — početna`}
+  >
     <!-- Same lockup twice, differing only in the "E" colour. The green one is
          the in-flow base (always opaque); the red one fades in over it with the
          theme morph, so the result is an exact colour lerp on the "E" while the
