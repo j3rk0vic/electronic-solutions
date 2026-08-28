@@ -73,6 +73,9 @@ const products = defineCollection({
     // <Image /> at render time via import.meta.glob. Optional: cards without an
     // image (e.g. Solar, Servis) render a graceful themed gradient placeholder.
     image: z.string().optional(),
+    // true = the image is a photograph, not a cut-out packshot. The tile then
+    // fills edge to edge instead of sitting contained on the white ground.
+    photo: z.boolean().default(false),
     badge: z.string().optional(),
   }),
 });
