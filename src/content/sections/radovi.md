@@ -3,8 +3,8 @@ order: 4
 world: dom
 num: "04 — RADOVI · S TERENA"
 eyebrow: "Naši radovi"
-title: "Ovako to izgleda uživo."
-lead: "Fotografije s naših gradilišta — polaganje podnog grijanja i strojarnica s Viessmann dizalicom topline. Bez rendera i bez katalogâ: isti ljudi koji vam prodaju opremu i ugrađuju je."
+title: "Radimo, ne renderiramo."
+lead: "Nekoliko fotografija s naših gradilišta — bez rendera i bez katalogâ. Cijeli pregled poslova, s opisom kako ih radimo, nalazi se na stranici Usluge."
 stats:
   - { value: "01", label: "Izmjera i ponuda" }
   - { value: "02", label: "Ugradnja i tlačna proba" }

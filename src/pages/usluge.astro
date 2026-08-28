@@ -4,11 +4,31 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import PageHeader from '../components/PageHeader.astro';
 import InfoGrid from '../components/InfoGrid.astro';
+import WorkGallery from '../components/WorkGallery.astro';
 import Contact from '../components/Contact.astro';
 
 const site = (await getEntry('settings', 'site'))!.data;
 const page = (await getEntry('pages', 'usluge'))!.data;
 const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+
+/**
+ * The full set lives here — this is the page where someone deciding whether to
+ * call wants to see everything we have actually done. The home page shows a
+ * taster that points here; each service page shows only its own jobs.
+ * All eight fill the 6-column mosaic exactly: wide(6), 2+2+2, 2+2+2, 2+4.
+ */
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+
+const gallerySection = {
+  order: 0,
+  world: 'dom' as const,
+  num: '',
+  eyebrow: 'Naši radovi',
+  title: 'Ovako to izgleda uživo.',
+  lead: 'Fotografije s naših gradilišta — polaganje podnog grijanja i strojarnice s Viessmann dizalicama topline. Bez rendera i bez katalogâ. Kliknite za veće.',
+  // The steps already appear above as page stats; don't repeat them here.
+  stats: [],
+};
 ---
 
 <Layout site={site} theme={page.theme} seo={page.seo}>
@@ -32,6 +52,8 @@ const contact = (await getCollection('sections')).find((s) => s.id === 'contact'
       )
     }
   </section>
+
+  <WorkGallery section={gallerySection} works={works} />
 
   <Contact contact={contact} site={site} />
 </Layout>
