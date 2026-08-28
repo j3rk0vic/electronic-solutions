@@ -21,7 +21,7 @@ const dd = n % 100;
 const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opcija';
 ---
 
-<article class="scard" data-reveal-item data-category={product.category}>
+<article class="scard" data-reveal-item data-world={product.world} data-category={product.category}>
   <button
     type="button"
     class="scard__btn"

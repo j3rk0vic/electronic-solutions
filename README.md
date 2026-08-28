@@ -24,8 +24,9 @@ Sav tekst i proizvodi su u `src/content/` — mijenjajte `.md` datoteke:
 | Što | Gdje |
 |-----|------|
 | **Kontakt podaci, brendovi, nav, SEO** | `src/content/settings/site.md` |
-| **Naslovi i tekstovi sekcija** (naslovnica) | `src/content/sections/*.md` (hero, vrt, dom, tv, value, contact) |
+| **Naslovi i tekstovi sekcija** (naslovnica) | `src/content/sections/*.md` (hero, vrt, dom, tv, radovi, value, contact) |
 | **Proizvodi na naslovnici** (izlog) | `src/content/products/*.md` |
+| **Radovi — fotografije s terena** | `src/content/works/*.md` (vidi „Radovi” niže) |
 | **Stranice** Trgovina / Servis / O nama | `src/content/pages/*.md` |
 | **Trgovina — cijeli webshop** | `src/content/shop/products.json` (vidi „Trgovina" niže) |
 
@@ -65,6 +66,28 @@ e-mail (`email:`) kao rezerva — zato i njega popunite.
    `world` (`vrt` | `dom` | `tv`), `order`, `title`, `brand`, `blurb`,
    `image` (naziv datoteke), opcionalno `badge`.
 3. Kartica bez `image:` prikazuje elegantni tematski placeholder (npr. Solar).
+
+### Radovi (galerija s terena)
+Sekcija **04 — RADOVI** na naslovnici je foto-esej sa stvarnih gradilišta:
+mozaik od jedne široke naslovne fotografije i niza portretnih pločica. Klik na
+pločicu otvara veću fotografiju u prozoru (strelice ←/→ i tipkovnica listaju,
+Esc zatvara).
+
+Fotografije su obične snimke s mobitela, pa im stranica nameće **isti tretman**
+(blaga desaturacija, zrno, tamni prijelaz i tanki sloj boje teme) — zato izgledaju
+kao jedna namjerna serija, a ne kao osam nasumičnih slika.
+
+Dodavanje nove fotografije:
+1. Sliku stavite u `src/assets/work/`.
+2. Kopirajte postojeću `.md` u `src/content/works/` i popunite:
+   `order` (redoslijed), `title`, `caption` (rečenica ispod naslova), `tag`
+   (npr. „Podno grijanje”), `image` (naziv datoteke), `span`
+   (`wide` = široka naslovna, `std` = uspravna pločica), opcionalno `location`
+   i `focus` (npr. `"center 38%"` — pomak izreza ako glavni motiv ispada izvan kadra).
+3. Naslov, uvod i tri koraka procesa mijenjaju se u `src/content/sections/radovi.md`.
+
+> `span: "wide"` je predviđen za jednu fotografiju na početku. Ako ih stavite više,
+> svaka će zauzeti cijeli redak.
 
 ## Trgovina (webshop na `/trgovina`)
 Cijeli asortiman s cijenama. Svaka kartica prikazuje sliku, naziv i cijenu;

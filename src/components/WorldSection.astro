@@ -6,10 +6,8 @@ interface Props {
   section: CollectionEntry<'sections'>['data'];
   products: CollectionEntry<'products'>[];
   id: string;
-  /** compact = TV-style strip (fewer items, tighter) */
-  compact?: boolean;
 }
-const { section, products, id, compact = false } = Astro.props;
+const { section, products, id } = Astro.props;
 const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
 ---
 
@@ -23,7 +21,7 @@ const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
     {section.lead && <p class="world__lead" data-reveal>{section.lead}</p>}
   </div>
 
-  <div class:list={['world__grid', { 'world__grid--compact': compact }]} data-reveal-group>
+  <div class="world__grid" data-reveal-group>
     {sorted.map((p, i) => <ProductCard product={p.data} index={i} />)}
   </div>
 
@@ -59,7 +57,7 @@ const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
   }
   .world__lead {
     max-width: 540px;
-    margin-top: 24px;
+    margin-top: 18px;
     font-size: clamp(1rem, 1.6vw, 1.1rem);
     line-height: 1.65;
     color: var(--muted);
@@ -69,26 +67,16 @@ const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 18px;
-    margin-top: 60px;
+    margin-top: 36px;
   }
-  /* garden has 6, home 5 → 3-up desktop reads best; compact (TV) centers */
-  .world__grid--compact {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 720px;
-  }
-  @media (min-width: 1080px) {
-    .world__grid:not(.world__grid--compact) {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
+  /* garden has 6, home 9 → 3-up desktop reads best for both */
   @media (max-width: 900px) {
     .world__grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
   @media (max-width: 520px) {
-    .world__grid,
-    .world__grid--compact {
+    .world__grid {
       grid-template-columns: 1fr;
     }
   }
@@ -96,9 +84,9 @@ const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
   .world__stats {
     display: flex;
     flex-wrap: wrap;
-    gap: 40px 56px;
-    margin-top: 68px;
-    padding-top: 40px;
+    gap: 26px 48px;
+    margin-top: 44px;
+    padding-top: 28px;
     border-top: 1px solid var(--border);
   }
   .stat__value {

@@ -28,6 +28,20 @@ const isHome = Astro.url.pathname === '/';
 // scripts/gen-og.mjs). Absolute is required — scrapers don't resolve relatives.
 const ogImage = new URL('/og.png', Astro.site ?? 'https://electronic-solution.hr').href;
 
+// The owner keeps one human address line; schema.org wants it in parts.
+// "Splitska ul. 48, 20350 Metković" → street / postcode / town. If it is ever
+// written in another shape, fall back to sending the whole line as the street
+// rather than emitting wrong parts.
+const addr = real(site.address);
+const parts = addr?.match(/^(.*?),\s*(\d{5})\s+(.+)$/);
+const addressLd = {
+  '@type': 'PostalAddress',
+  addressCountry: 'HR',
+  streetAddress: parts?.[1] ?? addr,
+  postalCode: parts?.[2],
+  addressLocality: parts?.[3] ?? 'Metković',
+};
+
 const jsonLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': ['LocalBusiness', 'Store'],
@@ -38,15 +52,11 @@ const jsonLd: Record<string, unknown> = {
   logo: ogImage,
   priceRange: '€€',
   areaServed: site.region,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Metković',
-    addressCountry: 'HR',
-    streetAddress: real(site.address),
-  },
+  address: addressLd,
   telephone: real(site.phoneHref),
   email: real(site.email),
-  openingHours: real(site.hours),
+  // Only the machine format is valid here — the prose in `hours` is for humans.
+  openingHours: real(site.hoursSchema) || undefined,
   brand: site.brands,
 };
 ---

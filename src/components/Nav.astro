@@ -172,6 +172,12 @@ const menuItems = [
     inset: 0;
     opacity: var(--t-morph, 0);
   }
+  /* On a pinned page --t-morph jumps 0 ⇄ 1 in one step (the shop's Vrt/Dom
+     selector), so ease it there. The morphing home page is excluded — it
+     updates every frame and must stay untransitioned. */
+  :global(:root:not([data-theme='morph'])) .nav__logo-img--red {
+    transition: opacity var(--dur-slow) var(--ease-out);
+  }
 
   .nav__toggle {
     display: flex;

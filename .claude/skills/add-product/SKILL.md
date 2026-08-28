@@ -1,6 +1,6 @@
 ---
 name: add-product
-description: Scaffold a new home-page product ("izlog") card for the Electronic Solution site — creates a correctly-named src/content/products/*.md with valid frontmatter and places its image. Use when the user wants to add a product to the vrt (Vrt/EGO), dom (Dom/klima), or tv world, or says "add a product", "novi proizvod", "dodaj proizvod".
+description: Scaffold a new home-page product ("izlog") card for the Electronic Solution site — creates a correctly-named src/content/products/*.md with valid frontmatter and places its image. Use when the user wants to add a product to the vrt (Vrt/EGO) or dom (Dom — klima, grijanje, TV) world, or says "add a product", "novi proizvod", "dodaj proizvod".
 ---
 
 # Add Product
@@ -13,7 +13,7 @@ is generated from `src/content/shop/products.json` by `scripts/parse-shop.mjs`.
 
 | Field   | Required | Notes |
 |---------|----------|-------|
-| `world` | ✅       | One of `vrt` (garden/EGO), `dom` (climate/heating), `tv` |
+| `world` | ✅       | Either `vrt` (garden/EGO) or `dom` (everything else: klima, grijanje, solar, TV) |
 | `order` | ✅       | Position within its world. Use the next free integer for that world. |
 | `title` | ✅       | Croatian, quoted. e.g. `"Kosilice"` |
 | `blurb` | ✅       | Croatian one-liner, quoted. |
@@ -40,12 +40,10 @@ is generated from `src/content/shop/products.json` by `scripts/parse-shop.mjs`.
      folded: č/ć→c, š→s, ž→z, đ→d), e.g. `Škare za živicu` → `skare`.
    - Verify the file does not already exist before writing.
 
-4. **Place the image** (if provided). Copy/save it to:
-   - `src/assets/products/` for `world: vrt` or `world: dom`
-   - `src/assets/tv/` for `world: tv`
+4. **Place the image** (if provided). Copy/save it to `src/assets/products/`.
 
    Then set `image:` to the **filename only** (e.g. `"kosilica.webp"`). `resolveImage`
-   in `src/lib/images.ts` globs those two folders, so the file must physically exist
+   in `src/lib/images.ts` globs that folder, so the file must physically exist
    there or the card renders the placeholder. Prefer `.webp`/`.avif` for size.
 
 5. **Write the `.md`** with frontmatter only (product cards have no body). Order the
