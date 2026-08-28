@@ -1,0 +1,179 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import PageHeader from '../components/PageHeader.astro';
+import InfoGrid from '../components/InfoGrid.astro';
+import WorkGallery from '../components/WorkGallery.astro';
+import Contact from '../components/Contact.astro';
+
+const site = (await getEntry('settings', 'site'))!.data;
+const entry = (await getEntry('pages', 'podno-grijanje'))!;
+const page = entry.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+
+// The intro is prose in the .md body so the owner can edit it without touching this file.
+const { Content } = await render(entry);
+
+const works = (await getCollection('works'))
+  .filter((w) => w.data.tag === 'Podno grijanje')
+  .sort((a, b) => a.data.order - b.data.order);
+
+/**
+ * WorkGallery lays out on a 6-column grid: a wide tile spans 6, a standard one
+ * 2, and the closing inquiry tile 4. With these six photos the only split that
+ * fills whole rows is two wide leading four standard — 6+6, 2+2+2, 2+4 — so the
+ * mosaic never ends ragged. The home page keeps its own spans untouched.
+ */
+const gallery = works.map((w, i) => (i < 2 ? { ...w, data: { ...w.data, span: 'wide' as const } } : w));
+
+const gallerySection = {
+  order: 0,
+  world: 'dom' as const,
+  num: '',
+  eyebrow: 'Naši radovi',
+  title: 'Ovako to izgleda na gradilištu.',
+  lead: 'Svaka fotografija je s posla koji smo sami odradili. Kliknite za veće.',
+  stats: page.stats,
+};
+
+// FAQPage is what lets Google show these answers straight under the result.
+const faqLd = page.faq.length
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: page.faq.map((f) => ({
+        '@type': 'Question',
+        name: f.q,
+        acceptedAnswer: { '@type': 'Answer', text: f.a },
+      })),
+    }
+  : null;
+---
+
+<Layout site={site} theme={page.theme} seo={page.seo}>
+  <Nav slot="nav" site={site} current="/podno-grijanje" />
+
+  <PageHeader page={page} />
+
+  <section class="section wrap pg">
+    <div class="pg__prose" data-reveal>
+      <Content />
+    </div>
+
+    <InfoGrid blocks={page.blocks} />
+  </section>
+
+  <WorkGallery section={gallerySection} works={gallery} />
+
+  {
+    page.faq.length > 0 && (
+      <section class="section wrap faq" id="pitanja">
+        <h2 class="faq__title" data-reveal>Česta pitanja</h2>
+        <div class="faq__list" data-reveal-group>
+          {page.faq.map((f) => (
+            <details class="faq__item" data-reveal-item>
+              <summary class="faq__q">{f.q}</summary>
+              <p class="faq__a">{f.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <Contact contact={contact} site={site} />
+</Layout>
+
+{faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} is:inline />}
+
+<style>
+  .pg {
+    padding-top: clamp(24px, 4vw, 40px);
+  }
+  .pg__prose {
+    max-width: 62ch;
+    margin-bottom: clamp(40px, 6vw, 64px);
+  }
+  /* <Content /> emits unscoped HTML, so these reach through :global. */
+  .pg__prose :global(p) {
+    font-size: clamp(1rem, 1.5vw, 1.12rem);
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .pg__prose :global(p + p) {
+    margin-top: 22px;
+  }
+  .pg__prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .faq {
+    padding-top: 0;
+  }
+  .faq__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h3);
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+  }
+  .faq__list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 820px;
+  }
+  .faq__item {
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    padding: 0 22px;
+    transition: border-color var(--dur-mid) var(--ease-out);
+  }
+  .faq__item:hover,
+  .faq__item[open] {
+    border-color: var(--accent);
+  }
+  .faq__q {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.4;
+    padding: 20px 30px 20px 0;
+    cursor: pointer;
+    list-style: none;
+    position: relative;
+  }
+  /* Replace the default disclosure triangle with a +/− that flips when open. */
+  .faq__q::-webkit-details-marker {
+    display: none;
+  }
+  .faq__q::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    translate: 0 -50%;
+    font-family: var(--font-mono);
+    font-size: 1.3rem;
+    color: var(--accent);
+    transition: rotate var(--dur-mid) var(--ease-out);
+  }
+  .faq__item[open] .faq__q::after {
+    content: '−';
+  }
+  .faq__a {
+    padding: 0 0 22px;
+    line-height: 1.7;
+    color: var(--muted);
+    max-width: 68ch;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq__item,
+    .faq__q::after {
+      transition: none;
+    }
+  }
+</style>

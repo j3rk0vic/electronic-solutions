@@ -45,6 +45,7 @@ formAccessKey: ""
 # oni su sekcije naslovnice i imaju vlastiti prekidač u navigaciji.
 nav:
   - { label: "Trgovina", href: "/trgovina" }
+  - { label: "Podno grijanje", href: "/podno-grijanje" }
   - { label: "Servis", href: "/servis" }
   - { label: "O nama", href: "/o-nama" }
 

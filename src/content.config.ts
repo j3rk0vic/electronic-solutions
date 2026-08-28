@@ -119,6 +119,12 @@ const pages = defineCollection({
     theme: z.enum(['morph', 'vrt', 'dom']).default('morph'),
     stats: z.array(stat).default([]),
     blocks: z.array(z.object({ num: z.string(), title: z.string(), body: z.string() })).default([]),
+    /**
+     * Questions people actually type before calling a tradesman. Rendered as an
+     * accordion and emitted as schema.org FAQPage, which is what lets Google
+     * show the answers directly under the result for a service query.
+     */
+    faq: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
     seo: z.object({
       title: z.string(),
       description: z.string(),
