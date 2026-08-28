@@ -1,39 +1,58 @@
 ---
 import { getCollection, getEntry, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import Nav from '../components/Nav.astro';
-import PageHeader from '../components/PageHeader.astro';
-import InfoGrid from '../components/InfoGrid.astro';
-import WorkGallery from '../components/WorkGallery.astro';
-import Contact from '../components/Contact.astro';
+import Nav from './Nav.astro';
+import PageHeader from './PageHeader.astro';
+import InfoGrid from './InfoGrid.astro';
+import WorkGallery from './WorkGallery.astro';
+import Contact from './Contact.astro';
+
+/**
+ * One service under /usluge. Every such page is the same shape — intro prose,
+ * the steps of the job, our own photos of it, then the questions people ask
+ * before calling — so the routes under src/pages/usluge stay one-liners.
+ */
+interface Props {
+  entry: CollectionEntry<'pages'>;
+  /** Which `works` tag supplies this page's photos. */
+  workTag: string;
+  /** Heading above the photo grid. */
+  galleryTitle: string;
+  galleryLead: string;
+}
+const { entry, workTag, galleryTitle, galleryLead } = Astro.props;
+const page = entry.data;
 
 const site = (await getEntry('settings', 'site'))!.data;
-const entry = (await getEntry('pages', 'podno-grijanje'))!;
-const page = entry.data;
 const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
 
-// The intro is prose in the .md body so the owner can edit it without touching this file.
+// The intro is prose in the .md body so the owner can edit it without code.
 const { Content } = await render(entry);
 
 const works = (await getCollection('works'))
-  .filter((w) => w.data.tag === 'Podno grijanje')
+  .filter((w) => w.data.tag === workTag)
   .sort((a, b) => a.data.order - b.data.order);
 
 /**
- * WorkGallery lays out on a 6-column grid: a wide tile spans 6, a standard one
- * 2, and the closing inquiry tile 4. With these six photos the only split that
- * fills whole rows is two wide leading four standard — 6+6, 2+2+2, 2+4 — so the
- * mosaic never ends ragged. The home page keeps its own spans untouched.
+ * WorkGallery lays out on 6 columns: a wide tile spans 6, a standard one 2, and
+ * the closing inquiry tile 4. Two wide leading the rest fills whole rows for a
+ * six-photo set (6 + 6, 2+2+2, 2+4); with fewer photos everything stays
+ * standard and the closing tile takes the slack. The home page keeps its own
+ * spans untouched — this only reshapes the copy passed in here.
  */
-const gallery = works.map((w, i) => (i < 2 ? { ...w, data: { ...w.data, span: 'wide' as const } } : w));
+const gallery =
+  works.length >= 5
+    ? works.map((w, i) => (i < 2 ? { ...w, data: { ...w.data, span: 'wide' as const } } : w))
+    : works.map((w) => ({ ...w, data: { ...w.data, span: 'std' as const } }));
 
 const gallerySection = {
   order: 0,
   world: 'dom' as const,
   num: '',
   eyebrow: 'Naši radovi',
-  title: 'Ovako to izgleda na gradilištu.',
-  lead: 'Svaka fotografija je s posla koji smo sami odradili. Kliknite za veće.',
+  title: galleryTitle,
+  lead: galleryLead,
   stats: page.stats,
 };
 
@@ -52,24 +71,26 @@ const faqLd = page.faq.length
 ---
 
 <Layout site={site} theme={page.theme} seo={page.seo}>
-  <Nav slot="nav" site={site} current="/podno-grijanje" />
+  <Nav slot="nav" site={site} current="/usluge" />
 
   <PageHeader page={page} />
 
-  <section class="section wrap pg">
-    <div class="pg__prose" data-reveal>
+  <section class="section wrap svc">
+    <div class="svc__prose" data-reveal>
       <Content />
     </div>
 
     <InfoGrid blocks={page.blocks} />
   </section>
 
-  <WorkGallery section={gallerySection} works={gallery} />
+  {gallery.length > 0 && <WorkGallery section={gallerySection} works={gallery} />}
 
   {
     page.faq.length > 0 && (
       <section class="section wrap faq" id="pitanja">
-        <h2 class="faq__title" data-reveal>Česta pitanja</h2>
+        <h2 class="faq__title" data-reveal>
+          Česta pitanja
+        </h2>
         <div class="faq__list" data-reveal-group>
           {page.faq.map((f) => (
             <details class="faq__item" data-reveal-item>
@@ -88,23 +109,23 @@ const faqLd = page.faq.length
 {faqLd && <script type="application/ld+json" set:html={JSON.stringify(faqLd)} is:inline />}
 
 <style>
-  .pg {
+  .svc {
     padding-top: clamp(24px, 4vw, 40px);
   }
-  .pg__prose {
+  .svc__prose {
     max-width: 62ch;
     margin-bottom: clamp(40px, 6vw, 64px);
   }
   /* <Content /> emits unscoped HTML, so these reach through :global. */
-  .pg__prose :global(p) {
+  .svc__prose :global(p) {
     font-size: clamp(1rem, 1.5vw, 1.12rem);
     line-height: 1.75;
     color: var(--muted);
   }
-  .pg__prose :global(p + p) {
+  .svc__prose :global(p + p) {
     margin-top: 22px;
   }
-  .pg__prose :global(strong) {
+  .svc__prose :global(strong) {
     color: var(--text);
     font-weight: 600;
   }
@@ -159,7 +180,6 @@ const faqLd = page.faq.length
     font-family: var(--font-mono);
     font-size: 1.3rem;
     color: var(--accent);
-    transition: rotate var(--dur-mid) var(--ease-out);
   }
   .faq__item[open] .faq__q::after {
     content: '−';
@@ -171,8 +191,7 @@ const faqLd = page.faq.length
     max-width: 68ch;
   }
   @media (prefers-reduced-motion: reduce) {
-    .faq__item,
-    .faq__q::after {
+    .faq__item {
       transition: none;
     }
   }

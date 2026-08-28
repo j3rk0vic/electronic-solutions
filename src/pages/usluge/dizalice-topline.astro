@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import ServicePage from '../../components/ServicePage.astro';
+
+const entry = (await getEntry('pages', 'dizalice-topline'))!;
+---
+
+<ServicePage
+  entry={entry}
+  workTag="Dizalica topline"
+  galleryTitle="Strojarnica koju smo posložili."
+  galleryLead="Unutarnja jedinica, spremnik i crpna grupa — s naših gradilišta. Kliknite za veće."
+/>

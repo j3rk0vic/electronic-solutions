@@ -14,7 +14,13 @@ const site = (await getEntry('settings', 'site'))!.data;
 const sectionEntries = await getCollection('sections');
 const section = (id: string) => sectionEntries.find((s) => s.id === id)!.data;
 
-const works = await getCollection('works');
+/**
+ * A taster, not the whole set — the full galleries now live on the service
+ * pages under /usluge, where each photo backs the job it belongs to. Five keeps
+ * the 6-column mosaic filling whole rows: wide(6), 2+2+2, then 2 plus the
+ * closing tile's 4.
+ */
+const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order).slice(0, 5);
 
 const products = await getCollection('products');
 const byWorld = (world: 'vrt' | 'dom') => products.filter((p) => p.data.world === world);
@@ -34,7 +40,12 @@ const homeProducts = byWorld('dom');
 
   <WorldSection id="dom" section={section('dom')} products={homeProducts} />
 
-  <WorkGallery section={section('radovi')} works={works} />
+  <WorkGallery
+    section={section('radovi')}
+    works={works}
+    ctaHref="/usluge"
+    ctaLabel="Pogledajte usluge"
+  />
 
   <ValueStrip value={section('value')} region={site.region} />
 

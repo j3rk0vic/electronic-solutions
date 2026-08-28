@@ -1,19 +1,33 @@
 ---
 interface Props {
-  blocks: { num: string; title: string; body: string }[];
+  blocks: { num: string; title: string; body: string; href?: string }[];
 }
 const { blocks } = Astro.props;
 ---
 
 <div class="info" data-reveal-group>
   {
-    blocks.map((b) => (
-      <article class="info__card" data-reveal-item>
-        <span class="info__num">{b.num}</span>
-        <h2 class="info__title">{b.title}</h2>
-        <p class="info__body">{b.body}</p>
-      </article>
-    ))
+    blocks.map((b) => {
+      const inner = (
+        <>
+          <span class="info__num">{b.num}</span>
+          <h2 class="info__title">{b.title}</h2>
+          <p class="info__body">{b.body}</p>
+          {b.href && <span class="info__more">Pogledaj →</span>}
+        </>
+      );
+      // A block with an href is a whole-card link; without one it stays plain
+      // text, which is what /servis needs.
+      return b.href ? (
+        <a class="info__card info__card--link" href={b.href} data-reveal-item>
+          {inner}
+        </a>
+      ) : (
+        <article class="info__card" data-reveal-item>
+          {inner}
+        </article>
+      );
+    })
   }
 </div>
 
@@ -63,6 +77,35 @@ const { blocks } = Astro.props;
     font-size: 0.94rem;
     line-height: 1.65;
     color: var(--muted);
+  }
+
+  /* Linked variant — used by the Usluge hub. */
+  .info__card--link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  .info__more {
+    display: inline-block;
+    margin-top: 18px;
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    transition: translate var(--dur-mid) var(--ease-out);
+  }
+  .info__card--link:hover .info__more {
+    translate: 4px 0;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .info__card:hover {
+      transform: none;
+    }
+    .info__more,
+    .info__card--link:hover .info__more {
+      transition: none;
+      translate: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -118,7 +118,11 @@ const pages = defineCollection({
      */
     theme: z.enum(['morph', 'vrt', 'dom']).default('morph'),
     stats: z.array(stat).default([]),
-    blocks: z.array(z.object({ num: z.string(), title: z.string(), body: z.string() })).default([]),
+    // `href` turns a block into a link — how the Usluge hub points at each
+    // service page while /servis keeps using the same grid for plain text.
+    blocks: z
+      .array(z.object({ num: z.string(), title: z.string(), body: z.string(), href: z.string().optional() }))
+      .default([]),
     /**
      * Questions people actually type before calling a tradesman. Rendered as an
      * accordion and emitted as schema.org FAQPage, which is what lets Google

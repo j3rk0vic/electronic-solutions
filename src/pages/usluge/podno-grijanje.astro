@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import ServicePage from '../../components/ServicePage.astro';
+
+const entry = (await getEntry('pages', 'podno-grijanje'))!;
+---
+
+<ServicePage
+  entry={entry}
+  workTag="Podno grijanje"
+  galleryTitle="Ovako to izgleda na gradilištu."
+  galleryLead="Svaka fotografija je s posla koji smo sami odradili. Kliknite za veće."
+/>

@@ -23,8 +23,11 @@ interface Props {
   works: CollectionEntry<'works'>[];
   /** Contact section id to jump to from the closing tile. */
   contactId?: string;
+  /** Send the closing tile to a page instead of the contact section. */
+  ctaHref?: string;
+  ctaLabel?: string;
 }
-const { section, works, contactId = 'kontakt' } = Astro.props;
+const { section, works, contactId = 'kontakt', ctaHref, ctaLabel } = Astro.props;
 
 const resolved = await Promise.all(
   [...works]
@@ -125,7 +128,17 @@ const lightboxData = items.map((it) => ({
         Dođite s tlocrtom ili nas pozovite na izmjeru — dobit ćete ponudu za podno grijanje, dizalicu topline ili
         klimatizaciju, s ugradnjom i servisom u jednom.
       </p>
-      <a class="wcta__btn magnetic press" href={`#${contactId}`} data-scroll-to={contactId}>Zatražite ponudu</a>
+      {
+        ctaHref ? (
+          <a class="wcta__btn magnetic press" href={ctaHref}>
+            {ctaLabel ?? 'Pogledajte usluge'}
+          </a>
+        ) : (
+          <a class="wcta__btn magnetic press" href={`#${contactId}`} data-scroll-to={contactId}>
+            {ctaLabel ?? 'Zatražite ponudu'}
+          </a>
+        )
+      }
     </div>
   </div>
 
