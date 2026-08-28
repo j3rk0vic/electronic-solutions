@@ -1,6 +1,6 @@
 ---
 eyebrow: "Usluge"
-title: "Ne prodajemo katalog — ugrađujemo"
+title: "Ono što prodamo, sami i ugradimo"
 lead: "Sve što prodajemo i sami postavljamo, puštamo u pogon i servisiramo. Isti ljudi savjetuju prije kupnje i dolaze kad zatreba popravak. Radimo od Zadra do Dubrovnika."
 theme: dom
 stats:

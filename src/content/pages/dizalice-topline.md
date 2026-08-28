@@ -42,4 +42,4 @@ Dizalica topline zrak-voda uzima toplinu iz vanjskog zraka i predaje je vodi u s
 
 Najbolje radi kad vodu ne mora grijati na visoku temperaturu, pa je **podno grijanje** njezin prirodni par — te dvije stvari zajedno projektiramo i ugrađujemo kao jedan sustav. Uz **solarne panele** koji pokrivaju potrošnju struje, to postaje grijanje s vrlo niskim pogonskim troškovima.
 
-Ugrađujemo Viessmann. Fotografije ispod su iz strojarnica koje smo sami posložili.
+Ugrađujemo Viessmann. Slike ispod su iz strojarnica koje smo sami posložili.

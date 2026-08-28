@@ -38,8 +38,8 @@ faq:
     a: "Samo polaganje na prosječnoj obiteljskoj kući obično je pitanje nekoliko dana. Ono što traje dulje je estrih — mora se sušiti i tek se onda zagrijava po protokolu, prije nego što dođe podna obloga. Točan raspored dogovorimo unaprijed s vašim izvođačem da se radovi ne sudaraju."
 ---
 
-Podno grijanje grije cijelu plohu poda na niskoj temperaturi umjesto da jedan radijator grije zrak oko sebe. Zato je ugodnije — nema toplog stropa i hladnog poda — i jeftinije u pogonu, jer voda u krugovima rijetko treba biti toplija od **35 °C**.
+Podno grijanje grije cijelu površinu poda blagom toplinom, umjesto da jedan radijator grije zrak oko sebe. Zato je ugodnije — nema toplog stropa i hladnog poda pod nogama — i jeftinije za korištenje, jer voda u cijevima rijetko treba biti toplija od **35 °C**.
 
 Ta niska temperatura je i razlog zašto se podno grijanje i **dizalica topline** toliko dobro slažu: dizalica troši najmanje kad vodu ne mora grijati na visoko. U kombinaciji sa solarnim panelima to postaje sustav koji zimi grije uz male pogonske troškove, a uz odgovarajuću izvedbu ljeti može i hladiti.
 
-Radimo novogradnju i obnovu, od izmjere do primopredaje. Fotografije ispod su s naših gradilišta — bez rendera i bez kataloga.
+Radimo i nove kuće i obnove starih, od prve izmjere do trenutka kad sustav proradi. Slike ispod su s naših gradilišta — sve smo to sami napravili.

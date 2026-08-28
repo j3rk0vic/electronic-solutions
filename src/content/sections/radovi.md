@@ -3,8 +3,8 @@ order: 4
 world: dom
 num: "04 — RADOVI · S TERENA"
 eyebrow: "Naši radovi"
-title: "Radimo, ne renderiramo."
-lead: "Nekoliko fotografija s naših gradilišta — bez rendera i bez katalogâ. Cijeli pregled poslova, s opisom kako ih radimo, nalazi se na stranici Usluge."
+title: "Ovo smo mi radili."
+lead: "Nekoliko slika s naših gradilišta. Sve što vidite napravili smo svojim rukama, u kućama ljudi kao što ste vi. Cijeli pregled poslova, s objašnjenjem kako ih radimo, nalazi se na stranici Usluge."
 stats:
   - { value: "01", label: "Izmjera i ponuda" }
   - { value: "02", label: "Ugradnja i tlačna proba" }
