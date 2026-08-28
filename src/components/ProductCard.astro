@@ -20,15 +20,15 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
     {product.badge && <span class="card__badge">{product.badge}</span>}
     {
       img ? (
-        <div class="card__tile">
+        <div class:list={['card__tile', { 'card__tile--photo': product.photo }]}>
           <Image
             src={img}
             alt={alt}
-            widths={[220, 320, 440]}
-            sizes="(max-width:520px) 82vw, (max-width:900px) 44vw, 22vw"
+            widths={[220, 320, 440, 640, 880]}
+            sizes="(max-width:520px) 88vw, (max-width:900px) 44vw, 30vw"
             loading="lazy"
             layout="none"
-            class="card__img"
+            class:list={['card__img', { 'card__img--photo': product.photo }]}
           />
         </div>
       ) : (
@@ -95,6 +95,21 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
        shifts. Reads as the product leaning toward the viewer. */
     transition: transform var(--dur-slow) var(--ease-out);
     will-change: transform;
+  }
+  /* A photograph has no cut-out edge to float on the white ground, so it fills
+     the tile instead of sitting padded inside it. */
+  .card__tile--photo {
+    background: color-mix(in srgb, var(--surface) 88%, black);
+  }
+  .card__img--photo {
+    padding: 0;
+    object-fit: cover;
+  }
+  /* Hover-only zoom — release the layer where there is no hover. */
+  @media (hover: none) {
+    .card__img {
+      will-change: auto;
+    }
   }
   .card:hover .card__img,
   .card:focus-within .card__img {

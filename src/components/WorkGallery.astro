@@ -361,6 +361,12 @@ const lightboxData = items.map((it) => ({
       filter var(--dur-slow) var(--ease-out);
     will-change: transform;
   }
+  /* Hover-only zoom — release the layer where there is no hover. */
+  @media (hover: none) {
+    .wtile__img {
+      will-change: auto;
+    }
+  }
   .wtile:hover .wtile__img,
   .wtile:focus-visible .wtile__img {
     transform: scale(1.07);
