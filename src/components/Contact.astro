@@ -10,11 +10,16 @@ interface Props {
 const { contact, site } = Astro.props;
 const year = new Date().getFullYear();
 
-// Only build tel:/mailto: links when the placeholder has been replaced.
+// Only build tel:/mailto: links when the placeholder has been replaced — and
+// only print the value at all, since an unfilled one would otherwise show the
+// visitor a literal "[EMAIL]".
 const phoneHref = real(site.phoneHref);
 const telHref = phoneHref ? `tel:${phoneHref.replace(/\s+/g, '')}` : null;
+const phone = real(site.phone);
 const mail = real(site.email);
 const mailHref = mail ? `mailto:${mail}` : null;
+const address = real(site.address);
+const hours = real(site.hours);
 ---
 
 <footer class="section wrap footer" id="kontakt">
@@ -31,10 +36,10 @@ const mailHref = mail ? `mailto:${mail}` : null;
 
     <address class="footer__info" data-reveal>
       <strong>{site.company}</strong>
-      <span>{site.address}</span>
-      {telHref ? <a href={telHref}>{site.phone}</a> : <span>{site.phone}</span>}
-      {mailHref ? <a href={mailHref}>{site.email}</a> : <span>{site.email}</span>}
-      <span>{site.hours}</span>
+      {address && <span>{address}</span>}
+      {phone && (telHref ? <a href={telHref}>{phone}</a> : <span>{phone}</span>)}
+      {mail && (mailHref ? <a href={mailHref}>{mail}</a> : <span>{mail}</span>)}
+      {hours && <span>{hours}</span>}
       <span class="footer__region">{site.region}</span>
       {telHref && <a class="footer__cta magnetic" href={telHref}>Nazovi nas</a>}
     </address>

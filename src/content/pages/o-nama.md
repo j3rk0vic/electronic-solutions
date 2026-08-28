@@ -20,4 +20,4 @@ istih ljudi koji će uređaj postaviti i, kad zatreba, servisirati. Bez posredni
 i bez prebacivanja odgovornosti.
 
 Radimo na terenu **od Zadra do Dubrovnika**, a pronaći nas možete na adresi
-**[ADRESA]**.
+**Splitska ul. 48, 20350 Metković**, radnim danom od 8 do 16 sati.
