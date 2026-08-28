@@ -24,8 +24,8 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
           <Image
             src={img}
             alt={alt}
-            widths={[220, 320, 440]}
-            sizes="(max-width:520px) 82vw, (max-width:900px) 44vw, 22vw"
+            widths={[220, 320, 440, 640, 880]}
+            sizes="(max-width:520px) 88vw, (max-width:900px) 44vw, 30vw"
             loading="lazy"
             layout="none"
             class="card__img"
@@ -95,6 +95,12 @@ const alt = product.brand ? `${product.title} — ${product.brand}` : product.ti
        shifts. Reads as the product leaning toward the viewer. */
     transition: transform var(--dur-slow) var(--ease-out);
     will-change: transform;
+  }
+  /* Hover-only zoom — release the layer where there is no hover. */
+  @media (hover: none) {
+    .card__img {
+      will-change: auto;
+    }
   }
   .card:hover .card__img,
   .card:focus-within .card__img {

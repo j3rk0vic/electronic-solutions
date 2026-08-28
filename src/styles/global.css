@@ -725,6 +725,23 @@ a {
    REDUCED MOTION — no scroll hijack, no loops, no reveal offsets.
    Content renders fully and statically; the nav toggle still works.
    ═══════════════════════════════════════════════════════════════════════ */
+/* ── touch: keep the look, drop the compositing cost ───────────────────
+   Three fixed 70vw layers with a 40px blur, animating forever, sit behind
+   every page. On a phone that is a permanent GPU load, and stacked with one
+   promoted layer per product card it is enough to stutter and to make the
+   browser evict image textures (blank tiles on /trgovina). The radial
+   gradient already fades to transparent, so losing the blur barely shows. */
+@media (hover: none) {
+  .orb,
+  .orb--1,
+  .orb--2,
+  .orb--3 {
+    filter: none;
+    animation: none;
+    will-change: auto;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .orb {
     animation: none;

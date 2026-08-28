@@ -30,6 +30,13 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText);
 
 const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* Touch devices scroll natively at 120Hz on the compositor thread. ScrollSmoother
+   replaces that with JS-driven scrolling, which on a phone reads as lag, and its
+   normalizeScroll hijacks touchmove — that also stops horizontally scrollable
+   children (the shop's category row) from being swipeable. So: no smoother on
+   touch. ScrollTrigger, the reveals and the colour morph all work without it. */
+const isTouch = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
 /* Shared motion rhythm — the JS-side mirror of the CSS motion tokens in
    global.css. Keeping reveals in one place means every entrance across the
    site shares the same duration, easing and stagger cadence. Stagger sits at
@@ -218,13 +225,15 @@ function initReduced() {
 function initFull() {
   // Defensive: never run two smoothers at once if a swap raced the teardown.
   ScrollSmoother.get()?.kill();
-  ScrollSmoother.create({
-    wrapper: '#smooth-wrapper',
-    content: '#smooth-content',
-    smooth: 1.15,
-    effects: true, // enables data-speed parallax (orbs / section headings)
-    normalizeScroll: true,
-  });
+  if (!isTouch) {
+    ScrollSmoother.create({
+      wrapper: '#smooth-wrapper',
+      content: '#smooth-content',
+      smooth: 1.15,
+      effects: true, // enables data-speed parallax (orbs / section headings)
+      normalizeScroll: true,
+    });
+  }
 
   // Theme morph, anchored to the Vrt→Dom seam (home page only). Driving this
   // off total page progress smeared green→red across most of the scroll, so it
