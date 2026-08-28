@@ -4,6 +4,7 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import WorldSection from '../components/WorldSection.astro';
+import WorkGallery from '../components/WorkGallery.astro';
 import ValueStrip from '../components/ValueStrip.astro';
 import Contact from '../components/Contact.astro';
 
@@ -13,15 +14,15 @@ const site = (await getEntry('settings', 'site'))!.data;
 const sectionEntries = await getCollection('sections');
 const section = (id: string) => sectionEntries.find((s) => s.id === id)!.data;
 
+const works = await getCollection('works');
+
 const products = await getCollection('products');
-const byWorld = (world: 'vrt' | 'dom' | 'tv') => products.filter((p) => p.data.world === world);
+const byWorld = (world: 'vrt' | 'dom') => products.filter((p) => p.data.world === world);
 
 const gardenProducts = byWorld('vrt');
+// Televisions live in Dom too — the page morphs green→red across two worlds,
+// and the nav toggle only ever knew Vrt⇄Dom, so a third strip sat outside both.
 const homeProducts = byWorld('dom');
-const tvProducts = byWorld('tv');
-
-// The TV strip renders ONLY if TV product images actually exist (brief §5).
-const showTv = tvProducts.some((p) => Boolean(p.data.image));
 ---
 
 <Layout site={site} theme="morph">
@@ -33,7 +34,7 @@ const showTv = tvProducts.some((p) => Boolean(p.data.image));
 
   <WorldSection id="dom" section={section('dom')} products={homeProducts} />
 
-  {showTv && <WorldSection id="tv" section={section('tv')} products={tvProducts} compact />}
+  <WorkGallery section={section('radovi')} works={works} />
 
   <ValueStrip value={section('value')} region={site.region} />
 

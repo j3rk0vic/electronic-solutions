@@ -3,16 +3,18 @@ company: "Electronic Solution"
 tagline: "Prodaja i servis — vrt i dom na jednom mjestu"
 
 # ─────────────────────────────────────────────────────────────────────
-#  KONTAKT PODACI — ZAMIJENITI PRAVIM VRIJEDNOSTIMA
-#  Ostavljeno kao [PLACEHOLDER] jer postoje dvije različite verzije sa
-#  starih stranica. Upišite točne podatke ovdje — mijenjaju se na cijeloj
-#  stranici automatski.
+#  KONTAKT PODACI
+#  Mijenjaju se na cijeloj stranici automatski.
 # ─────────────────────────────────────────────────────────────────────
-address: "[ADRESA]"
-phone: "[TELEFON]"
-phoneHref: "[TELEFON]"        # npr. +385915722622 (bez razmaka, za tel: link)
+address: "Splitska ul. 48, 20350 Metković"
+phone: "095 302 6666"
+phoneHref: "+385953026666"    # bez razmaka, za tel: link
 email: "[EMAIL]"              # ← E-MAIL TVRTKE. Prikazuje se u podnožju.
-hours: "[RADNO VRIJEME]"
+hours: "Pon – Pet: 08:00 – 16:00 · Subota i nedjelja: zatvoreno"
+# Isto radno vrijeme u strojnom obliku, za Google (schema.org openingHours).
+# Format: dvoslovne oznake dana Mo Tu We Th Fr Sa Su, npr. "Mo-Fr 08:00-16:00".
+# Ostavite prazno ako ne želite da se šalje.
+hoursSchema: "Mo-Fr 08:00-16:00"
 region: "Od Zadra do Dubrovnika"
 
 # ─────────────────────────────────────────────────────────────────────

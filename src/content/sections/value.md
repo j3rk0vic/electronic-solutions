@@ -1,5 +1,5 @@
 ---
-order: 4
+order: 5
 world: neutral
 eyebrow: "Prodaja + servis"
 title: "Sve za dom i vrt — na jednom mjestu."

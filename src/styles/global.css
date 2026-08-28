@@ -89,6 +89,16 @@ body {
   transition: background-color 0.12s linear;
 }
 
+/* A pinned page can repin its palette at runtime — the shop's Vrt/Dom selector
+   swaps data-theme green ⇄ red. That is one deliberate switch, not a per-frame
+   morph step, so it gets a longer ease. The home page morphs every frame and
+   keeps the 0.12s linear step above. */
+:root:not([data-theme='morph']) body {
+  transition:
+    background-color var(--dur-slow) var(--ease-out),
+    color var(--dur-slow) var(--ease-out);
+}
+
 ::selection {
   background: var(--accent);
   color: var(--accent-ink);
@@ -107,7 +117,7 @@ a {
 }
 
 /* Smooth-scroll targets clear the fixed nav (used by scrollIntoView in motion.ts). */
-:where(#top, #vrt, #dom, #kontakt) {
+:where(#top, #vrt, #dom, #radovi, #kontakt) {
   scroll-margin-top: 88px;
 }
 
@@ -120,7 +130,9 @@ a {
 }
 .section {
   position: relative;
-  padding-block: clamp(80px, 12vw, 130px);
+  /* Tight enough that two sections fit the eye at once — the worlds are told
+     apart by the green→red flip at the seam, not by acres of empty space. */
+  padding-block: clamp(52px, 6.5vw, 84px);
 }
 
 /* shared eyebrow / kicker label */
@@ -471,6 +483,240 @@ a {
     transition: none;
   }
   .pmodal__close:hover {
+    transform: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   RADOVI LIGHTBOX — the on-site gallery's full-size viewer. Native <dialog>
+   again (top layer, focus trap, Esc). Kept global for the same reason as
+   .pmodal: ::backdrop and the open/close transitions apply reliably here.
+   ═══════════════════════════════════════════════════════════════════════ */
+.lbox {
+  position: fixed;
+  inset: 0;
+  width: min(1180px, 94vw);
+  max-width: none;
+  max-height: 92vh;
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--surface) 92%, black);
+  /* Fixed frame: the photos run portrait AND 20:9, and a dialog that resized
+     around each one would jump under the cursor while stepping through. */
+  color: var(--text);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  transition:
+    opacity 0.32s ease,
+    transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+    overlay 0.32s ease allow-discrete,
+    display 0.32s ease allow-discrete;
+}
+.lbox[open] {
+  opacity: 1;
+  transform: none;
+}
+@media (min-width: 861px) {
+  .lbox {
+    height: min(720px, 88vh);
+  }
+}
+@starting-style {
+  .lbox[open] {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+}
+.lbox::backdrop {
+  background: color-mix(in srgb, var(--bg) 62%, black);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  opacity: 0;
+  transition:
+    opacity 0.32s ease,
+    overlay 0.32s ease allow-discrete,
+    display 0.32s ease allow-discrete;
+}
+.lbox[open]::backdrop {
+  opacity: 1;
+}
+@starting-style {
+  .lbox[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.lbox__figure {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  margin: 0;
+  height: 100%;
+  max-height: 92vh;
+}
+@media (max-width: 860px) {
+  .lbox__figure {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    overflow-y: auto;
+  }
+}
+
+/* The photo sits on near-black so the grade from the tiles carries through. */
+.lbox__stage {
+  position: relative;
+  min-height: 320px;
+  max-height: 92vh;
+  overflow: hidden;
+  background: #070505;
+}
+.lbox__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(48px) saturate(1.25) brightness(0.26);
+  transform: scale(1.25);
+  pointer-events: none;
+}
+.lbox__img {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: 92vh;
+  object-fit: contain;
+  /* A fraction of the tile grade — enough that a white boiler room doesn't
+     flare against the dark page, not so much that detail is lost. */
+  filter: saturate(0.95) contrast(1.03) brightness(0.95);
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+.lbox__img.is-swapping {
+  opacity: 0;
+}
+@media (max-width: 860px) {
+  .lbox__stage,
+  .lbox__img {
+    max-height: 52vh;
+  }
+}
+
+.lbox__cap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: clamp(24px, 3.5vw, 40px);
+  background: color-mix(in srgb, var(--surface) 82%, black);
+  overflow-y: auto;
+}
+.lbox__tag {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.lbox__title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+}
+.lbox__text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.lbox__loc {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+}
+.lbox__loc:empty {
+  display: none;
+}
+
+.lbox__close,
+.lbox__nav {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: var(--text);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-mid) var(--ease-out),
+    color var(--dur-mid) var(--ease-out),
+    border-color var(--dur-mid) var(--ease-out),
+    transform var(--dur-mid) var(--ease-out);
+}
+.lbox__close {
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+}
+.lbox__close:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  transform: rotate(90deg);
+}
+.lbox__nav {
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin-top: -23px;
+}
+.lbox__nav--prev {
+  left: 14px;
+}
+.lbox__nav--next {
+  right: 14px;
+}
+/* On desktop the caption owns the right half — keep "next" over the photo. */
+@media (min-width: 861px) {
+  .lbox__nav--next {
+    left: calc(1.55 / 2.55 * 100% - 60px);
+    right: auto;
+  }
+}
+.lbox__nav:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  transform: scale(1.06);
+}
+.lbox__nav:active {
+  transform: scale(0.94);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lbox,
+  .lbox::backdrop,
+  .lbox__img,
+  .lbox__close,
+  .lbox__nav {
+    transition: none;
+  }
+  .lbox__close:hover,
+  .lbox__nav:hover,
+  .lbox__nav:active {
     transform: none;
   }
 }

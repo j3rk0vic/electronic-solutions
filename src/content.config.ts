@@ -3,10 +3,11 @@ import { glob, file } from 'astro/loaders';
 
 /**
  * All editable text + products live here so the owner can maintain the site
- * without touching components. Four collections:
+ * without touching components. Five collections:
  *   - settings : one singleton (site.md) — company info, nav, brands, SEO
  *   - sections : per-section headline/eyebrow/copy/stats (home page)
  *   - products : one file per product, grouped by "world" (vrt | dom | tv)
+ *   - works    : one file per site photo — the "Radovi" gallery on the home page
  *   - pages    : the standalone pages (trgovina, servis, o-nama)
  */
 
@@ -26,6 +27,9 @@ const settings = defineCollection({
     phoneHref: z.string(),
     email: z.string(),
     hours: z.string(),
+    // Machine-readable twin of `hours` for schema.org (e.g. "Mo-Fr 08:00-16:00").
+    // The display string is prose, which Google cannot parse as opening hours.
+    hoursSchema: z.string().default(''),
     region: z.string(),
     // Where the contact form POSTs. See the comment block in site.md.
     formEndpoint: z.string().default('[FORM ENDPOINT]'),
@@ -45,7 +49,7 @@ const sections = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/sections' }),
   schema: z.object({
     order: z.number(),
-    world: z.enum(['neutral', 'vrt', 'dom', 'tv']).default('neutral'),
+    world: z.enum(['neutral', 'vrt', 'dom']).default('neutral'),
     num: z.string().optional(),
     eyebrow: z.string().optional(),
     title: z.string(),
@@ -57,16 +61,44 @@ const sections = defineCollection({
 const products = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/products' }),
   schema: z.object({
-    world: z.enum(['vrt', 'dom', 'tv']),
+    // Two worlds: vrt is the EGO Power+ range, dom is everything else the home
+    // needs — klima, grijanje, solar and televisions. The home page morphs
+    // green→red across exactly these two.
+    world: z.enum(['vrt', 'dom']),
     order: z.number(),
     title: z.string(),
     brand: z.string().optional(),
     blurb: z.string(),
-    // Filename inside src/assets/products (or /tv). Resolved to an optimized
+    // Filename inside src/assets/products. Resolved to an optimized
     // <Image /> at render time via import.meta.glob. Optional: cards without an
     // image (e.g. Solar, Servis) render a graceful themed gradient placeholder.
     image: z.string().optional(),
     badge: z.string().optional(),
+  }),
+});
+
+/**
+ * WORKS — the "Radovi" gallery (real jobs, photographed on site). One file per
+ * photo; `span` drives the mosaic (wide = full-bleed feature row, std = a 4:5
+ * portrait tile). Drop a new JPG in src/assets/work and add a file here.
+ */
+const works = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/works' }),
+  schema: z.object({
+    order: z.number(),
+    title: z.string(),
+    /** Short line under the title in the tile + lightbox. */
+    caption: z.string(),
+    /** Mono chip on the tile — the kind of job (e.g. "Podno grijanje"). */
+    tag: z.string(),
+    /** Filename inside src/assets/work. Missing file = tile is skipped. */
+    image: z.string(),
+    /** wide = 21:9 feature spanning the row; std = 4:5 portrait tile. */
+    span: z.enum(['wide', 'std']).default('std'),
+    /** Optional place/context line, shown in the lightbox only. */
+    location: z.string().optional(),
+    /** CSS object-position for the tile crop (e.g. "center 38%"). */
+    focus: z.string().default('center'),
   }),
 });
 
@@ -103,6 +135,10 @@ const shop = defineCollection({
     order: z.number(),
     name: z.string(),
     image: z.string(),
+    // Top-level split on /trgovina: vrt is the EGO Power+ range, dom is
+    // everything else (klima, grijanje, TV …). Derived from the category by
+    // parse-shop.mjs, so a new category only has to be classified in one place.
+    world: z.enum(['vrt', 'dom']).default('dom'),
     category: z.string().default('Ostalo'),
     price: z.string(),
     description: z.string().default(''),
@@ -112,4 +148,4 @@ const shop = defineCollection({
   }),
 });
 
-export const collections = { settings, sections, products, pages, shop };
+export const collections = { settings, sections, products, works, pages, shop };

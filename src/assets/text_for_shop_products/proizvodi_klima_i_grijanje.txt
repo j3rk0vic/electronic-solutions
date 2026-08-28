@@ -1,0 +1,23 @@
+naziv slike: daikin_sensira.png
+puni naziv za web: Daikin Sensira klima uređaj
+cijena: €325.00 – €780.00
+FTXF35F unutarnja jedinica 3,5 kW -> €325.00
+RXF35F vanjska jedinica 3,5 kW -> €520.00
+FTXF50F unutarnja jedinica 5,0 kW -> €390.00
+RXF50F vanjska jedinica 5,0 kW -> €780.00
+opis: Inverterski zidni klima uređaj s R-32 rashladnim medijem. Tih rad, brzo postizanje temperature i visoka energetska učinkovitost u hlađenju i grijanju. Unutarnja i vanjska jedinica naručuju se zasebno — odaberite kombinaciju prema veličini prostora.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: viessmann_vitoclima_200s.png
+puni naziv za web: Viessmann Vitoclima 200-S
+cijena: Cijena na upit
+opis: DC inverter zidni klima uređaj koji regulira rad kompresora prema stvarnoj potrebi prostorije, pa je posebno učinkovit pri djelomičnom opterećenju. Filter sa srebrnim ionima i plazma filter s antialergijskim djelovanjem, senzor sobne temperature u daljinskom upravljaču, hlađenje u rasponu od −15 °C do 43 °C. Dostupno u izvedbama Vitoclima 200-S i 200-S/HE.
+-----------------------------------------------------------------------------------------------------------------------
+
+naziv slike: viessmann_vitotron_100.png
+puni naziv za web: Viessmann Vitotron 100 električni kotao
+cijena: €1,250.00
+VLN3-24 (24 kW) -> €1,250.00
+VMN3-24 (24 kW) -> Cijena na upit
+opis: Zidni električni kotao snage do 24 kW za grijanje stanova, kuća te poslovnih i pomoćnih prostora. Grijanje bez plina i dimnjaka, električna iskoristivost 99,4 %, glatka regulacija snage i višestupanjska zaštita od pregrijavanja. Hidraulički priključci smješteni su s donje strane.
+-----------------------------------------------------------------------------------------------------------------------

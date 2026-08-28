@@ -7,9 +7,11 @@
  * image files and reports any mismatch instead of guessing.
  */
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 
-const TXT = 'src/assets/text_for_shop_products/proizvodi_electronic_solution.txt';
+// Every .txt in here is parsed, in filename order — that order becomes the
+// order products appear on /trgovina. Add a new file per product range.
+const TXT_DIR = 'src/assets/text_for_shop_products';
 const IMG_DIR = 'src/assets/shop_products';
 const OUT = 'src/content/shop/products.json';
 
@@ -46,11 +48,30 @@ const CATEGORY = {
   prijernosni_inverter: 'Baterije i energija',
   prijenosni_reflektor: 'Baterije i energija',
   prikljucak_za_teleskopski_komplet: 'Pribor',
+  daikin_sensira: 'Klima uređaji',
+  viessmann_vitoclima_200s: 'Klima uređaji',
+  viessmann_vitotron_100: 'Grijanje',
 };
 
+// Top-level split on /trgovina. "vrt" is the EGO Power+ range and nothing else;
+// "dom" is everything we sell that is not EGO (klima, grijanje, TV …). Only the
+// garden categories are listed — anything new falls to "dom" by default.
+const VRT_CATEGORIES = new Set([
+  'Kosilice',
+  'Trimeri',
+  'Pile',
+  'Puhači i usisavači',
+  'Škare za živicu',
+  'Baterije i energija',
+  'Pribor',
+]);
+const worldFor = (category) => (VRT_CATEGORIES.has(category) ? 'vrt' : 'dom');
+
 const files = new Set(readdirSync(IMG_DIR).filter((f) => f.toLowerCase().endsWith('.png')));
-const blocks = readFileSync(TXT, 'utf8')
-  .split(/\n-{5,}\n?/)
+const blocks = readdirSync(TXT_DIR)
+  .filter((f) => f.toLowerCase().endsWith('.txt'))
+  .sort()
+  .flatMap((f) => readFileSync(join(TXT_DIR, f), 'utf8').split(/\n-{5,}\n?/))
   .map((b) => b.trim())
   .filter(Boolean);
 
@@ -89,19 +110,22 @@ for (const block of blocks) {
   else used.add(image);
 
   const id = image.replace(/\.png$/i, '');
-  products.push({ id, order: order++, name, image, category: CATEGORY[id] ?? 'Ostalo', price, description, variants });
+  const category = CATEGORY[id] ?? 'Ostalo';
+  products.push({ id, order: order++, name, image, world: worldFor(category), category, price, description, variants });
 }
 
 // Images the owner gave us but the txt does not describe yet.
 for (const f of [...files].sort()) {
   if (used.has(f)) continue;
   const uid = f.replace(/\.png$/i, '');
+  const ucategory = CATEGORY[uid] ?? 'Ostalo';
   products.push({
     id: uid,
     order: order++,
     name: NAME_FOR_UNTEXTED[f] ?? uid.replace(/_/g, ' '),
     image: f,
-    category: CATEGORY[uid] ?? 'Ostalo',
+    world: worldFor(ucategory),
+    category: ucategory,
     price: 'Cijena na upit',
     description: '',
     variants: [],

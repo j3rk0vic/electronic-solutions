@@ -1,5 +1,5 @@
 ---
-order: 5
+order: 6
 world: neutral
 eyebrow: "Kontakt"
 title: "Javi se. Rado ćemo pomoći."

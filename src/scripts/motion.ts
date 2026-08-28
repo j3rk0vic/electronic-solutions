@@ -71,10 +71,12 @@ const smoothstep = (e0: number, e1: number, x: number) => {
 const root = document.documentElement.style;
 const THEME_VARS = ['--bg', '--surface', '--text', '--muted', '--accent', '--accent-ink', '--border', '--t-morph'];
 
-/** Paint the live tokens for a raw scroll progress p ∈ [0,1]. */
+/** Paint the live tokens for a raw scroll progress p ∈ [0,1] across the seam. */
 function applyTheme(p: number) {
-  // Transition concentrated in the middle third of the page.
-  const t = smoothstep(0.2, 0.8, p);
+  // p already covers just the Vrt→Dom handover band (see the ScrollTrigger
+  // below), so ease across the whole of it — the band's shortness is what
+  // makes the flip decisive, not a narrow sub-range inside it.
+  const t = smoothstep(0, 1, p);
   const mix = (k: keyof Palette) => GREEN[k].map((v, i) => lerp(v, RED[k][i], t));
   root.setProperty('--bg', rgb(mix('bg')));
   root.setProperty('--surface', rgb(mix('surface')));
@@ -224,14 +226,21 @@ function initFull() {
     normalizeScroll: true,
   });
 
-  // Theme morph driven by the smoothed scroll position (home page only).
+  // Theme morph, anchored to the Vrt→Dom seam (home page only). Driving this
+  // off total page progress smeared green→red across most of the scroll, so it
+  // never read as a boundary — just a slow drift. Tying it to #dom keeps Vrt
+  // fully green, flips hard as the Dom heading comes up, and holds red below.
   if (pageMorphs()) {
-    ScrollTrigger.create({
-      start: 0,
-      end: 'max',
-      onUpdate: (self) => applyTheme(self.progress),
-      onRefresh: (self) => applyTheme(self.progress),
-    });
+    const seam = document.getElementById('dom');
+    if (seam) {
+      ScrollTrigger.create({
+        trigger: seam,
+        start: 'top 78%',
+        end: 'top 42%',
+        onUpdate: (self) => applyTheme(self.progress),
+        onRefresh: (self) => applyTheme(self.progress),
+      });
+    }
     applyTheme(0);
   }
 

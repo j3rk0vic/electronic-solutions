@@ -10,14 +10,25 @@ interface Props {
 const { products } = Astro.props;
 const sorted = [...products].sort((a, b) => a.data.order - b.data.order);
 
+// Top-level departments. Only render one if it actually has products, so the
+// bar stays honest while the dom range is still filling out.
+const WORLDS = [
+  { id: 'vrt', label: 'Vrt', hint: 'EGO Power+' },
+  { id: 'dom', label: 'Dom', hint: 'Klima, grijanje, TV' },
+] as const;
+const worlds = WORLDS.filter((w) => sorted.some((p) => p.data.world === w.id));
+
 // Filter bar: "Sve" + the categories that actually have products, in a sensible
 // order. Any category not listed here still shows, appended after the known ones.
-const ORDER = ['Kosilice', 'Trimeri', 'Pile', 'Puhači i usisavači', 'Škare za živicu', 'Baterije i energija', 'Pribor'];
+const ORDER = ['Kosilice', 'Trimeri', 'Pile', 'Puhači i usisavači', 'Škare za živicu', 'Baterije i energija', 'Pribor', 'Klima uređaji', 'Grijanje'];
 const present = [...new Set(sorted.map((p) => p.data.category))];
+// A category lives in exactly one world (parse-shop.mjs derives it), so tagging
+// each chip lets the chip row narrow to whichever department is selected.
+const worldOfCategory = new Map(sorted.map((p) => [p.data.category, p.data.world]));
 const categories = [
   ...ORDER.filter((c) => present.includes(c)),
   ...present.filter((c) => !ORDER.includes(c)),
-];
+].map((c) => ({ name: c, world: worldOfCategory.get(c) ?? 'dom' }));
 
 // ── Product structured data (schema.org ItemList of Products) ──────────
 // Lets Google show product names + prices as rich results. Prices are parsed
@@ -73,12 +84,35 @@ const shopLd = {
 ---
 
 <section class="section wrap shop" id="trgovina-grid">
+  <div class="shop__worlds" role="group" aria-label="Odaberi odjel" data-shop-worlds>
+    <button type="button" class="shop__world is-on" data-world-filter="*" aria-pressed="true">
+      <span class="shop__world-name">Sve</span>
+      <span class="shop__world-hint">Cijeli asortiman</span>
+    </button>
+    {
+      worlds.map((w) => (
+        <button type="button" class="shop__world" data-world-filter={w.id} aria-pressed="false">
+          <span class="shop__world-name">{w.label}</span>
+          <span class="shop__world-hint">{w.hint}</span>
+        </button>
+      ))
+    }
+  </div>
+
   <div class="shop__filters" role="group" aria-label="Filtriraj proizvode" data-shop-filters>
-    <button type="button" class="shop__filter is-on" data-filter="*" aria-pressed="true">Sve</button>
+    <button type="button" class="shop__filter is-on" data-filter="*" aria-pressed="true">
+      Sve kategorije
+    </button>
     {
       categories.map((c) => (
-        <button type="button" class="shop__filter" data-filter={c} aria-pressed="false">
-          {c}
+        <button
+          type="button"
+          class="shop__filter"
+          data-filter={c.name}
+          data-cat-world={c.world}
+          aria-pressed="false"
+        >
+          {c.name}
         </button>
       ))
     }
@@ -94,41 +128,85 @@ const shopLd = {
 <script type="application/ld+json" set:html={JSON.stringify(shopLd)} is:inline />
 
 <script>
-  // ── category filter ────────────────────────────────────────────────
+  // ── department + category filter ───────────────────────────────────
+  // Two independent axes: world (Vrt / Dom) and category. A card shows only if
+  // it satisfies both, and the category chips narrow to the selected world.
+  const worldBar = document.querySelector<HTMLElement>('[data-shop-worlds]');
   const filterBar = document.querySelector<HTMLElement>('[data-shop-filters]');
   const cards = Array.from(document.querySelectorAll<HTMLElement>('.scard[data-category]'));
   const emptyMsg = document.querySelector<HTMLElement>('[data-shop-empty]');
 
-  if (filterBar) {
-    filterBar.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
-      if (!btn) return;
-      const want = btn.dataset.filter!;
+  let world = '*';
+  let category = '*';
 
-      filterBar.querySelectorAll<HTMLButtonElement>('[data-filter]').forEach((b) => {
-        const on = b === btn;
-        b.classList.toggle('is-on', on);
-        b.setAttribute('aria-pressed', String(on));
-      });
+  // Dom is the red half of the brand, Vrt the green one. Repin the palette to
+  // the chosen department: :root[data-theme] swaps every token and carries
+  // --t-morph, which cross-fades the nav logo green ↔ red. "Sve" falls back to
+  // green, the palette this page is pinned to server-side.
+  const THEME_COLOR = { dom: '#140807', vrt: '#081310' };
+  const paintTheme = () => {
+    const theme = world === 'dom' ? 'dom' : 'vrt';
+    document.documentElement.dataset.theme = theme;
+    document
+      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+      ?.setAttribute('content', THEME_COLOR[theme]);
+  };
 
-      let shown = 0;
-      cards.forEach((card) => {
-        const match = want === '*' || card.dataset.category === want;
-        card.hidden = !match;
-        if (match) {
-          shown++;
-          // Clear any reveal offset so filtered-in cards are always visible.
-          card.style.opacity = '1';
-          card.style.transform = 'none';
-        }
-      });
-      if (emptyMsg) emptyMsg.hidden = shown > 0;
-
-      // The grid just changed height — let ScrollSmoother re-measure so there's
-      // no dead scroll space (or missing space) below the shortened grid.
-      requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('es:refresh')));
+  const press = (bar: HTMLElement | null, btn: Element | null) => {
+    bar?.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
+      const on = b === btn;
+      b.classList.toggle('is-on', on);
+      b.setAttribute('aria-pressed', String(on));
     });
-  }
+  };
+
+  const apply = () => {
+    // Hide chips belonging to the other department so the row reads as a
+    // subset of the current one rather than a flat list of everything.
+    filterBar?.querySelectorAll<HTMLElement>('[data-cat-world]').forEach((chip) => {
+      chip.hidden = world !== '*' && chip.dataset.catWorld !== world;
+    });
+
+    let shown = 0;
+    cards.forEach((card) => {
+      const match =
+        (world === '*' || card.dataset.world === world) &&
+        (category === '*' || card.dataset.category === category);
+      card.hidden = !match;
+      if (match) {
+        shown++;
+        // Clear any reveal offset so filtered-in cards are always visible.
+        card.style.opacity = '1';
+        card.style.transform = 'none';
+      }
+    });
+    if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+    // The grid just changed height — let ScrollSmoother re-measure so there's
+    // no dead scroll space (or missing space) below the shortened grid.
+    requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('es:refresh')));
+  };
+
+  worldBar?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-world-filter]');
+    if (!btn) return;
+    world = btn.dataset.worldFilter!;
+    press(worldBar, btn);
+    paintTheme();
+    // The old category may belong to the department we just left, which would
+    // leave the grid empty — reset to "all categories" on every switch.
+    category = '*';
+    press(filterBar, filterBar?.querySelector('[data-filter="*"]') ?? null);
+    apply();
+  });
+
+  filterBar?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+    if (!btn) return;
+    category = btn.dataset.filter!;
+    press(filterBar, btn);
+    apply();
+  });
 
   // Wire each card to its <dialog>. Native showModal() gives us the top layer,
   // focus trapping and Esc-to-close; we add backdrop-click and the inquiry jump.
@@ -173,6 +251,65 @@ const shopLd = {
 <style>
   .shop {
     padding-top: clamp(24px, 4vw, 40px);
+  }
+
+  /* Department selector — deliberately heavier than the category chips so the
+     Vrt / Dom split reads as the primary axis. */
+  .shop__worlds {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .shop__world {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    text-align: left;
+    padding: 12px 22px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: color-mix(in srgb, var(--surface) 55%, transparent);
+    color: var(--muted);
+    cursor: pointer;
+    transition:
+      background-color var(--dur-mid) var(--ease-out),
+      color var(--dur-mid) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .shop__world-name {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+  .shop__world-hint {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: inherit;
+  }
+  .shop__world:hover {
+    border-color: var(--accent);
+  }
+  .shop__world:active {
+    transform: scale(0.98);
+  }
+  .shop__world.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .shop__world.is-on .shop__world-name {
+    color: var(--accent-ink);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .shop__world:active {
+      transform: none;
+    }
   }
 
   .shop__filters {
@@ -246,6 +383,55 @@ const shopLd = {
   @media (max-width: 440px) {
     .shop__grid {
       grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── phones ──────────────────────────────────────────────────────────
+     Two filter rows stacked above the grid cost most of a phone screen
+     before a single product shows. So: departments share one row, and the
+     category chips become one swipeable line bleeding to the screen edge
+     (the bleed is what signals there is more to the right). */
+  @media (max-width: 620px) {
+    .shop__worlds {
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .shop__world {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+    }
+    .shop__world-name {
+      font-size: 0.95rem;
+    }
+    .shop__world-hint {
+      font-size: 0.56rem;
+      letter-spacing: 0.04em;
+      /* "Klima, grijanje, TV" must not wrap to three lines and make the
+         buttons uneven — clip it instead. */
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .shop__filters {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x proximity;
+      scrollbar-width: none;
+      margin-bottom: 24px;
+      /* bleed past .wrap's padding, then restore it as inner padding */
+      margin-inline: calc(-1 * clamp(20px, 5vw, 32px));
+      padding-inline: clamp(20px, 5vw, 32px);
+    }
+    .shop__filters::-webkit-scrollbar {
+      display: none;
+    }
+    .shop__filter {
+      flex: 0 0 auto;
+      scroll-snap-align: start;
     }
   }
 </style>

@@ -1,10 +1,10 @@
 ---
 order: 2
 world: dom
-num: "02 — DOM · KLIMA & GRIJANJE"
-eyebrow: "Klimatizacija, grijanje i solar"
+num: "02 — DOM · KLIMA, GRIJANJE & TV"
+eyebrow: "Klimatizacija, grijanje, solar i TV"
 title: "Ugodno cijele godine."
-lead: "Od hlađenja ljeti do topline zimi — klima uređaji Fujitsu, Samsung i LG, Viessmann dizalice topline zrak-voda, sustavi grijanja i solarni paneli. Prodaja, ovlaštena ugradnja i servis, sve na jednom mjestu."
+lead: "Od hlađenja ljeti do topline zimi — klima uređaji Daikin, Fujitsu i Samsung, Viessmann dizalice topline zrak-voda i električni kotlovi, solarni paneli te OLED i QLED televizori LG i Samsung. Prodaja, ovlaštena ugradnja i servis, sve na jednom mjestu."
 stats:
   - { value: "A+++", label: "energetska klasa" }
   - { value: "Zadar→DBK", label: "lokalna prisutnost" }
