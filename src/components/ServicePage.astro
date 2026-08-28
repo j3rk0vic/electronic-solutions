@@ -129,6 +129,19 @@ const faqLd = page.faq.length
     color: var(--text);
     font-weight: 600;
   }
+  /* Cross-links between services and the shop — the prose is where most of the
+     internal linking on this site happens, so they need to look clickable. */
+  .svc__prose :global(a) {
+    color: var(--text);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    transition: color var(--dur-mid) var(--ease-out);
+  }
+  .svc__prose :global(a:hover) {
+    color: var(--accent);
+  }
 
   .faq {
     padding-top: 0;

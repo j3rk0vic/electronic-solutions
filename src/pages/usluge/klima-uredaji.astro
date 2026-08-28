@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import ServicePage from '../../components/ServicePage.astro';
+
+const entry = (await getEntry('pages', 'klima-uredaji'))!;
+---
+
+<ServicePage
+  entry={entry}
+  workTag="Klima"
+  galleryTitle="Ugradnje s terena."
+  galleryLead="Fotografije naših montaža. Kliknite za veće."
+/>
