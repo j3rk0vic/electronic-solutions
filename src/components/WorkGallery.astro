@@ -88,7 +88,7 @@ const lightboxData = items.map((it) => ({
             <Image
               src={it.meta}
               alt={altOf(it)}
-              widths={it.span === 'wide' ? [640, 960, 1400] : [300, 460, 640]}
+              widths={it.span === 'wide' ? [800, 1400] : [360, 640]}
               sizes={
                 it.span === 'wide'
                   ? '(max-width:520px) 92vw, (max-width:900px) 92vw, min(1200px, 92vw)'

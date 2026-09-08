@@ -17,5 +17,9 @@ export default defineConfig({
     // astro:assets serves optimized AVIF/WebP; sharp is the default service.
     responsiveStyles: true,
     layout: 'constrained',
+    // Tri širine umjesto Astrovih osam. Deploy ide FTP-om na cPanel, gdje svaki
+    // fajl otvara vlastitu vezu — osam varijanti po slici značilo je 350+ fajlova
+    // i firewall bi prekinuo prijenos. Ove tri pokrivaju mobitel/tablet/desktop.
+    breakpoints: [640, 1080, 1920],
   },
 });
