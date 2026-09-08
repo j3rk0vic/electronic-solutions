@@ -1,0 +1,77 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Electronic Solution — Apache (cPanel, ea-php81, NGINX cache ispred).
+#  Fajl živi u public/ pa ga Astro kopira u dist/, a deploy u public_html/.
+#  NAPOMENA: HTTPS preusmjeravanje NAMJERNO nije ovdje — radi ga cPanel
+#  ("Force HTTPS Redirect"); dupliranje bi napravilo petlju.
+# ═══════════════════════════════════════════════════════════════════════
+
+# Nepoznata adresa poslužuje Astrovu 404 stranicu umjesto golog Apacheva teksta.
+ErrorDocument 404 /404.html
+
+# Direktorij bez index datoteke ne smije ispisati popis fajlova.
+Options -Indexes
+
+# ── Kanonski host ─────────────────────────────────────────────────────
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # www → bez www, jer je site: u astro.config.mjs bez www (301, trajno).
+  RewriteCond %{HTTP_HOST} ^www\.electronic-solution\.hr$ [NC]
+  RewriteRule ^(.*)$ https://electronic-solution.hr/$1 [R=301,L]
+</IfModule>
+
+# ── Tipovi datoteka ───────────────────────────────────────────────────
+# Astro isporučuje AVIF/WebP i woff2; starija mime.types ih ne mora znati.
+<IfModule mod_mime.c>
+  AddType image/avif                  .avif
+  AddType image/webp                  .webp
+  AddType image/svg+xml               .svg
+  AddType font/woff2                  .woff2
+  AddType application/manifest+json   .webmanifest
+</IfModule>
+
+# ── Kompresija ────────────────────────────────────────────────────────
+# Tekstualni odgovori se šalju gzipani; slike su već komprimirane pa se preskaču.
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript text/javascript
+  AddOutputFilterByType DEFLATE application/json application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Oznaka za sve iz /_astro/ — ime već sadrži hash sadržaja (koristi se niže).
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "^/_astro/" HASHED_ASSET
+</IfModule>
+
+# ── Keširanje i sigurnosna zaglavlja ──────────────────────────────────
+<IfModule mod_headers.c>
+  # /_astro/ — promjena sadržaja mijenja i ime fajla, pa smije stajati godinu dana.
+  Header set Cache-Control "public, max-age=31536000, immutable" env=HASHED_ASSET
+
+  # HTML se ne kešira, da se novi deploy vidi odmah (i u NGINX cacheu ispred).
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+
+  # Slike, fontovi i ikone izvan /_astro/ nemaju hash — nekoliko dana (7).
+  <FilesMatch "\.(?:jpe?g|png|gif|webp|avif|svg|ico|woff2?|ttf|otf|eot)$">
+    Header set Cache-Control "public, max-age=604800" env=!HASHED_ASSET
+  </FilesMatch>
+
+  # sitemap i robots se mijenjaju sa sadržajem — kratko (1 sat).
+  <FilesMatch "(?:sitemap[^/]*\.xml|robots\.txt)$">
+    Header set Cache-Control "public, max-age=3600"
+  </FilesMatch>
+
+  # Preglednik ne smije nagađati tip datoteke (obrana od MIME sniffinga).
+  Header set X-Content-Type-Options "nosniff"
+
+  # Referrer se šalje samo unutar iste domene, prema van ostaje samo domena.
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+
+  # Stranicu smije u <iframe> ugraditi samo naša domena (obrana od clickjackinga).
+  Header set X-Frame-Options "SAMEORIGIN"
+
+  # HSTS namjerno NIJE ovdje — uključuje se tek uz izričitu potvrdu (teško se povlači).
+</IfModule>
