@@ -8,6 +8,12 @@
 # Nepoznata adresa poslužuje Astrovu 404 stranicu umjesto golog Apacheva teksta.
 ErrorDocument 404 /404.html
 
+# Datoteke koje počinju točkom nisu za javnost (.htaccess, evidencija deploya).
+# Mapa .well-known ostaje dostupna — njezine datoteke nemaju točku u imenu.
+<FilesMatch "^\.">
+  Require all denied
+</FilesMatch>
+
 # Direktorij bez index datoteke ne smije ispisati popis fajlova.
 Options -Indexes
 
