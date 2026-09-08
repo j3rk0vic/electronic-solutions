@@ -1,0 +1,57 @@
+# ═══════════════════════════════════════════════════════════════════════
+#  Deploy na cPanel shared hosting (electronic-solution.hr)
+#
+#  Na serveru nema Node.js-a: build se radi ovdje, na server ide samo dist/.
+#
+#  POTREBNI SECRETI — GitHub → Settings → Secrets and variables → Actions
+#  → New repository secret:
+#    FTP_SERVER    host FTP-a, npr. ftp.electronic-solution.hr
+#    FTP_USERNAME  cPanel / FTP korisnik (npr. electro3)
+#    FTP_PASSWORD  lozinka tog FTP korisnika
+# ═══════════════════════════════════════════════════════════════════════
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: # ručno pokretanje iz Actions taba
+
+# Dva deploya odjednom bi se preplitala po FTP-u; noviji čeka stariji.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build
+
+      # dist/ ide u /home/electro3/public_html. FTP korisnik sjeda u /home/electro3,
+      # pa je server-dir relativan na to.
+      - name: Upload na cPanel (FTPS)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps # explicit FTPS na portu 21 (cPanel standard)
+          local-dir: ./dist/
+          server-dir: ./public_html/
+          # Nikad true: true obriše cijeli public_html prije uploada.
+          dangerous-clean-slate: false
+          # Zamjenjuje ugrađeni popis izuzetaka. Namjerno ne izuzima dotfileove
+          # općenito, da se dist/.htaccess sigurno prenese na server.
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
