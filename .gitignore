@@ -11,3 +11,7 @@ node_modules/
 .DS_Store
 # logs
 npm-debug.log*
+
+# radni materijal (fotke s terena, cjenici) — ne ide u build ni na server
+postavljanje/
+uredaji/
