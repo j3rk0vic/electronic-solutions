@@ -1,0 +1,124 @@
+---
+import { getCollection, getEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Contact from '../components/Contact.astro';
+
+const site = (await getEntry('settings', 'site'))!.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+
+// Apache serves this file for any unknown path (ErrorDocument 404 in
+// public/.htaccess), so the links below are the visitor's only way onward.
+const links = [
+  { label: 'Naslovnica', href: '/' },
+  { label: 'Trgovina', href: '/trgovina' },
+  { label: 'Usluge', href: '/usluge' },
+  { label: 'Servis', href: '/servis' },
+  { label: 'Kontakt', href: '#kontakt', scroll: 'kontakt' },
+];
+
+const seo = {
+  title: 'Stranica nije pronađena — Electronic Solution',
+  description: 'Tražena stranica ne postoji ili je premještena. Vratite se na naslovnicu, u trgovinu ili nam se javite.',
+};
+---
+
+<Layout site={site} theme="morph" seo={seo}>
+  <Nav slot="nav" site={site} />
+
+  <header class="wrap nf" id="top">
+    <p class="eyebrow" data-reveal>Greška 404</p>
+    <p class="nf__code" data-reveal>404</p>
+    <h1 class="nf__title" data-reveal>Ova stranica ne postoji.</h1>
+    <p class="nf__lead" data-reveal>
+      Stranica koju tražite premještena je ili je adresa krivo upisana. Krenite dalje odavde — ili nas nazovite pa
+      pronađemo što vam treba.
+    </p>
+
+    <nav class="nf__links" aria-label="Povratak na stranicu" data-reveal>
+      {
+        links.map((l) => (
+          <a href={l.href} class="nf__link press" data-scroll-to={l.scroll}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+  </header>
+
+  <Contact contact={contact} site={site} />
+</Layout>
+
+<style>
+  /* Extra top padding clears the fixed nav, kao i na ostalim stranicama. */
+  .nf {
+    padding-top: clamp(130px, 17vw, 190px);
+    padding-bottom: clamp(48px, 7vw, 80px);
+  }
+  .nf .eyebrow {
+    display: block;
+  }
+  .nf__code {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-display);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+    margin-top: 12px;
+  }
+  .nf__title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--text-h3);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-top: 20px;
+  }
+  .nf__lead {
+    max-width: 52ch;
+    margin-top: 18px;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    line-height: 1.65;
+    color: var(--muted);
+  }
+
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+  }
+  .nf__link {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    padding: 12px 24px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    background: color-mix(in srgb, var(--surface) 60%, transparent);
+    color: var(--text);
+    transition:
+      background-color var(--dur-mid) var(--ease-out),
+      border-color var(--dur-mid) var(--ease-out),
+      color var(--dur-mid) var(--ease-out);
+  }
+  .nf__link:hover,
+  .nf__link:focus-visible {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  /* Prvi link je primarni put natrag — naslovnica. */
+  .nf__link:first-child {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nf__link {
+      transition: none;
+    }
+  }
+</style>
