@@ -9,7 +9,7 @@ tagline: "Prodaja i servis — vrt i dom na jednom mjestu"
 address: "Splitska ul. 48, 20350 Metković"
 phone: "095 302 6666"
 phoneHref: "+385953026666"    # bez razmaka, za tel: link
-email: "[EMAIL]"              # ← E-MAIL TVRTKE. Prikazuje se u podnožju.
+email: "info@electronic-solution.hr"   # ← E-MAIL TVRTKE. Prikazuje se u podnožju.
 hours: "Pon – Pet: 08:00 – 16:00 · Subota i nedjelja: zatvoreno"
 # Isto radno vrijeme u strojnom obliku, za Google (schema.org openingHours).
 # Format: dvoslovne oznake dana Mo Tu We Th Fr Sa Su, npr. "Mo-Fr 08:00-16:00".
@@ -20,26 +20,29 @@ region: "Od Zadra do Dubrovnika"
 # ─────────────────────────────────────────────────────────────────────
 #  OBRAZAC ZA KONTAKT — OVDJE SE POSTAVLJA SLANJE E-MAILA
 #
-#  Stranica je statična (nema servera), pa obrazac šalje poruku preko
-#  besplatnog servisa koji je prosljeđuje na vaš e-mail.
+#  Stranica je statična (nema servera), pa obrazac poruku šalje preko
+#  besplatnog servisa Web3Forms, koji je prosljeđuje na vaš e-mail.
 #
-#  Preporuka — Web3Forms (https://web3forms.com):
-#    1. Upišite svoj e-mail, dobijete "Access Key" na taj e-mail.
-#    2. formEndpoint:  https://api.web3forms.com/submit
-#    3. formAccessKey: <ključ koji ste dobili>
+#  KAKO SPOJITI (nekoliko minuta, besplatno):
+#    1. Otvorite https://web3forms.com i upišite e-mail tvrtke.
+#    2. Na taj e-mail stigne "Access Key" — dugačak niz slova i brojeva.
+#    3. Zalijepite ga niže u formAccessKey, umjesto [WEB3FORMS KEY].
+#       formEndpoint ostaje ovakav kakav jest.
+#
+#  Poruke od tada stižu na e-mail upisan na web3forms.com. Ta adresa
+#  NIJE nigdje u kodu stranice, pa je roboti za skupljanje e-mailova
+#  ne mogu pokupiti — vidljiv je samo ključ, koji sam po sebi ništa ne odaje.
+#
+#  Dok je bilo koje od ta dva polja u [...] obliku, obrazac se prikazuje
+#  onemogućen uz napomenu — da nitko ne šalje poruku u prazno.
 #
 #  Alternativa — Formspree (https://formspree.io):
 #    formEndpoint:  https://formspree.io/f/<vaš-id>
-#    formAccessKey: ostavite prazno
-#
-#  Dok je formEndpoint u [...] obliku, obrazac je vidljiv ali onemogućen.
-#
-#  TRENUTNO: privremeno spojeno na FormSubmit (bez registracije) za TESTIRANJE.
-#  Poruke idu na ijerkovic13@gmail.com. Prije produkcije zamijeniti pravim
-#  servisom i skriti e-mail (vidi README → Obrazac za kontakt).
+#    formAccessKey: ostavite prazno (Formspree ne koristi ključ)
 # ─────────────────────────────────────────────────────────────────────
-formEndpoint: "https://formsubmit.co/ajax/ijerkovic13@gmail.com"
-formAccessKey: ""
+formEndpoint: "https://api.web3forms.com/submit"
+# Access Key dobivate na web3forms.com upisom svog e-maila (vidi upute gore).
+formAccessKey: "e61637ed-3228-4938-a98a-b17b5bfb2a09"
 
 # Sporedna navigacija (zaglavlje + podnožje). Vrt/Dom se ne navode ovdje —
 # oni su sekcije naslovnice i imaju vlastiti prekidač u navigaciji.

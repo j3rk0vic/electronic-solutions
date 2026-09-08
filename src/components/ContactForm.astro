@@ -13,7 +13,11 @@ const { site } = Astro.props;
 const endpoint = real(site.formEndpoint);
 const accessKey = real(site.formAccessKey);
 const mail = real(site.email);
-const ready = Boolean(endpoint);
+// Web3Forms rejects any POST without a valid access_key, so an endpoint alone
+// is not enough there — the form stays disabled until the key is filled in too.
+// Formspree carries the id in the URL and needs no key.
+const needsKey = Boolean(endpoint?.includes('web3forms.com'));
+const ready = Boolean(endpoint) && (!needsKey || Boolean(accessKey));
 
 const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', 'Solarni sustavi', 'Servis', 'Ostalo'];
 ---
@@ -29,14 +33,15 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
   {accessKey && <input type="hidden" name="access_key" value={accessKey} />}
   <input type="hidden" name="subject" value={`Nova poruka s ${site.company} web stranice`} />
 
-  {/* Honeypots — real users never fill these. Names cover Web3Forms + Formspree. */}
+  {/* Honeypots — real users never fill these. `botcheck` is the name Web3Forms
+      checks (a ticked box = silently discarded); `_gotcha` covers Formspree. */}
   <input type="checkbox" name="botcheck" class="form__hp" tabindex="-1" autocomplete="off" />
   <input type="text" name="_gotcha" class="form__hp" tabindex="-1" autocomplete="off" />
 
   {
     !ready && (
       <p class="form__notice" id="form-disabled">
-        ⚠️ Obrazac još nije spojen. Postavite <code>formEndpoint</code> u{' '}
+        ⚠️ Obrazac još nije spojen. Postavite <code>formEndpoint</code> i <code>formAccessKey</code> u{' '}
         <code>src/content/settings/site.md</code>.
       </p>
     )
