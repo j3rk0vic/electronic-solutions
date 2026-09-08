@@ -110,7 +110,11 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
           body: new FormData(form),
           headers: { Accept: 'application/json' },
         });
-        if (!res.ok) throw new Error(String(res.status));
+        // Web3Forms zna vratiti HTTP 200 uz {"success": false} — npr. kad poruku
+        // odbaci kao spam. Bez ove provjere posjetitelj vidi "poslano" za poruku
+        // koja nikamo nije stigla. Servis koji ne vrati JSON prolazi na res.ok.
+        const data = await res.json().catch(() => null);
+        if (!res.ok || data?.success === false) throw new Error(data?.message ?? String(res.status));
         form.reset();
         status.textContent = 'Hvala! Poruka je poslana — javljamo se uskoro.';
         status.dataset.state = 'ok';
