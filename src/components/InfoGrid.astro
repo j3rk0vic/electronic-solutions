@@ -37,6 +37,11 @@ const { blocks } = Astro.props;
     grid-template-columns: repeat(2, 1fr);
     gap: 18px;
   }
+  /* An odd last card takes the whole row rather than leaving a hole beside it
+     (Usluge is three blocks since solar came off the list). */
+  .info__card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
   @media (max-width: 760px) {
     .info {
       grid-template-columns: 1fr;

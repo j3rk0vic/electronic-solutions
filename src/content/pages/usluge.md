@@ -8,8 +8,8 @@ stats:
   - { value: "02", label: "Ugradnja i puštanje u pogon" }
   - { value: "03", label: "Servis i održavanje" }
 seo:
-  title: "Usluge — podno grijanje, dizalice topline, klime i solar | Electronic Solution"
-  description: "Ugradnja podnog grijanja, Viessmann dizalica topline, klima uređaja i solarnih sustava. Izmjera, montaža, puštanje u pogon i servis. Metković i Dalmacija."
+  title: "Usluge — podno grijanje, dizalice topline i klime | Electronic Solution"
+  description: "Ugradnja podnog grijanja, Viessmann dizalica topline i klima uređaja. Izmjera, montaža, puštanje u pogon i servis. Metković i Dalmacija."
 blocks:
   - num: "01"
     title: "Podno grijanje"
@@ -23,8 +23,4 @@ blocks:
     title: "Klima uređaji"
     body: "Montaža, vakuumiranje instalacije i puštanje u rad inverterskih klima Daikin, Viessmann, Fujitsu i Samsung. Čišćenje i servis i za uređaje koje nismo mi ugradili."
     href: "/usluge/klima-uredaji"
-  - num: "04"
-    title: "Solarni sustavi"
-    body: "Fotonaponski paneli za vlastitu proizvodnju struje — postavljanje, spajanje i provjera učinka nakon prve sezone. Javite se za izmjeru i ponudu."
-    href: "/servis"
 ---
