@@ -66,6 +66,23 @@ formEndpoint: "https://api.web3forms.com/submit"
 # Access Key dobivate na web3forms.com upisom svog e-maila (vidi upute gore).
 formAccessKey: "e61637ed-3228-4938-a98a-b17b5bfb2a09"
 
+# ─────────────────────────────────────────────────────────────────────
+#  ANALITIKA — Cloudflare Web Analytics (besplatno, bez kolačića)
+#
+#  Broji posjete, stranice, s čega ljudi dolaze (Google, Facebook, izravno)
+#  i s kojih uređaja. Ne postavlja kolačiće i ne prati pojedince, pa ne
+#  treba kolačić-prozor — politika privatnosti to već opisuje.
+#
+#  KAKO UKLJUČITI:
+#    1. Otvorite https://dash.cloudflare.com i napravite besplatan račun.
+#    2. Lijevo: Web Analytics → Add a site → upišite electronic-solution.hr
+#       (ne treba mijenjati DNS — odaberite "JS snippet").
+#    3. U snippetu piše  data-cf-beacon='{"token": "xxxxxxxx"}'  —
+#       kopirajte samo taj token niže.
+#  Dok je polje prazno, na stranici nema nikakve skripte za analitiku.
+# ─────────────────────────────────────────────────────────────────────
+analyticsToken: ""
+
 # Sporedna navigacija (zaglavlje + podnožje). Vrt/Dom se ne navode ovdje —
 # oni su sekcije naslovnice i imaju vlastiti prekidač u navigaciji.
 nav:

@@ -39,8 +39,15 @@ interneta. Karta se učitava tek kad doskrolate do podnožja.
 
 ## Kolačići i analitika
 
-Stranica **ne postavlja kolačiće** za praćenje, ne koristi analitiku ni
-oglašivačke skripte. Nema što prihvatiti ni odbiti, pa nema ni kolačić-prozora.
+Stranica **ne postavlja kolačiće** i ne koristi oglašivačke skripte. Nema što
+prihvatiti ni odbiti, pa nema ni kolačić-prozora.
+
+Za brojanje posjeta koristimo **Cloudflare Web Analytics**. Ta usluga ne
+koristi kolačiće ni otisak uređaja, ne prati pojedince preko stranica i ne
+sastavlja profile — bilježi samo zbirne podatke: koje su stranice otvorene,
+s koje stranice je posjetitelj došao, vrsta uređaja i preglednika te država.
+Podatke obrađuje Cloudflare, Inc. prema svojim
+[pravilima privatnosti](https://www.cloudflare.com/privacypolicy/).
 
 ## Poslužitelj
 

@@ -51,6 +51,9 @@ const settings = defineCollection({
     // Where the contact form POSTs. See the comment block in site.md.
     formEndpoint: z.string().default('[FORM ENDPOINT]'),
     formAccessKey: z.string().default(''),
+    // Cloudflare Web Analytics beacon token. Empty or a [PLACEHOLDER] = no
+    // analytics script at all, so the site stays cookie-free by default.
+    analyticsToken: z.string().default(''),
     // Secondary nav — the standalone pages. Rendered in the header and footer.
     nav: z.array(z.object({ label: z.string(), href: z.string() })),
     brands: z.array(z.string()),

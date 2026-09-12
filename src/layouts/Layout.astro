@@ -28,6 +28,12 @@ const { site, theme = 'morph', seo: seoOverride } = Astro.props;
 const seo = { ...site.seo, ...seoOverride };
 const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://electronic-solution.hr').href;
 
+// Cloudflare Web Analytics — only when the owner has pasted a token into
+// site.md. Cookie-free (no identifier is stored on the visitor's device), so
+// no consent banner is needed; /privatnost describes it. The beacon counts
+// ClientRouter navigations as page views on its own (it hooks History).
+const analyticsToken = real(site.analyticsToken);
+
 // Address-bar tint should match the palette the page actually opens with.
 const themeColor = theme === 'dom' ? '#140807' : '#081310';
 
@@ -156,5 +162,17 @@ const jsonLd: Record<string, unknown> = {
         transform: translateY(0);
       }
     </style>
+
+    {
+      analyticsToken && (
+        <script
+          is:inline
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: analyticsToken, spa: true })}
+          data-astro-rerun
+        />
+      )
+    }
   </body>
 </html>
