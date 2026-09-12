@@ -427,6 +427,29 @@ const lightboxData = items.map((it) => ({
       radial-gradient(120% 95% at 50% 38%, transparent 40%, rgba(0, 0, 0, 0.45) 100%);
   }
 
+  /* Touch screens never hover, so the tiles would sit in the muted resting
+     grade forever — and at 170 px wide, a 0.9 brightness, a 55 % red wash,
+     a scrim over the bottom 58 % and a vignette add up to a dark red smear
+     with no floor or pipes left to recognise. Hand phones the hover grade
+     as the resting state, and shrink the scrim: the caption lives under the
+     photo, not on it, so the scrim was only ever mood. */
+  @media (hover: none) {
+    .wtile__img {
+      filter: saturate(1) contrast(1.02) brightness(1);
+    }
+    .wtile__wash {
+      opacity: 0.22;
+    }
+    .wtile__grain {
+      opacity: 0.1;
+    }
+    .wtile__scrim {
+      background:
+        linear-gradient(to top, color-mix(in srgb, var(--bg) 70%, transparent) 0%, transparent 30%),
+        radial-gradient(120% 95% at 50% 38%, transparent 55%, rgba(0, 0, 0, 0.22) 100%);
+    }
+  }
+
   .wtile__zoom {
     position: absolute;
     top: 14px;
@@ -606,6 +629,11 @@ const lightboxData = items.map((it) => ({
     }
     .wtile[data-span='std'] {
       border-radius: 14px;
+    }
+    /* Square, not 4:3 — at 170 px wide the landscape crop left a strip of
+       floor with nothing to read in it. */
+    .wtile[data-span='std'] .wtile__media {
+      aspect-ratio: 1;
     }
     .wtile[data-span='std'] .wtile__meta {
       gap: 5px;
