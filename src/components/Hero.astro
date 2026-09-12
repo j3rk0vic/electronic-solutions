@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
+import heroPhoto from '../assets/hero/podno-grijanje.jpg';
 
 interface Props {
   hero: CollectionEntry<'sections'>['data'];
@@ -15,7 +17,28 @@ function highlight(text: string): string {
 }
 ---
 
-<header class="hero wrap" id="top" data-hero>
+<header class="hero" id="top" data-hero>
+  <!-- A real floor from a real job, graded down to a texture: the loops of
+       PE-Xa pipe carry the page's diagonal energy without competing with the
+       headline. Two gradients melt it into the page ground (bottom) and clear
+       the text column (left); the grain ties it to the Radovi tiles. -->
+  <div class="hero__bg" aria-hidden="true" data-speed="0.88">
+    <Image
+      src={heroPhoto}
+      alt=""
+      widths={[720, 1200, 1800]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      layout="none"
+      class="hero__photo"
+      data-hero-photo
+    />
+    <span class="hero__grain"></span>
+    <span class="hero__veil"></span>
+  </div>
+
+  <div class="hero__inner wrap">
   <p class="eyebrow" data-reveal>{hero.eyebrow}</p>
 
   <h1 class="hero__title" data-hero-title>
@@ -35,6 +58,7 @@ function highlight(text: string): string {
       <path d="M7 1v18M1 13l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </a>
+  </div>
 </header>
 
 <style>
@@ -43,8 +67,92 @@ function highlight(text: string): string {
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    /* clips the photo's settle-in scale so nothing spills sideways */
+    overflow: hidden;
+  }
+  .hero__inner {
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
     justify-content: center;
     padding-block: 128px 72px;
+  }
+
+  /* ── the photo layer ─────────────────────────────────────────────── */
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    /* The layer fades out, rather than being painted over with the page
+       colour: the orbs behind the page glow through the next section, and an
+       opaque veil would have met that glow with a hard seam. */
+    /* The parallax (data-speed) lets this layer lag ~12% behind the hero,
+       so the fully clear band must be at least that tall or the hero's
+       overflow clip shows a seam mid-fade. */
+    -webkit-mask-image: linear-gradient(to top, transparent 0%, transparent 14%, rgba(0, 0, 0, 0.5) 32%, #000 62%);
+    mask-image: linear-gradient(to top, transparent 0%, transparent 14%, rgba(0, 0, 0, 0.5) 32%, #000 62%);
+  }
+  .hero__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* the curve of the loops sits bottom-right; keep it in frame under the
+       empty half of the headline row */
+    object-position: 62% 60%;
+    /* Deep grade: the pipes' red drops to ember, the mats to charcoal. It
+       must read as ground, not as a picture the text happens to sit on. */
+    filter: saturate(0.5) brightness(0.68) contrast(1.08);
+    opacity: 0.85;
+    /* Settles from a touch larger as the headline rises — one motion, not
+       two. Scale, not translate, so nothing ever shows an edge. */
+    transform: scale(1.06);
+    animation: heroSettle 2.4s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+  }
+  @keyframes heroSettle {
+    to {
+      transform: scale(1);
+    }
+  }
+  /* Same film grain as the Radovi tiles: it hides the phone-JPEG mush the
+     grade would otherwise expose, and stitches the hero to the gallery. */
+  .hero__grain {
+    position: absolute;
+    inset: -50%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.6'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    opacity: 0.14;
+  }
+  /* Left: clear air behind the headline. Top-left: a breath of the accent,
+     so the photo takes the world's colour as the palette morphs. */
+  .hero__veil {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(to right, color-mix(in srgb, var(--bg) 78%, transparent) 0%, color-mix(in srgb, var(--bg) 42%, transparent) 38%, transparent 72%),
+      radial-gradient(70% 60% at 12% 18%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 70%);
+  }
+  /* Phones: the text column is the whole width, so the veil goes darker and
+     the photo sits lower, behind the lead rather than the headline. */
+  @media (max-width: 640px) {
+    .hero__photo {
+      object-position: 55% 70%;
+      opacity: 0.72;
+    }
+    .hero__veil {
+      background:
+        linear-gradient(to top, color-mix(in srgb, var(--bg) 30%, transparent) 0%, color-mix(in srgb, var(--bg) 18%, transparent) 60%, color-mix(in srgb, var(--bg) 45%, transparent) 100%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__photo {
+      animation: none;
+      transform: none;
+    }
   }
   .hero .eyebrow {
     margin-bottom: 26px;
