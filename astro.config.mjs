@@ -8,6 +8,13 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://electronic-solution.hr',
   output: 'static',
+  build: {
+    // Every stylesheet goes inline in the HTML. The hosting is plain cPanel
+    // over HTTP/1.1 with no edge cache, so each external CSS file was a
+    // render-blocking round trip before the first paint (~1.7 s on a slow
+    // phone in Lighthouse). ~15 KB gzipped per page is the cheaper trade.
+    inlineStylesheets: 'always',
+  },
   // Generates /sitemap-index.xml (+ sitemap-0.xml) from all pages for Google.
   integrations: [sitemap({ i18n: undefined })],
   vite: {

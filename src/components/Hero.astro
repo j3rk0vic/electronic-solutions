@@ -21,13 +21,18 @@ function highlight(text: string): string {
   <!-- A real floor from a real job, graded down to a texture: the loops of
        PE-Xa pipe carry the page's diagonal energy without competing with the
        headline. Two gradients melt it into the page ground (bottom) and clear
-       the text column (left); the grain ties it to the Radovi tiles. -->
+       the text column (left); the grain ties it to the Radovi tiles.
+       The source is pre-softened (sharp blur 1.0) and served at low quality:
+       a floor of a thousand studs is the worst case for webp, and under this
+       grade none of that detail survives anyway — 380 KB became ~100 KB on a
+       phone. `sizes` under-reports on phones on purpose, for the same reason. -->
   <div class="hero__bg" aria-hidden="true" data-speed="0.88">
     <Image
       src={heroPhoto}
       alt=""
-      widths={[720, 1200, 1800]}
-      sizes="100vw"
+      widths={[640, 1080, 1400]}
+      sizes="(max-width: 640px) 80vw, 100vw"
+      quality={42}
       loading="eager"
       fetchpriority="high"
       layout="none"
@@ -52,7 +57,7 @@ function highlight(text: string): string {
     {brands.map((b) => <span class="hero__brand">{b}</span>)}
   </div>
 
-  <a class="hero__scroll" href="#vrt" data-scroll-to="vrt" data-reveal aria-label="Kreni dolje">
+  <a class="hero__scroll" href="#vrt" data-scroll-to="vrt" data-reveal>
     <span>Istraži</span>
     <svg width="14" height="22" viewBox="0 0 14 22" fill="none" aria-hidden="true">
       <path d="M7 1v18M1 13l6 6 6-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>

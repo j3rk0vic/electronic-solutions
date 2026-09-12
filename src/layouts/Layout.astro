@@ -1,6 +1,19 @@
 ---
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
+// Self-hosted fonts (were Google Fonts): no third-party round trip before the
+// first paint, no fonts.gstatic request to disclose. Each package ships one
+// woff2 per script with unicode-range, so a Croatian page pulls latin +
+// latin-ext only. Bricolage comes with the optical-size axis — the display
+// sizes need it or the headline letterforms run too loose.
+import '@fontsource-variable/bricolage-grotesque/opsz.css';
+import '@fontsource-variable/inter';
+import '@fontsource/space-mono/400.css';
+import '@fontsource/space-mono/700.css';
+// Preload the two faces the first screen is set in, so the headline and lead
+// don't wait for the CSS to be parsed before the font request even starts.
+import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2?url';
+import bodyFont from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
 import type { CollectionEntry } from 'astro:content';
 import { real } from '../lib/placeholders';
 
@@ -68,6 +81,8 @@ const jsonLd: Record<string, unknown> = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={canonical} />
+    <link rel="preload" as="font" type="font/woff2" href={displayFont} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={bodyFont} crossorigin />
 
     <title>{seo.title}</title>
     <meta name="description" content={seo.description} />
@@ -95,14 +110,6 @@ const jsonLd: Record<string, unknown> = {
     <meta name="twitter:title" content={seo.title} />
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={ogImage} />
-
-    <!-- Fonts: preconnect + display=swap to avoid render blocking -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
 
     {isHome && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />}
   </head>
