@@ -23,6 +23,23 @@ mapLat: 43.0470226
 mapLng: 17.6260102
 
 # ─────────────────────────────────────────────────────────────────────
+#  PODACI IZ SUDSKOG REGISTRA — prikazuju se na /impressum
+#  Zakon o trgovačkim društvima (čl. 21. st. 4.) traži da ih svako d.o.o.
+#  ima na svojim web stranicama. Izvor: sudreg.pravosudje.hr, MBS 090048534.
+#  IBAN nije u sudskom registru — provjerite ga s bankom/knjigovođom.
+# ─────────────────────────────────────────────────────────────────────
+legal:
+  name: "ELECTRONIC SOLUTION d.o.o. za usluge i trgovinu"
+  seat: "Splitska 45, 20350 Metković"
+  oib: "15100354402"
+  mbs: "090048534"
+  court: "Trgovački sud u Dubrovniku"
+  capital: "2.500,00 EUR, uplaćen u cijelosti"
+  director: "Robertino Jerković, direktor — zastupa samostalno i pojedinačno"
+  iban: "HR5823600001103144242"
+  bank: "Zagrebačka banka d.d., Zagreb"
+
+# ─────────────────────────────────────────────────────────────────────
 #  OBRAZAC ZA KONTAKT — OVDJE SE POSTAVLJA SLANJE E-MAILA
 #
 #  Stranica je statična (nema servera), pa obrazac poruku šalje preko

@@ -78,7 +78,7 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
 
   <label class="consent">
     <input type="checkbox" name="consent" required disabled={!ready} />
-    <span>Slažem se da me kontaktirate u vezi ovog upita.</span>
+    <span>Slažem se da me kontaktirate u vezi ovog upita (<a href="/privatnost">privatnost</a>).</span>
   </label>
 
   <div class="form__foot">
@@ -242,6 +242,11 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
     line-height: 1.5;
     color: var(--muted);
     cursor: pointer;
+  }
+  .consent a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
   .consent input {
     margin-top: 2px;

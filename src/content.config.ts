@@ -35,6 +35,19 @@ const settings = defineCollection({
     // if the marker lands on the wrong side of the street.
     mapLat: z.number().optional(),
     mapLng: z.number().optional(),
+    // Registry data for the Impressum (ZTD čl. 21 st. 4 — every d.o.o. must
+    // publish these on its website). Straight from sudreg.pravosudje.hr.
+    legal: z.object({
+      name: z.string(),
+      seat: z.string(),
+      oib: z.string(),
+      mbs: z.string(),
+      court: z.string(),
+      capital: z.string(),
+      director: z.string(),
+      iban: z.string(),
+      bank: z.string(),
+    }),
     // Where the contact form POSTs. See the comment block in site.md.
     formEndpoint: z.string().default('[FORM ENDPOINT]'),
     formAccessKey: z.string().default(''),

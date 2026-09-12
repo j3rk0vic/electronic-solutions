@@ -61,6 +61,8 @@ const showMap = Boolean(address && site.mapLat != null && site.mapLng != null);
     <span>© {year} {site.company}</span>
     <nav class="footer__links" aria-label="Stranice">
       {site.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      <a href="/impressum">Impressum</a>
+      <a href="/privatnost">Privatnost</a>
     </nav>
   </div>
 </footer>
@@ -165,7 +167,8 @@ const showMap = Boolean(address && site.mapLat != null && site.mapLng != null);
   }
   .footer__links {
     display: flex;
-    gap: 20px;
+    flex-wrap: wrap;
+    gap: 12px 20px;
   }
   .footer__links a {
     transition: color var(--dur-mid) var(--ease-out);

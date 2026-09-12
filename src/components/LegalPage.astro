@@ -1,0 +1,162 @@
+---
+/**
+ * The two statutory pages — /impressum and /privatnost. Header + a narrow
+ * Markdown column; the Impressum additionally prints the registry data from
+ * site.md as a definition list, since those fields must be verbatim and are
+ * easier to keep right in one structured place than in prose.
+ */
+import { getCollection, getEntry, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Nav from './Nav.astro';
+import PageHeader from './PageHeader.astro';
+import Contact from './Contact.astro';
+
+interface Props {
+  slug: 'impressum' | 'privatnost';
+}
+const { slug } = Astro.props;
+
+const site = (await getEntry('settings', 'site'))!.data;
+const entry = (await getEntry('pages', slug))!;
+const page = entry.data;
+const contact = (await getCollection('sections')).find((s) => s.id === 'contact')!.data;
+const { Content } = await render(entry);
+
+const legal = site.legal;
+const rows: [string, string][] =
+  slug === 'impressum'
+    ? [
+        ['Tvrtka', legal.name],
+        ['Sjedište', legal.seat],
+        ['OIB', legal.oib],
+        ['MBS', legal.mbs],
+        ['Sud upisa', legal.court],
+        ['Temeljni kapital', legal.capital],
+        ['Uprava', legal.director],
+        ['IBAN', legal.iban],
+        ['Banka', legal.bank],
+        ['E-mail', site.email],
+        ['Telefon', site.phone],
+      ]
+    : [];
+---
+
+<Layout site={site} theme={page.theme} seo={page.seo}>
+  <Nav slot="nav" site={site} current={`/${slug}`} />
+
+  <PageHeader page={page} />
+
+  <section class="section wrap legal">
+    {
+      rows.length > 0 && (
+        <dl class="legal__data" data-reveal>
+          {rows.map(([k, v]) => (
+            <div class="legal__row">
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+
+    <div class="legal__prose" data-reveal>
+      <Content />
+    </div>
+  </section>
+
+  <Contact contact={contact} site={site} />
+</Layout>
+
+<style>
+  .legal {
+    padding-top: clamp(24px, 4vw, 40px);
+    max-width: 860px;
+  }
+
+  .legal__data {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--surface) 72%, transparent);
+    overflow: hidden;
+    margin-bottom: clamp(36px, 5vw, 56px);
+  }
+  .legal__row {
+    display: contents;
+  }
+  .legal__row dt,
+  .legal__row dd {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    line-height: 1.5;
+  }
+  .legal__row:first-child dt,
+  .legal__row:first-child dd {
+    border-top: 0;
+  }
+  .legal__row dt {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    padding-top: 17px;
+  }
+  .legal__row dd {
+    margin: 0;
+    font-size: 0.98rem;
+    color: var(--text);
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 560px) {
+    .legal__data {
+      grid-template-columns: 1fr;
+    }
+    .legal__row dt {
+      padding-bottom: 0;
+      border-top: 1px solid var(--border);
+    }
+    .legal__row dd {
+      border-top: 0;
+      padding-top: 6px;
+    }
+  }
+
+  /* Markdown body — <Content /> emits unscoped HTML, hence :global. */
+  .legal__prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(1.25rem, 2.2vw, 1.55rem);
+    letter-spacing: -0.01em;
+    margin-top: clamp(32px, 4vw, 44px);
+    margin-bottom: 12px;
+  }
+  .legal__prose :global(h2:first-child) {
+    margin-top: 0;
+  }
+  .legal__prose :global(p) {
+    font-size: clamp(1rem, 1.5vw, 1.08rem);
+    line-height: 1.75;
+    color: var(--muted);
+  }
+  .legal__prose :global(p + p) {
+    margin-top: 16px;
+  }
+  .legal__prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .legal__prose :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    transition: text-decoration-color var(--dur-mid) var(--ease-out);
+  }
+  .legal__prose :global(a:hover) {
+    text-decoration-color: var(--accent);
+  }
+</style>
