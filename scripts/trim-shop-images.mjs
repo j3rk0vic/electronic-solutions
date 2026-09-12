@@ -17,7 +17,7 @@ import { join } from 'node:path';
 
 const DIRS = ['src/assets/shop_products', 'src/assets/products'];
 /** Photographs and shots on a coloured ground — nothing to trim, leave as is. */
-const SKIP = new Set(['ugradnja-servis.webp', 'solarni-paneli.webp']);
+const SKIP = new Set(['ugradnja-servis.webp']);
 /** Breathing room kept around the product, as a fraction of the longer side. */
 const MARGIN = 0.03;
 

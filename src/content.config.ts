@@ -62,7 +62,7 @@ const products = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/products' }),
   schema: z.object({
     // Two worlds: vrt is the EGO Power+ range, dom is everything else the home
-    // needs — klima, grijanje, solar and televisions. The home page morphs
+    // needs — klima, grijanje and televisions. The home page morphs
     // green→red across exactly these two.
     world: z.enum(['vrt', 'dom']),
     order: z.number(),
@@ -71,7 +71,7 @@ const products = defineCollection({
     blurb: z.string(),
     // Filename inside src/assets/products. Resolved to an optimized
     // <Image /> at render time via import.meta.glob. Optional: cards without an
-    // image (e.g. Solar, Servis) render a graceful themed gradient placeholder.
+    // image render a graceful themed gradient placeholder.
     image: z.string().optional(),
     // true = the image is a photograph, not a cut-out packshot. The tile then
     // fills edge to edge instead of sitting contained on the white ground.

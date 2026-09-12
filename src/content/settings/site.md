@@ -61,6 +61,6 @@ brands:
 
 seo:
   title: "Electronic Solution — Vrtni alat, klima i grijanje | Metković"
-  description: "Bežični EGO Power+ vrtni alat, klima uređaji, Viessmann dizalice topline i solarni sustavi. Prodaja, ugradnja i servis iz Metkovića — od Zadra do Dubrovnika."
+  description: "Bežični EGO Power+ vrtni alat, klima uređaji, Viessmann dizalice topline. Prodaja, ugradnja i servis iz Metkovića — od Zadra do Dubrovnika."
   ogImageAlt: "Electronic Solution — snaga za vrt, toplina za dom"
 ---

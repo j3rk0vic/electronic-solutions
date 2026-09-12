@@ -40,6 +40,6 @@ faq:
 
 Podno grijanje grije cijelu površinu poda blagom toplinom, umjesto da jedan radijator grije zrak oko sebe. Zato je ugodnije — nema toplog stropa i hladnog poda pod nogama — i jeftinije za korištenje, jer voda u cijevima rijetko treba biti toplija od **35 °C**.
 
-Ta niska temperatura je i razlog zašto se podno grijanje i **dizalica topline** toliko dobro slažu: dizalica troši najmanje kad vodu ne mora grijati na visoko. U kombinaciji sa solarnim panelima to postaje sustav koji zimi grije uz male pogonske troškove, a uz odgovarajuću izvedbu ljeti može i hladiti.
+Ta niska temperatura je i razlog zašto se podno grijanje i **dizalica topline** toliko dobro slažu: dizalica troši najmanje kad vodu ne mora grijati na visoko. Tako sustav zimi grije uz male pogonske troškove, a uz odgovarajuću izvedbu ljeti može i hladiti.
 
 Radimo i nove kuće i obnove starih, od prve izmjere do trenutka kad sustav proradi. Slike ispod su s naših gradilišta — sve smo to sami napravili.

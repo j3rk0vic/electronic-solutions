@@ -13,7 +13,7 @@ is generated from `src/content/shop/products.json` by `scripts/parse-shop.mjs`.
 
 | Field   | Required | Notes |
 |---------|----------|-------|
-| `world` | ✅       | Either `vrt` (garden/EGO) or `dom` (everything else: klima, grijanje, solar, TV) |
+| `world` | ✅       | Either `vrt` (garden/EGO) or `dom` (everything else: klima, grijanje, TV) |
 | `order` | ✅       | Position within its world. Use the next free integer for that world. |
 | `title` | ✅       | Croatian, quoted. e.g. `"Kosilice"` |
 | `blurb` | ✅       | Croatian one-liner, quoted. |
@@ -69,7 +69,7 @@ badge: "56V"
 ---
 ```
 
-Placeholder card (no image — like Solar/Servis):
+Placeholder card (no image):
 
 ```markdown
 ---

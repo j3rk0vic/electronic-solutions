@@ -8,11 +8,11 @@ stats:
   - { value: "2", label: "Svijeta — vrt i dom" }
 seo:
   title: "O nama — Electronic Solution, Metković"
-  description: "Tvrtka iz Metkovića za prodaju i servis vrtnog alata, klima uređaja, dizalica topline i solarnih sustava. Teren od Zadra do Dubrovnika."
+  description: "Tvrtka iz Metkovića za prodaju i servis vrtnog alata, klima uređaja, dizalica topline. Teren od Zadra do Dubrovnika."
 ---
 
 Pod istim krovom držimo dva svijeta — **bežični vrtni alat** EGO Power+ i
-**opremu za dom**: klima uređaje, Viessmann dizalice topline, solarne sustave i
+**opremu za dom**: klima uređaje, Viessmann dizalice topline i
 televizore.
 
 Sve što prodajemo i sami ugrađujemo. To znači da savjet prije kupnje dolazi od

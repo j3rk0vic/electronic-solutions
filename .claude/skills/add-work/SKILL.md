@@ -19,7 +19,7 @@ never go into `src/assets/work` raw — run them through the prep script first.
 | `order`    | ✅       | Position in the gallery. Home shows the first 5. |
 | `title`    | ✅       | Croatian, quoted, short. e.g. `"Podno grijanje — kupaonica"` |
 | `caption`  | ✅       | One Croatian sentence under the title — say what's technically interesting, not "lijepa slika". |
-| `tag`      | ✅       | Mono chip: the kind of job. Reuse existing tags exactly: `"Podno grijanje"`, `"Dizalica topline"`; new ones e.g. `"Klima uređaj"`, `"Solarni paneli"`. |
+| `tag`      | ✅       | Mono chip: the kind of job. Reuse existing tags exactly: `"Podno grijanje"`, `"Dizalica topline"`; new ones e.g. `"Klima uređaj"`. |
 | `image`    | ✅       | Filename only, inside `src/assets/work`. Missing file = tile silently skipped. |
 | `span`     | optional | `wide` (21:9 feature row, landscape photo) or `std` (4:5 portrait tile, default). |
 | `location` | optional | Context line in the lightbox, e.g. `"Obiteljska kuća — novogradnja"`. |

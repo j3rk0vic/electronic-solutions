@@ -65,7 +65,7 @@ e-mail (`email:`) kao rezerva — zato i njega popunite.
 2. Kopirajte postojeću `.md` u `src/content/products/`, promijenite polja:
    `world` (`vrt` | `dom` | `tv`), `order`, `title`, `brand`, `blurb`,
    `image` (naziv datoteke), opcionalno `badge`.
-3. Kartica bez `image:` prikazuje elegantni tematski placeholder (npr. Solar).
+3. Kartica bez `image:` prikazuje elegantni tematski placeholder.
 
 ### Radovi (galerija s terena)
 Sekcija **04 — RADOVI** na naslovnici je foto-esej sa stvarnih gradilišta:

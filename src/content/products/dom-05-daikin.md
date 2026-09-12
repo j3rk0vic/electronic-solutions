@@ -1,6 +1,6 @@
 ---
 world: dom
-order: 6
+order: 5
 title: "Daikin klime"
 brand: "Daikin Sensira"
 blurb: "Inverterske zidne klime s R-32 medijem — tih rad, brzo hlađenje i grijanje uz nisku potrošnju."

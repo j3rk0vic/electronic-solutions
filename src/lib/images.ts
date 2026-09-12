@@ -4,7 +4,7 @@ import type { ImageMetadata } from 'astro';
  * Resolve a product image filename (as stored in content frontmatter) to the
  * imported ImageMetadata that <Image /> needs. Eagerly globs the asset folder
  * so any mix of webp/jpg/avif inputs is served as one optimized format + size
- * set. Returns undefined for imageless products (Solar, Servis) so the card can
+ * set. Returns undefined for imageless products so the card can
  * render its graceful themed placeholder instead.
  */
 const modules = import.meta.glob<{ default: ImageMetadata }>(
