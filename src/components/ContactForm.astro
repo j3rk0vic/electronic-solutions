@@ -88,46 +88,51 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
 </form>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-  const status = document.querySelector<HTMLElement>('[data-form-status]');
+  // Rebinds after every client-side navigation — see the note in Shop.astro.
+  // A dead handler here would let the form POST natively and dump the visitor
+  // on the Web3Forms JSON response.
+  document.addEventListener('astro:page-load', () => {
+    const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
+    const status = document.querySelector<HTMLElement>('[data-form-status]');
 
-  if (form && status && form.action) {
-    const button = form.querySelector<HTMLButtonElement>('.form__submit')!;
-    const mail = form.dataset.mail;
+    if (form && status && form.action) {
+      const button = form.querySelector<HTMLButtonElement>('.form__submit')!;
+      const mail = form.dataset.mail;
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      // Let the browser surface its own validation messages first.
-      if (!form.reportValidity()) return;
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        // Let the browser surface its own validation messages first.
+        if (!form.reportValidity()) return;
 
-      button.disabled = true;
-      status.textContent = 'Šaljem…';
-      status.dataset.state = 'busy';
+        button.disabled = true;
+        status.textContent = 'Šaljem…';
+        status.dataset.state = 'busy';
 
-      try {
-        const res = await fetch(form.action, {
-          method: 'POST',
-          body: new FormData(form),
-          headers: { Accept: 'application/json' },
-        });
-        // Web3Forms zna vratiti HTTP 200 uz {"success": false} — npr. kad poruku
-        // odbaci kao spam. Bez ove provjere posjetitelj vidi "poslano" za poruku
-        // koja nikamo nije stigla. Servis koji ne vrati JSON prolazi na res.ok.
-        const data = await res.json().catch(() => null);
-        if (!res.ok || data?.success === false) throw new Error(data?.message ?? String(res.status));
-        form.reset();
-        status.textContent = 'Hvala! Poruka je poslana — javljamo se uskoro.';
-        status.dataset.state = 'ok';
-      } catch {
-        status.dataset.state = 'error';
-        status.textContent = mail
-          ? `Slanje nije uspjelo. Pišite nam izravno na ${mail}.`
-          : 'Slanje nije uspjelo. Pokušajte ponovno ili nas nazovite.';
-      } finally {
-        button.disabled = false;
-      }
-    });
-  }
+        try {
+          const res = await fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: { Accept: 'application/json' },
+          });
+          // Web3Forms zna vratiti HTTP 200 uz {"success": false} — npr. kad poruku
+          // odbaci kao spam. Bez ove provjere posjetitelj vidi "poslano" za poruku
+          // koja nikamo nije stigla. Servis koji ne vrati JSON prolazi na res.ok.
+          const data = await res.json().catch(() => null);
+          if (!res.ok || data?.success === false) throw new Error(data?.message ?? String(res.status));
+          form.reset();
+          status.textContent = 'Hvala! Poruka je poslana — javljamo se uskoro.';
+          status.dataset.state = 'ok';
+        } catch {
+          status.dataset.state = 'error';
+          status.textContent = mail
+            ? `Slanje nije uspjelo. Pišite nam izravno na ${mail}.`
+            : 'Slanje nije uspjelo. Pokušajte ponovno ili nas nazovite.';
+        } finally {
+          button.disabled = false;
+        }
+      });
+    }
+  });
 </script>
 
 <style>

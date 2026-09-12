@@ -477,6 +477,19 @@ a {
   box-shadow: 0 14px 30px -12px color-mix(in srgb, var(--accent) 70%, black);
 }
 
+/* Phones: the inquiry button rides the bottom edge while the options list
+   scrolls, so it is never below the fold of a dialog with six variants. */
+@media (max-width: 720px) {
+  .pmodal__cta {
+    position: sticky;
+    bottom: 0;
+    display: block;
+    text-align: center;
+    margin-top: 22px;
+    box-shadow: 0 -12px 24px -8px color-mix(in srgb, var(--surface) 90%, transparent), 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pmodal,
   .pmodal::backdrop {
@@ -546,6 +559,18 @@ a {
 @starting-style {
   .lbox[open]::backdrop {
     opacity: 0;
+  }
+}
+/* Phones: no blur behind either dialog. A 10–14 px backdrop-filter over a
+   28-card grid is a full-screen GPU pass every frame, and on a mid-range
+   phone the dialog opened into a frozen half-second — which read as the page
+   hanging. A deeper plain tint does the same job for free. */
+@media (max-width: 720px) {
+  .pmodal::backdrop,
+  .lbox::backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: color-mix(in srgb, var(--bg) 86%, transparent);
   }
 }
 

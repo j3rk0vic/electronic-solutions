@@ -78,7 +78,9 @@ Fotografije su obične snimke s mobitela, pa im stranica nameće **isti tretman*
 kao jedna namjerna serija, a ne kao osam nasumičnih slika.
 
 Dodavanje nove fotografije:
-1. Sliku stavite u `src/assets/work/`.
+1. Sliku pripremite skriptom (EXIF rotacija, max 2000 px, jpg, čist naziv):
+   `node scripts/prep-work-photo.mjs "postavljanje/PHOTO-….jpg" podno-grijanje-kupaonica`
+   → završi u `src/assets/work/`. (Ili je ručno kopirajte onamo.)
 2. Kopirajte postojeću `.md` u `src/content/works/` i popunite:
    `order` (redoslijed), `title`, `caption` (rečenica ispod naslova), `tag`
    (npr. „Podno grijanje”), `image` (naziv datoteke), `span`
@@ -98,7 +100,9 @@ skrola do kontakt-obrasca i unaprijed upiše naziv proizvoda u poruku.
 **Podaci se NE uređuju ručno u JSON-u.** Uređujete tekstualnu datoteku pa
 pokrenete generator:
 
-1. Slike idu u `src/assets/shop_products/` (`naziv.png`).
+1. Slike idu u `src/assets/shop_products/` (`naziv.png`), pa **`node scripts/trim-shop-images.mjs`**
+   — odreže prazne bijele rubove s packshota da proizvod ispuni pločicu
+   (radi i za `src/assets/products/`; fotografije preskače).
 2. Tekst/cijene u `src/assets/text_for_shop_products/proizvodi_electronic_solution.txt`.
    Format po proizvodu:
    ```

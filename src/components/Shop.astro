@@ -128,122 +128,130 @@ const shopLd = {
 <script type="application/ld+json" set:html={JSON.stringify(shopLd)} is:inline />
 
 <script>
-  // ── department + category filter ───────────────────────────────────
-  // Two independent axes: world (Vrt / Dom) and category. A card shows only if
-  // it satisfies both, and the category chips narrow to the selected world.
-  const worldBar = document.querySelector<HTMLElement>('[data-shop-worlds]');
-  const filterBar = document.querySelector<HTMLElement>('[data-shop-filters]');
-  const cards = Array.from(document.querySelectorAll<HTMLElement>('.scard[data-category]'));
-  const emptyMsg = document.querySelector<HTMLElement>('[data-shop-empty]');
+  // Astro's <ClientRouter> swaps the page body in place and runs each bundled
+  // script only once per site visit — so everything bound at module top-level
+  // died the first time the visitor navigated away and back. astro:page-load
+  // fires on the initial load AND after every client-side navigation, with the
+  // new DOM already in place, so bind here. (Tapping a product then opened
+  // nothing on the second visit to /trgovina.)
+  document.addEventListener('astro:page-load', () => {
+    // ── department + category filter ───────────────────────────────────
+    // Two independent axes: world (Vrt / Dom) and category. A card shows only if
+    // it satisfies both, and the category chips narrow to the selected world.
+    const worldBar = document.querySelector<HTMLElement>('[data-shop-worlds]');
+    const filterBar = document.querySelector<HTMLElement>('[data-shop-filters]');
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('.scard[data-category]'));
+    const emptyMsg = document.querySelector<HTMLElement>('[data-shop-empty]');
 
-  let world = '*';
-  let category = '*';
+    let world = '*';
+    let category = '*';
 
-  // Dom is the red half of the brand, Vrt the green one. Repin the palette to
-  // the chosen department: :root[data-theme] swaps every token and carries
-  // --t-morph, which cross-fades the nav logo green ↔ red. "Sve" falls back to
-  // green, the palette this page is pinned to server-side.
-  const THEME_COLOR = { dom: '#140807', vrt: '#081310' };
-  const paintTheme = () => {
-    const theme = world === 'dom' ? 'dom' : 'vrt';
-    document.documentElement.dataset.theme = theme;
-    document
-      .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
-      ?.setAttribute('content', THEME_COLOR[theme]);
-  };
+    // Dom is the red half of the brand, Vrt the green one. Repin the palette to
+    // the chosen department: :root[data-theme] swaps every token and carries
+    // --t-morph, which cross-fades the nav logo green ↔ red. "Sve" falls back to
+    // green, the palette this page is pinned to server-side.
+    const THEME_COLOR = { dom: '#140807', vrt: '#081310' };
+    const paintTheme = () => {
+      const theme = world === 'dom' ? 'dom' : 'vrt';
+      document.documentElement.dataset.theme = theme;
+      document
+        .querySelector<HTMLMetaElement>('meta[name="theme-color"]')
+        ?.setAttribute('content', THEME_COLOR[theme]);
+    };
 
-  const press = (bar: HTMLElement | null, btn: Element | null) => {
-    bar?.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
-      const on = b === btn;
-      b.classList.toggle('is-on', on);
-      b.setAttribute('aria-pressed', String(on));
+    const press = (bar: HTMLElement | null, btn: Element | null) => {
+      bar?.querySelectorAll<HTMLButtonElement>('button').forEach((b) => {
+        const on = b === btn;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    };
+
+    const apply = () => {
+      // Hide chips belonging to the other department so the row reads as a
+      // subset of the current one rather than a flat list of everything.
+      filterBar?.querySelectorAll<HTMLElement>('[data-cat-world]').forEach((chip) => {
+        chip.hidden = world !== '*' && chip.dataset.catWorld !== world;
+      });
+
+      let shown = 0;
+      cards.forEach((card) => {
+        const match =
+          (world === '*' || card.dataset.world === world) &&
+          (category === '*' || card.dataset.category === category);
+        card.hidden = !match;
+        if (match) {
+          shown++;
+          // Clear any reveal offset so filtered-in cards are always visible.
+          card.style.opacity = '1';
+          card.style.transform = 'none';
+        }
+      });
+      if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+      // The grid just changed height — let ScrollSmoother re-measure so there's
+      // no dead scroll space (or missing space) below the shortened grid.
+      requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('es:refresh')));
+    };
+
+    worldBar?.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-world-filter]');
+      if (!btn) return;
+      world = btn.dataset.worldFilter!;
+      press(worldBar, btn);
+      paintTheme();
+      // The old category may belong to the department we just left, which would
+      // leave the grid empty — reset to "all categories" on every switch.
+      category = '*';
+      press(filterBar, filterBar?.querySelector('[data-filter="*"]') ?? null);
+      apply();
     });
-  };
 
-  const apply = () => {
-    // Hide chips belonging to the other department so the row reads as a
-    // subset of the current one rather than a flat list of everything.
-    filterBar?.querySelectorAll<HTMLElement>('[data-cat-world]').forEach((chip) => {
-      chip.hidden = world !== '*' && chip.dataset.catWorld !== world;
+    filterBar?.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
+      if (!btn) return;
+      category = btn.dataset.filter!;
+      press(filterBar, btn);
+      apply();
     });
 
-    let shown = 0;
-    cards.forEach((card) => {
-      const match =
-        (world === '*' || card.dataset.world === world) &&
-        (category === '*' || card.dataset.category === category);
-      card.hidden = !match;
-      if (match) {
-        shown++;
-        // Clear any reveal offset so filtered-in cards are always visible.
-        card.style.opacity = '1';
-        card.style.transform = 'none';
+    // Wire each card to its <dialog>. Native showModal() gives us the top layer,
+    // focus trapping and Esc-to-close; we add backdrop-click and the inquiry jump.
+    const modals = document.querySelectorAll<HTMLDialogElement>('dialog.pmodal');
+
+    document.querySelectorAll<HTMLButtonElement>('[data-shop-open]').forEach((btn) => {
+      const dlg = document.getElementById(btn.getAttribute('aria-controls') ?? '');
+      if (dlg instanceof HTMLDialogElement) {
+        btn.addEventListener('click', () => dlg.showModal());
       }
     });
-    if (emptyMsg) emptyMsg.hidden = shown > 0;
 
-    // The grid just changed height — let ScrollSmoother re-measure so there's
-    // no dead scroll space (or missing space) below the shortened grid.
-    requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('es:refresh')));
-  };
+    modals.forEach((dlg) => {
+      dlg.querySelector('[data-shop-close]')?.addEventListener('click', () => dlg.close());
 
-  worldBar?.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-world-filter]');
-    if (!btn) return;
-    world = btn.dataset.worldFilter!;
-    press(worldBar, btn);
-    paintTheme();
-    // The old category may belong to the department we just left, which would
-    // leave the grid empty — reset to "all categories" on every switch.
-    category = '*';
-    press(filterBar, filterBar?.querySelector('[data-filter="*"]') ?? null);
-    apply();
-  });
+      // A click whose target is the dialog element itself landed on the backdrop.
+      dlg.addEventListener('click', (e) => {
+        if (e.target === dlg) dlg.close();
+      });
 
-  filterBar?.addEventListener('click', (e) => {
-    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-filter]');
-    if (!btn) return;
-    category = btn.dataset.filter!;
-    press(filterBar, btn);
-    apply();
-  });
-
-  // Wire each card to its <dialog>. Native showModal() gives us the top layer,
-  // focus trapping and Esc-to-close; we add backdrop-click and the inquiry jump.
-  const modals = document.querySelectorAll<HTMLDialogElement>('dialog.pmodal');
-
-  document.querySelectorAll<HTMLButtonElement>('[data-shop-open]').forEach((btn) => {
-    const dlg = document.getElementById(btn.getAttribute('aria-controls') ?? '');
-    if (dlg instanceof HTMLDialogElement) {
-      btn.addEventListener('click', () => dlg.showModal());
-    }
-  });
-
-  modals.forEach((dlg) => {
-    dlg.querySelector('[data-shop-close]')?.addEventListener('click', () => dlg.close());
-
-    // A click whose target is the dialog element itself landed on the backdrop.
-    dlg.addEventListener('click', (e) => {
-      if (e.target === dlg) dlg.close();
-    });
-
-    // "Pošalji upit" → close, prefill the contact message, scroll to it.
-    dlg.querySelector<HTMLAnchorElement>('[data-shop-inquire]')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      const name = dlg.querySelector<HTMLElement>('[data-shop-name]')?.dataset.shopName ?? '';
-      const msg = document.querySelector<HTMLTextAreaElement>('#cf-message');
-      if (msg) {
-        msg.value = `Upit za proizvod: ${name}`;
-        msg.dispatchEvent(new Event('input'));
-      }
-      // The dialog keeps the top layer during its exit animation (overlay
-      // allow-discrete), which blocks a background scroll. So wait for the
-      // close to finish, then ask motion.ts (owner of ScrollSmoother) to scroll.
-      const scroll = () => window.dispatchEvent(new CustomEvent('es:scrollto', { detail: 'kontakt' }));
-      dlg.addEventListener('transitionend', scroll, { once: true });
-      // Fallback if transitions are disabled (reduced motion / no support).
-      setTimeout(scroll, 420);
-      dlg.close();
+      // "Pošalji upit" → close, prefill the contact message, scroll to it.
+      dlg.querySelector<HTMLAnchorElement>('[data-shop-inquire]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        const name = dlg.querySelector<HTMLElement>('[data-shop-name]')?.dataset.shopName ?? '';
+        const msg = document.querySelector<HTMLTextAreaElement>('#cf-message');
+        if (msg) {
+          msg.value = `Upit za proizvod: ${name}`;
+          msg.dispatchEvent(new Event('input'));
+        }
+        // The dialog keeps the top layer during its exit animation (overlay
+        // allow-discrete), which blocks a background scroll. So wait for the
+        // close to finish, then ask motion.ts (owner of ScrollSmoother) to scroll.
+        const scroll = () => window.dispatchEvent(new CustomEvent('es:scrollto', { detail: 'kontakt' }));
+        dlg.addEventListener('transitionend', scroll, { once: true });
+        // Fallback if transitions are disabled (reduced motion / no support).
+        setTimeout(scroll, 420);
+        dlg.close();
+      });
     });
   });
 </script>
@@ -367,22 +375,21 @@ const shopLd = {
 
   .shop__grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 18px;
   }
   @media (max-width: 1080px) {
     .shop__grid {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
+  /* Two columns all the way down. One card per phone screen made 28 products
+     a 17 000 px scroll; two-up halves that, and the packshots (trimmed at the
+     source, see scripts/trim-shop-images.mjs) still fill a 170 px tile. */
   @media (max-width: 760px) {
     .shop__grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  @media (max-width: 440px) {
-    .shop__grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
   }
 

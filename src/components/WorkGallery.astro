@@ -92,7 +92,7 @@ const lightboxData = items.map((it) => ({
               sizes={
                 it.span === 'wide'
                   ? '(max-width:520px) 92vw, (max-width:900px) 92vw, min(1200px, 92vw)'
-                  : '(max-width:520px) 92vw, (max-width:900px) 45vw, 30vw'
+                  : '(max-width:900px) 45vw, 30vw'
               }
               loading="lazy"
               layout="none"
@@ -196,87 +196,92 @@ const lightboxData = items.map((it) => ({
 <script type="application/json" id="work-data" set:html={JSON.stringify(lightboxData)} is:inline />
 
 <script>
-  // ── lightbox ────────────────────────────────────────────────────────
-  type Shot = { src: string; alt: string; tag: string; title: string; caption: string; location: string };
+  // Rebinds after every client-side navigation — see the note in Shop.astro.
+  // The gallery sits on both / and /usluge, so without this the second page a
+  // visitor reached had dead tiles.
+  document.addEventListener('astro:page-load', () => {
+    // ── lightbox ────────────────────────────────────────────────────────
+    type Shot = { src: string; alt: string; tag: string; title: string; caption: string; location: string };
 
-  const dataEl = document.getElementById('work-data');
-  const dlg = document.getElementById('work-lightbox') as HTMLDialogElement | null;
+    const dataEl = document.getElementById('work-data');
+    const dlg = document.getElementById('work-lightbox') as HTMLDialogElement | null;
 
-  if (dataEl && dlg) {
-    const shots: Shot[] = JSON.parse(dataEl.textContent || '[]');
+    if (dataEl && dlg) {
+      const shots: Shot[] = JSON.parse(dataEl.textContent || '[]');
 
-    const img = dlg.querySelector<HTMLImageElement>('[data-work-img]')!;
-    const bg = dlg.querySelector<HTMLImageElement>('[data-work-bg]')!;
-    const elTag = dlg.querySelector<HTMLElement>('[data-work-tag]')!;
-    const elCount = dlg.querySelector<HTMLElement>('[data-work-count]')!;
-    const elTitle = dlg.querySelector<HTMLElement>('[data-work-title]')!;
-    const elText = dlg.querySelector<HTMLElement>('[data-work-text]')!;
-    const elLoc = dlg.querySelector<HTMLElement>('[data-work-loc]')!;
+      const img = dlg.querySelector<HTMLImageElement>('[data-work-img]')!;
+      const bg = dlg.querySelector<HTMLImageElement>('[data-work-bg]')!;
+      const elTag = dlg.querySelector<HTMLElement>('[data-work-tag]')!;
+      const elCount = dlg.querySelector<HTMLElement>('[data-work-count]')!;
+      const elTitle = dlg.querySelector<HTMLElement>('[data-work-title]')!;
+      const elText = dlg.querySelector<HTMLElement>('[data-work-text]')!;
+      const elLoc = dlg.querySelector<HTMLElement>('[data-work-loc]')!;
 
-    let current = 0;
-    /** The tile that opened the dialog — focus returns here on close. */
-    let opener: HTMLElement | null = null;
+      let current = 0;
+      /** The tile that opened the dialog — focus returns here on close. */
+      let opener: HTMLElement | null = null;
 
-    function show(i: number) {
-      current = (i + shots.length) % shots.length;
-      const s = shots[current];
-      // Fade the swap so stepping through doesn't flash.
-      img.classList.add('is-swapping');
-      const paint = () => {
-        img.src = s.src;
-        img.alt = s.alt;
-        bg.src = s.src;
-        elTag.textContent = s.tag;
-        elCount.textContent = `${String(current + 1).padStart(2, '0')}/${String(shots.length).padStart(2, '0')} ·`;
-        elTitle.textContent = s.title;
-        elText.textContent = s.caption;
-        elLoc.textContent = s.location;
-        img.classList.remove('is-swapping');
-      };
-      // One frame is enough for the opacity transition to register.
-      requestAnimationFrame(paint);
-    }
-
-    document.querySelectorAll<HTMLButtonElement>('[data-work-open]').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        opener = btn;
-        show(Number(btn.dataset.index ?? 0));
-        dlg!.showModal();
-      });
-    });
-
-    dlg.querySelector('[data-work-close]')?.addEventListener('click', () => dlg!.close());
-    dlg.querySelector('[data-work-prev]')?.addEventListener('click', () => show(current - 1));
-    dlg.querySelector('[data-work-next]')?.addEventListener('click', () => show(current + 1));
-
-    // A click landing on the dialog element itself is a backdrop click.
-    dlg.addEventListener('click', (e) => {
-      if (e.target === dlg) dlg!.close();
-    });
-
-    dlg.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        show(current + 1);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        show(current - 1);
+      function show(i: number) {
+        current = (i + shots.length) % shots.length;
+        const s = shots[current];
+        // Fade the swap so stepping through doesn't flash.
+        img.classList.add('is-swapping');
+        const paint = () => {
+          img.src = s.src;
+          img.alt = s.alt;
+          bg.src = s.src;
+          elTag.textContent = s.tag;
+          elCount.textContent = `${String(current + 1).padStart(2, '0')}/${String(shots.length).padStart(2, '0')} ·`;
+          elTitle.textContent = s.title;
+          elText.textContent = s.caption;
+          elLoc.textContent = s.location;
+          img.classList.remove('is-swapping');
+        };
+        // One frame is enough for the opacity transition to register.
+        requestAnimationFrame(paint);
       }
-    });
 
-    dlg.addEventListener('close', () => {
-      const tile = opener;
-      opener = null;
-      if (!tile) return;
-      // The dialog keeps the top layer through its exit animation (overlay
-      // allow-discrete), which swallows focus aimed at the page behind it —
-      // so restore focus once the close has actually finished.
-      const restore = () => tile.focus();
-      dlg!.addEventListener('transitionend', restore, { once: true });
-      // Fallback where transitions are off (reduced motion / no support).
-      setTimeout(restore, 420);
-    });
-  }
+      document.querySelectorAll<HTMLButtonElement>('[data-work-open]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          opener = btn;
+          show(Number(btn.dataset.index ?? 0));
+          dlg!.showModal();
+        });
+      });
+
+      dlg.querySelector('[data-work-close]')?.addEventListener('click', () => dlg!.close());
+      dlg.querySelector('[data-work-prev]')?.addEventListener('click', () => show(current - 1));
+      dlg.querySelector('[data-work-next]')?.addEventListener('click', () => show(current + 1));
+
+      // A click landing on the dialog element itself is a backdrop click.
+      dlg.addEventListener('click', (e) => {
+        if (e.target === dlg) dlg!.close();
+      });
+
+      dlg.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          show(current + 1);
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          show(current - 1);
+        }
+      });
+
+      dlg.addEventListener('close', () => {
+        const tile = opener;
+        opener = null;
+        if (!tile) return;
+        // The dialog keeps the top layer through its exit animation (overlay
+        // allow-discrete), which swallows focus aimed at the page behind it —
+        // so restore focus once the close has actually finished.
+        const restore = () => tile.focus();
+        dlg!.addEventListener('transitionend', restore, { once: true });
+        // Fallback where transitions are off (reduced motion / no support).
+        setTimeout(restore, 420);
+      });
+    }
+  });
 </script>
 
 <style>
@@ -569,7 +574,9 @@ const lightboxData = items.map((it) => ({
   /* ── responsive ──────────────────────────────────────────────────── */
   @media (max-width: 900px) {
     .works__grid {
-      grid-template-columns: repeat(2, 1fr);
+      /* minmax(0, …): a bare 1fr lets the inquiry tile's button widen its
+         column and the photo beside it ends up a third narrower. */
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .wtile,
     .wtile[data-span='wide'],
@@ -582,17 +589,39 @@ const lightboxData = items.map((it) => ({
     /* One column at this width, so the inquiry tile pairs with the last photo
        instead of spanning the row and leaving a hole beside it. */
   }
+  /* Phones stay two-up: the feature and the inquiry tile take the full width,
+     the portraits pair off. The caption comes off the small tiles — it is
+     repeated in the lightbox, and at 170 px it turned every tile into a
+     paragraph. Stacked one-up this section was 3 000 px, four screens. */
   @media (max-width: 520px) {
     .works__grid {
-      grid-template-columns: 1fr;
-    }
-    .wtile,
-    .wtile[data-span='wide'],
-    .wcta {
-      grid-column: span 1;
+      gap: 12px;
+      margin-top: 28px;
     }
     .wtile[data-span='wide'] .wtile__media {
       aspect-ratio: 16 / 10;
+    }
+    .wcta {
+      grid-column: span 2;
+    }
+    .wtile[data-span='std'] {
+      border-radius: 14px;
+    }
+    .wtile[data-span='std'] .wtile__meta {
+      gap: 5px;
+      padding: 12px 12px 14px;
+    }
+    .wtile[data-span='std'] .wtile__tag {
+      font-size: 0.58rem;
+    }
+    .wtile[data-span='std'] .wtile__name {
+      font-size: 0.95rem;
+    }
+    .wtile[data-span='std'] .wtile__caption {
+      display: none;
+    }
+    .wtile[data-span='wide'] .wtile__meta {
+      padding: 14px 16px 18px;
     }
   }
 

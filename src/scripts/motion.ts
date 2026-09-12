@@ -286,17 +286,18 @@ function initFull() {
     });
   });
 
-  // Staggered reveals for grouped items (cards / stats / brands).
+  // Staggered reveals for grouped items (cards / stats / brands). Batched per
+  // viewport entry rather than one tween per group: the shop grid is 28 cards
+  // in a single column on a phone, and one group-level trigger left every card
+  // below the fold invisible until the whole 1.4 s stagger had played out —
+  // a fast thumb-scroll landed on blank tiles.
   gsap.utils.toArray<HTMLElement>('[data-reveal-group]').forEach((group) => {
     const items = group.querySelectorAll<HTMLElement>('[data-reveal-item]');
     gsap.set(items, { opacity: 0, y: 28 });
-    gsap.to(items, {
-      opacity: 1,
-      y: 0,
-      duration: ENTER.dur,
-      ease: ENTER.ease,
-      stagger: ENTER.stagger,
-      scrollTrigger: { trigger: group, start: 'top 82%' },
+    ScrollTrigger.batch(items, {
+      start: 'top 92%',
+      onEnter: (batch) =>
+        gsap.to(batch, { opacity: 1, y: 0, duration: ENTER.dur, ease: ENTER.ease, stagger: ENTER.stagger }),
     });
   });
 
