@@ -224,21 +224,19 @@ const lightboxData = items.map((it) => ({
       function show(i: number) {
         current = (i + shots.length) % shots.length;
         const s = shots[current];
-        // Fade the swap so stepping through doesn't flash.
+        // Paint synchronously — the contents must be there the instant the
+        // dialog opens, whatever the browser does with animation frames. The
+        // swap fade is cosmetic, so it is the part that waits.
         img.classList.add('is-swapping');
-        const paint = () => {
-          img.src = s.src;
-          img.alt = s.alt;
-          bg.src = s.src;
-          elTag.textContent = s.tag;
-          elCount.textContent = `${String(current + 1).padStart(2, '0')}/${String(shots.length).padStart(2, '0')} ·`;
-          elTitle.textContent = s.title;
-          elText.textContent = s.caption;
-          elLoc.textContent = s.location;
-          img.classList.remove('is-swapping');
-        };
-        // One frame is enough for the opacity transition to register.
-        requestAnimationFrame(paint);
+        img.src = s.src;
+        img.alt = s.alt;
+        bg.src = s.src;
+        elTag.textContent = s.tag;
+        elCount.textContent = `${String(current + 1).padStart(2, '0')}/${String(shots.length).padStart(2, '0')} ·`;
+        elTitle.textContent = s.title;
+        elText.textContent = s.caption;
+        elLoc.textContent = s.location;
+        setTimeout(() => img.classList.remove('is-swapping'), 30);
       }
 
       document.querySelectorAll<HTMLButtonElement>('[data-work-open]').forEach((btn) => {

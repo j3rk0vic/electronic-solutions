@@ -581,11 +581,27 @@ a {
   height: 100%;
   max-height: 92vh;
 }
+/* Phones: every size explicit. The desktop frame leans on percentage heights
+   inside a top-layer dialog with inset:0 + margin:auto, and Safari resolves
+   that chain differently from Chrome — the figure came out zero-height,
+   overflow-y:auto clipped everything inside it, and a tap showed the backdrop
+   with nothing in front of it. Here the dialog is pinned by top/left, the
+   stage has a viewport-unit height, and the caption takes what is left. */
 @media (max-width: 860px) {
+  .lbox {
+    inset: auto;
+    top: 4vh;
+    left: 3vw;
+    width: 94vw;
+    height: auto;
+    max-height: 92vh;
+    margin: 0;
+  }
   .lbox__figure {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(0, 1fr) auto;
-    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    max-height: 92vh;
   }
 }
 
@@ -625,9 +641,14 @@ a {
   opacity: 0;
 }
 @media (max-width: 860px) {
-  .lbox__stage,
+  .lbox__stage {
+    flex: 0 0 auto;
+    height: 50vh;
+    min-height: 0;
+    max-height: none;
+  }
   .lbox__img {
-    max-height: 52vh;
+    max-height: none;
   }
 }
 
@@ -639,6 +660,14 @@ a {
   padding: clamp(24px, 3.5vw, 40px);
   background: color-mix(in srgb, var(--surface) 82%, black);
   overflow-y: auto;
+}
+@media (max-width: 860px) {
+  .lbox__cap {
+    flex: 1 1 auto;
+    min-height: 0;
+    justify-content: flex-start;
+    padding: 18px 20px 22px;
+  }
 }
 .lbox__tag {
   font-family: var(--font-mono);
@@ -713,6 +742,13 @@ a {
 }
 .lbox__nav--next {
   right: 14px;
+}
+/* Phones: the stage is a fixed 50vh, so centre the arrows on it, not on the
+   whole dialog (which would drop them onto the caption). */
+@media (max-width: 860px) {
+  .lbox__nav {
+    top: 25vh;
+  }
 }
 /* On desktop the caption owns the right half — keep "next" over the photo. */
 @media (min-width: 861px) {
