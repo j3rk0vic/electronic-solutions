@@ -19,8 +19,8 @@ region: "Od Zadra do Dubrovnika"
 # Tocka na karti u podnozju (decimalni stupnjevi). Ako pin ne sjedne tocno
 # na ulaz, popravite ovdje - na Google kartama desni klik -> prva stavka
 # kopira koordinate.
-mapLat: 43.0444016
-mapLng: 17.6235940
+mapLat: 43.0470226
+mapLng: 17.6260102
 
 # ─────────────────────────────────────────────────────────────────────
 #  OBRAZAC ZA KONTAKT — OVDJE SE POSTAVLJA SLANJE E-MAILA
