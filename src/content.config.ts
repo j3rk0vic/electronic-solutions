@@ -102,6 +102,9 @@ const works = defineCollection({
     location: z.string().optional(),
     /** CSS object-position for the tile crop (e.g. "center 38%"). */
     focus: z.string().default('center'),
+    /** Shown in the home-page taster. Pick photos that differ from each
+     *  other — six floor-heating shots in a row read as one photo repeated. */
+    featured: z.boolean().default(false),
   }),
 });
 

@@ -6,4 +6,5 @@ tag: "Dizalica topline"
 image: "strojarnica-viessmann.jpg"
 span: "wide"
 location: "Obiteljska kuća — novogradnja"
+featured: true
 ---

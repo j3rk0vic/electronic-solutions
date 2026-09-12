@@ -7,4 +7,5 @@ image: "dizalica-topline-viessmann.jpg"
 span: "std"
 focus: "center 38%"
 location: "Obiteljska kuća — novogradnja"
+featured: true
 ---

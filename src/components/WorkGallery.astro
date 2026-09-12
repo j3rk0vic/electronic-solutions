@@ -71,7 +71,7 @@ const lightboxData = items.map((it) => ({
     {section.lead && <p class="works__lead" data-reveal>{section.lead}</p>}
   </div>
 
-  <div class="works__grid" data-reveal-group>
+  <div class="works__grid" data-reveal-group data-std={items.filter((it) => it.span === 'std').length}>
     {
       items.map((it, i) => (
         <button
@@ -338,6 +338,11 @@ const lightboxData = items.map((it) => ({
   }
   .wcta {
     grid-column: span 4;
+  }
+  /* Home taster: wide(6), then two portraits (2+2) — the inquiry tile takes
+     the remaining 2 so the row closes instead of wrapping alone. */
+  .works__grid[data-std='2'] .wcta {
+    grid-column: span 2;
   }
 
   .wtile:hover,
@@ -607,8 +612,10 @@ const lightboxData = items.map((it) => ({
     .wtile[data-span='wide'] {
       grid-column: span 2;
     }
-    /* One column at this width, so the inquiry tile pairs with the last photo
-       instead of spanning the row and leaving a hole beside it. */
+    /* Two portraits fill a row here, so the inquiry tile takes its own. */
+    .works__grid[data-std='2'] .wcta {
+      grid-column: span 2;
+    }
   }
   /* Phones stay two-up: the feature and the inquiry tile take the full width,
      the portraits pair off. The caption comes off the small tiles — it is

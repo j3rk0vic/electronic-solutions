@@ -15,12 +15,14 @@ const sectionEntries = await getCollection('sections');
 const section = (id: string) => sectionEntries.find((s) => s.id === id)!.data;
 
 /**
- * A taster, not the whole set — the full galleries now live on the service
- * pages under /usluge, where each photo backs the job it belongs to. Five keeps
- * the 6-column mosaic filling whole rows: wide(6), 2+2+2, then 2 plus the
- * closing tile's 4.
+ * A taster, not the whole set — the full gallery lives on /usluge. Only the
+ * photos flagged `featured` in src/content/works, so the home page shows three
+ * different jobs rather than the first five files (which were one floor,
+ * four times over). Falls back to the first five if nothing is flagged.
  */
-const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order).slice(0, 5);
+const allWorks = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
+const featured = allWorks.filter((w) => w.data.featured);
+const works = featured.length ? featured : allWorks.slice(0, 5);
 
 const products = await getCollection('products');
 const byWorld = (world: 'vrt' | 'dom') => products.filter((p) => p.data.world === world);

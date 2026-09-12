@@ -6,4 +6,5 @@ tag: "Podno grijanje"
 image: "podno-grijanje-soba.jpg"
 span: "std"
 location: "Obiteljska kuća — novogradnja"
+featured: true
 ---
