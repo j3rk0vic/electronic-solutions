@@ -16,6 +16,11 @@ hours: "Pon – Pet: 08:00 – 16:00 · Subota i nedjelja: zatvoreno"
 # Ostavite prazno ako ne želite da se šalje.
 hoursSchema: "Mo-Fr 08:00-16:00"
 region: "Od Zadra do Dubrovnika"
+# Tocka na karti u podnozju (decimalni stupnjevi). Ako pin ne sjedne tocno
+# na ulaz, popravite ovdje - na Google kartama desni klik -> prva stavka
+# kopira koordinate.
+mapLat: 43.0444016
+mapLng: 17.6235940
 
 # ─────────────────────────────────────────────────────────────────────
 #  OBRAZAC ZA KONTAKT — OVDJE SE POSTAVLJA SLANJE E-MAILA

@@ -31,6 +31,10 @@ const settings = defineCollection({
     // The display string is prose, which Google cannot parse as opening hours.
     hoursSchema: z.string().default(''),
     region: z.string(),
+    // Pin for the map in the footer. Geocoded from `address`; nudge by hand
+    // if the marker lands on the wrong side of the street.
+    mapLat: z.number().optional(),
+    mapLng: z.number().optional(),
     // Where the contact form POSTs. See the comment block in site.md.
     formEndpoint: z.string().default('[FORM ENDPOINT]'),
     formAccessKey: z.string().default(''),

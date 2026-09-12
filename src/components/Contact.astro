@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import ContactForm from './ContactForm.astro';
+import Map from './Map.astro';
 import { real } from '../lib/placeholders';
 
 interface Props {
@@ -20,6 +21,9 @@ const mail = real(site.email);
 const mailHref = mail ? `mailto:${mail}` : null;
 const address = real(site.address);
 const hours = real(site.hours);
+// The map needs a real address AND coordinates; without either it simply
+// isn't rendered, so an unfilled site.md never shows a pin in the sea.
+const showMap = Boolean(address && site.mapLat != null && site.mapLng != null);
 ---
 
 <footer class="section wrap footer" id="kontakt">
@@ -44,6 +48,14 @@ const hours = real(site.hours);
       {telHref && <a class="footer__cta magnetic" href={telHref}>Nazovi nas</a>}
     </address>
   </div>
+
+  {
+    showMap && (
+      <div class="footer__map" data-reveal>
+        <Map lat={site.mapLat!} lng={site.mapLng!} company={site.company} address={address!} />
+      </div>
+    )
+  }
 
   <div class="footer__bottom">
     <span>© {year} {site.company}</span>
@@ -131,6 +143,10 @@ const hours = real(site.hours);
   .footer__region {
     color: var(--accent);
     margin-top: 4px;
+  }
+
+  .footer__map {
+    margin-top: clamp(40px, 6vw, 72px);
   }
 
   .footer__bottom {

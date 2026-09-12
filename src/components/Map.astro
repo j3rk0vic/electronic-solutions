@@ -1,0 +1,352 @@
+---
+/**
+ * Where we are — a Leaflet map on OpenStreetMap tiles, graded dark with CSS
+ * so it sits in the page instead of glowing out of it like an embed. No API
+ * key, no third-party script, no cookies: the tiles are plain images.
+ *
+ * Loads only when the footer is about to scroll into view (the footer is on
+ * every page and most visitors never reach it), and Leaflet itself is a
+ * dynamic import so the site's main bundle stays untouched.
+ */
+interface Props {
+  lat: number;
+  lng: number;
+  company: string;
+  address: string;
+}
+const { lat, lng, company, address } = Astro.props;
+
+const q = encodeURIComponent(`${company}, ${address}`);
+const directions = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+const openMap = `https://www.google.com/maps/search/?api=1&query=${q}`;
+---
+
+<div class="map" data-map data-lat={lat} data-lng={lng} data-label={company}>
+  <div class="map__canvas" data-map-canvas aria-label={`Karta: ${address}`} role="img"></div>
+  <span class="map__wash" aria-hidden="true"></span>
+
+  <div class="map__card">
+    <p class="map__eyebrow">Gdje smo</p>
+    <p class="map__name">{company}</p>
+    <p class="map__addr">{address}</p>
+    <div class="map__actions">
+      <a class="map__btn map__btn--primary" href={directions} target="_blank" rel="noopener">
+        Navigiraj
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <a class="map__btn" href={openMap} target="_blank" rel="noopener">Otvori u Google kartama</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  import 'leaflet/dist/leaflet.css';
+
+  // Rebinds after every client-side navigation — see the note in Shop.astro.
+  document.addEventListener('astro:page-load', () => {
+    const host = document.querySelector<HTMLElement>('[data-map]');
+    const canvas = host?.querySelector<HTMLElement>('[data-map-canvas]');
+    if (!host || !canvas || canvas.dataset.ready) return;
+
+    const lat = Number(host.dataset.lat);
+    const lng = Number(host.dataset.lng);
+    const label = host.dataset.label ?? '';
+
+    const build = async () => {
+      canvas.dataset.ready = '1';
+      const L = (await import('leaflet')).default;
+      // The page may have swapped away while Leaflet was loading.
+      if (!document.body.contains(canvas)) return;
+
+      const coarse = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      const map = L.map(canvas, {
+        center: [lat, lng],
+        zoom: 16,
+        zoomControl: false,
+        attributionControl: true,
+        // Never fight the page: no wheel zoom, and on touch no one-finger
+        // drag (which would swallow the scroll gesture over the map).
+        scrollWheelZoom: false,
+        dragging: !coarse,
+        touchZoom: true,
+        doubleClickZoom: true,
+        keyboard: false,
+      });
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+      map.attributionControl.setPrefix('');
+
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution:
+          '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
+      }).addTo(map);
+
+      // Brand pin: a ring with a pulsing halo, in the live accent colour.
+      const icon = L.divIcon({
+        className: 'map__pin',
+        html: '<span class="map__pin-halo"></span><span class="map__pin-dot"></span>',
+        iconSize: [22, 22],
+        iconAnchor: [11, 11],
+      });
+      L.marker([lat, lng], { icon, title: label, keyboard: false }).addTo(map);
+
+      // The info card covers the left third on wide screens, so shift the
+      // centre right a touch to keep the pin in the open part of the frame.
+      // On phones the card is a strip along the bottom, so lift the pin
+      // into the upper half instead.
+      const wide = window.matchMedia('(min-width: 861px)').matches;
+      map.panBy(wide ? [-140, 0] : [0, 70], { animate: false });
+    };
+
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            io.disconnect();
+            build();
+          }
+        },
+        { rootMargin: '500px 0px' }
+      );
+      io.observe(host);
+    } else {
+      build();
+    }
+  });
+</script>
+
+<style>
+  .map {
+    position: relative;
+    height: clamp(340px, 46vw, 460px);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--surface) 88%, black);
+    box-shadow: 0 18px 40px -28px rgba(0, 0, 0, 0.7);
+    /* Leaflet's own transforms otherwise leak past the rounded corners */
+    isolation: isolate;
+  }
+  .map__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  /* Dark grade for the standard OSM tiles: invert flips the paper to charcoal,
+     the hue-rotate puts water back on the blue side, and the desaturation
+     keeps the POI colours from shouting. Applied to the tile pane only, so
+     the marker and controls stay in true colour. */
+  .map :global(.leaflet-tile-pane) {
+    filter: invert(1) hue-rotate(195deg) saturate(0.2) brightness(0.74) contrast(1.12);
+  }
+  .map :global(.leaflet-container) {
+    background: #0b0f0d;
+    font-family: var(--font-mono);
+  }
+  /* Vignette + a breath of the page's accent, so the map takes the world's
+     colour like everything else. Sits above the tiles, below the card. */
+  .map__wash {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(120% 100% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55) 100%),
+      linear-gradient(120deg, color-mix(in srgb, var(--accent) 12%, transparent), transparent 55%);
+  }
+
+  /* ── pin ─────────────────────────────────────────────────────────── */
+  .map :global(.map__pin) {
+    background: none;
+    border: 0;
+  }
+  .map :global(.map__pin-dot) {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 3px solid #fff;
+    box-shadow: 0 6px 18px -4px color-mix(in srgb, var(--accent) 70%, black);
+  }
+  .map :global(.map__pin-halo) {
+    position: absolute;
+    inset: -14px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 40%, transparent);
+    animation: mapPulse 2.4s ease-out infinite;
+  }
+  @keyframes mapPulse {
+    0% {
+      transform: scale(0.45);
+      opacity: 0.9;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+
+  /* ── controls / attribution, restyled to the page ────────────────── */
+  .map :global(.leaflet-bar) {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.8);
+  }
+  .map :global(.leaflet-bar a) {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    background: color-mix(in srgb, var(--surface) 92%, black);
+    color: var(--text);
+    border-bottom-color: var(--border);
+    font-family: var(--font-mono);
+  }
+  .map :global(.leaflet-bar a:hover) {
+    background: var(--surface);
+    color: var(--accent);
+  }
+  .map :global(.leaflet-control-attribution) {
+    background: color-mix(in srgb, var(--bg) 70%, transparent);
+    color: var(--muted);
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    padding: 3px 8px;
+    border-top-left-radius: 8px;
+  }
+  .map :global(.leaflet-control-attribution a) {
+    color: var(--muted);
+  }
+  .map :global(.leaflet-bottom.leaflet-right) {
+    margin-bottom: 26px;
+  }
+
+  /* ── the info card ───────────────────────────────────────────────── */
+  .map__card {
+    position: absolute;
+    z-index: 2;
+    left: 22px;
+    top: 22px;
+    max-width: 320px;
+    padding: 22px 24px 24px;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 24px 48px -24px rgba(0, 0, 0, 0.8);
+  }
+  .map__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+  .map__name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+  .map__addr {
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+  .map__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  .map__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 10px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition:
+      border-color var(--dur-mid) var(--ease-out),
+      color var(--dur-mid) var(--ease-out),
+      box-shadow var(--dur-mid) var(--ease-out);
+  }
+  .map__btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .map__btn--primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  .map__btn--primary:hover {
+    color: var(--accent-ink);
+    box-shadow: 0 12px 26px -12px color-mix(in srgb, var(--accent) 70%, black);
+  }
+  .map__btn--primary svg {
+    transition: transform var(--dur-mid) var(--ease-out);
+  }
+  .map__btn--primary:hover svg {
+    transform: translateX(3px);
+  }
+
+  /* Phones: the card becomes a strip along the bottom of the map so the pin
+     has the whole frame. The secondary link goes — "Navigiraj" is what a
+     phone user wants, and it opens the same place. */
+  @media (max-width: 640px) {
+    .map {
+      height: 420px;
+      border-radius: 16px;
+    }
+    .map__card {
+      left: 12px;
+      right: 12px;
+      top: auto;
+      bottom: 12px;
+      max-width: none;
+      padding: 16px 18px 18px;
+      border-radius: 14px;
+    }
+    .map__name {
+      font-size: 1.05rem;
+    }
+    .map__addr {
+      font-size: 0.78rem;
+    }
+    .map__actions {
+      margin-top: 12px;
+    }
+    .map__btn:not(.map__btn--primary) {
+      display: none;
+    }
+    .map :global(.leaflet-bottom.leaflet-right) {
+      margin-bottom: 150px;
+    }
+    .map :global(.leaflet-control-attribution) {
+      margin-bottom: 138px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .map :global(.map__pin-halo) {
+      animation: none;
+      opacity: 0.35;
+      transform: scale(1);
+    }
+    .map__btn,
+    .map__btn--primary svg {
+      transition: none;
+    }
+  }
+</style>
