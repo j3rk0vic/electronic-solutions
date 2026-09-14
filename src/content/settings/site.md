@@ -81,7 +81,7 @@ formAccessKey: "e61637ed-3228-4938-a98a-b17b5bfb2a09"
 #       kopirajte samo taj token niže.
 #  Dok je polje prazno, na stranici nema nikakve skripte za analitiku.
 # ─────────────────────────────────────────────────────────────────────
-analyticsToken: ""
+analyticsToken: "cecb73700ba849ddb19fce68b92e8a4a"
 
 # Sporedna navigacija (zaglavlje + podnožje). Vrt/Dom se ne navode ovdje —
 # oni su sekcije naslovnice i imaju vlastiti prekidač u navigaciji.
