@@ -94,6 +94,8 @@ nav:
 brands:
   - "EGO Power+"
   - "Viessmann"
+  - "Fronius"
+  - "BYD"
   - "Fujitsu"
   - "Samsung"
   - "LG"

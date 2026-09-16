@@ -1,0 +1,13 @@
+---
+import { getEntry } from 'astro:content';
+import ServicePage from '../../components/ServicePage.astro';
+
+const entry = (await getEntry('pages', 'solarne-elektrane'))!;
+---
+
+<ServicePage
+  entry={entry}
+  workTag="Solarna elektrana"
+  galleryTitle="Pretvarači i baterije koje smo postavili."
+  galleryLead="Fronius i BYD s naših montaža — u strojarnicama, podrumima i na fasadama. Kliknite za veće."
+/>

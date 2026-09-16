@@ -15,7 +15,7 @@ const contact = (await getCollection('sections')).find((s) => s.id === 'contact'
  * The full set lives here — this is the page where someone deciding whether to
  * call wants to see everything we have actually done. The home page shows a
  * taster that points here; each service page shows only its own jobs.
- * All eight fill the 6-column mosaic exactly: wide(6), 2+2+2, 2+2+2, 2+4.
+ * Fourteen fill the 6-column mosaic exactly: wide(6), four rows of 2+2+2, 2+4.
  */
 const works = (await getCollection('works')).sort((a, b) => a.data.order - b.data.order);
 
@@ -25,7 +25,7 @@ const gallerySection = {
   num: '',
   eyebrow: 'Naši radovi',
   title: 'Ovako to izgleda uživo.',
-  lead: 'Slike s naših gradilišta — polaganje podnog grijanja i strojarnice s Viessmann dizalicama topline. Sve smo radili sami. Kliknite na sliku za veći prikaz.',
+  lead: 'Slike s naših gradilišta — podno grijanje, strojarnice s Viessmann dizalicama topline te solarne elektrane s Fronius pretvaračima i BYD baterijama. Sve smo radili sami. Kliknite na sliku za veći prikaz.',
   // The steps already appear above as page stats; don't repeat them here.
   stats: [],
 };
