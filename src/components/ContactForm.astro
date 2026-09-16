@@ -7,9 +7,11 @@ interface Props {
 }
 const { site } = Astro.props;
 
-// The form can only post somewhere once the owner fills in formEndpoint (and,
-// for Web3Forms, formAccessKey) in site.md. Until then we render the fields
-// read-only with a clear notice rather than a button that silently does nothing.
+// The form posts to formEndpoint from site.md — by default /kontakt.php, a
+// PHP mailer that ships in public/ and runs on the owner's own cPanel, so no
+// third-party account is involved. Web3Forms/Formspree still work if the
+// endpoint is pointed at them. With no endpoint we render the fields read-only
+// with a clear notice rather than a button that silently does nothing.
 const endpoint = real(site.formEndpoint);
 const accessKey = real(site.formAccessKey);
 const mail = real(site.email);
@@ -33,15 +35,16 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
   {accessKey && <input type="hidden" name="access_key" value={accessKey} />}
   <input type="hidden" name="subject" value={`Nova poruka s ${site.company} web stranice`} />
 
-  {/* Honeypots — real users never fill these. `botcheck` is the name Web3Forms
-      checks (a ticked box = silently discarded); `_gotcha` covers Formspree. */}
+  {/* Honeypots — real users never fill these. kontakt.php discards a submission
+      with either one filled; `botcheck` is also what Web3Forms checks and
+      `_gotcha` what Formspree checks, so the same markup serves all three. */}
   <input type="checkbox" name="botcheck" class="form__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
   <input type="text" name="_gotcha" class="form__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
   {
     !ready && (
       <p class="form__notice" id="form-disabled">
-        ⚠️ Obrazac još nije spojen. Postavite <code>formEndpoint</code> i <code>formAccessKey</code> u{' '}
+        ⚠️ Obrazac još nije spojen. Postavite <code>formEndpoint</code> u{' '}
         <code>src/content/settings/site.md</code>.
       </p>
     )
@@ -114,9 +117,10 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
             body: new FormData(form),
             headers: { Accept: 'application/json' },
           });
-          // Web3Forms zna vratiti HTTP 200 uz {"success": false} — npr. kad poruku
-          // odbaci kao spam. Bez ove provjere posjetitelj vidi "poslano" za poruku
-          // koja nikamo nije stigla. Servis koji ne vrati JSON prolazi na res.ok.
+          // kontakt.php i Web3Forms vraćaju {"success": true|false}; Web3Forms zna
+          // dati i HTTP 200 uz success:false (spam). Bez ove provjere posjetitelj
+          // vidi "poslano" za poruku koja nikamo nije stigla. Servis koji ne vrati
+          // JSON prolazi na res.ok.
           const data = await res.json().catch(() => null);
           if (!res.ok || data?.success === false) throw new Error(data?.message ?? String(res.status));
           form.reset();

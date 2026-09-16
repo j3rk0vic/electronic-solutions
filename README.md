@@ -40,24 +40,20 @@ kao običan tekst bez linka.
 > `[ADRESA]` se pojavljuje i u tekstu na dnu `src/content/pages/o-nama.md` —
 > zamijenite je i ondje.
 
-### 📨 Obrazac za kontakt — SPOJITI
-Obrazac u podnožju šalje poruku na vaš e-mail preko besplatnog servisa (stranica
-je statična, nema vlastitog servera). **Dok nije spojen, prikazuje se onemogućen
-uz napomenu.** Spaja se u `src/content/settings/site.md`, polja `formEndpoint` i
-`formAccessKey`:
+### 📨 Obrazac za kontakt
+Obrazac u podnožju šalje poruku preko `public/kontakt.php` — PHP skripte koja
+se s ostatkom stranice objavi na vaš cPanel i poruku dostavi na e-mail tvrtke.
+Nema vanjskog servisa, ključa ni računa.
 
-**Web3Forms (preporuka)** — https://web3forms.com
-1. Upišite e-mail tvrtke → na njega stigne *Access Key*.
-2. `formEndpoint: "https://api.web3forms.com/submit"`
-3. `formAccessKey: "<vaš ključ>"`
+- **Primatelj** je `$to` na vrhu `public/kontakt.php`. Ako se e-mail tvrtke
+  promijeni, promijenite ga ondje i u `email:` u `site.md` (podnožje, rezerva).
+- Poruke stižu s poljima: ime, e-mail, telefon, tema, poruka. *Reply* ide
+  izravno pošiljatelju.
+- Ako slanje zakaže, posjetitelju se prikaže vaš e-mail (`email:`) kao rezerva.
 
-**Formspree** — https://formspree.io
-1. `formEndpoint: "https://formspree.io/f/<vaš-id>"`
-2. `formAccessKey` ostavite prazno.
-
-Nakon spajanja obrazac se automatski aktivira. Poruke stižu s poljima: ime,
-e-mail, telefon, tema, poruka. Ako slanje zakaže, korisniku se prikaže vaš
-e-mail (`email:`) kao rezerva — zato i njega popunite.
+Ako ikad zatreba vanjski servis (npr. hosting bez PHP-a), u `site.md` postavite
+`formEndpoint` na Web3Forms (`https://api.web3forms.com/submit` + `formAccessKey`)
+ili Formspree (`https://formspree.io/f/<id>`); obrazac radi s oba bez promjene koda.
 
 ### Dodavanje proizvoda
 1. Stavite sliku u `src/assets/products/` (bilo koji format — webp/jpg/avif;

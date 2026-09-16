@@ -40,31 +40,22 @@ legal:
   bank: "Zagrebačka banka d.d., Zagreb"
 
 # ─────────────────────────────────────────────────────────────────────
-#  OBRAZAC ZA KONTAKT — OVDJE SE POSTAVLJA SLANJE E-MAILA
+#  OBRAZAC ZA KONTAKT
 #
-#  Stranica je statična (nema servera), pa obrazac poruku šalje preko
-#  besplatnog servisa Web3Forms, koji je prosljeđuje na vaš e-mail.
+#  Poruke šalje public/kontakt.php izravno s vašeg hostinga (PHP na cPanelu)
+#  na e-mail tvrtke. Nema vanjskog servisa, ključa ni računa.
 #
-#  KAKO SPOJITI (nekoliko minuta, besplatno):
-#    1. Otvorite https://web3forms.com i upišite e-mail tvrtke.
-#    2. Na taj e-mail stigne "Access Key" — dugačak niz slova i brojeva.
-#    3. Zalijepite ga niže u formAccessKey, umjesto [WEB3FORMS KEY].
-#       formEndpoint ostaje ovakav kakav jest.
+#  Primatelj je upisan u public/kontakt.php ($to) — ako se e-mail tvrtke
+#  promijeni, promijenite ga ondje i u polju email: gore.
 #
-#  Poruke od tada stižu na e-mail upisan na web3forms.com. Ta adresa
-#  NIJE nigdje u kodu stranice, pa je roboti za skupljanje e-mailova
-#  ne mogu pokupiti — vidljiv je samo ključ, koji sam po sebi ništa ne odaje.
-#
-#  Dok je bilo koje od ta dva polja u [...] obliku, obrazac se prikazuje
-#  onemogućen uz napomenu — da nitko ne šalje poruku u prazno.
-#
-#  Alternativa — Formspree (https://formspree.io):
-#    formEndpoint:  https://formspree.io/f/<vaš-id>
-#    formAccessKey: ostavite prazno (Formspree ne koristi ključ)
+#  Alternativa, ako ikad zatreba vanjski servis:
+#    Web3Forms:  formEndpoint: https://api.web3forms.com/submit
+#                formAccessKey: ključ koji stigne na e-mail s web3forms.com
+#    Formspree:  formEndpoint: https://formspree.io/f/<vaš-id>, ključ prazan
+#  Dok je formEndpoint u [...] obliku, obrazac se prikazuje onemogućen.
 # ─────────────────────────────────────────────────────────────────────
-formEndpoint: "https://api.web3forms.com/submit"
-# Access Key dobivate na web3forms.com upisom svog e-maila (vidi upute gore).
-formAccessKey: "e61637ed-3228-4938-a98a-b17b5bfb2a09"
+formEndpoint: "/kontakt.php"
+formAccessKey: ""
 
 # ─────────────────────────────────────────────────────────────────────
 #  ANALITIKA — Cloudflare Web Analytics (besplatno, bez kolačića)
