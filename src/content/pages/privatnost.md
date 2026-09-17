@@ -26,9 +26,9 @@ komunikacija oko upita, a najdulje **godinu dana** od zadnjeg kontakta, osim
 ako iz upita nastane posao — tada se podaci čuvaju koliko traže računovodstveni
 propisi.
 
-Obrazac poruku šalje izravno s poslužitelja na kojem je ova stranica na naš
-e-mail; nijedan vanjski servis za obrasce ne sudjeluje. Pružatelj hostinga na
-kojem su stranica i e-mail naš je izvršitelj obrade u smislu GDPR-a.
+Obrazac tehnički prenosi servis **FormSubmit** (formsubmit.co), koji poruku
+prosljeđuje na naš e-mail i ne koristi je ni za što drugo. To je naš izvršitelj
+obrade u smislu GDPR-a.
 
 ## Karta
 

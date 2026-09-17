@@ -42,19 +42,19 @@ legal:
 # ─────────────────────────────────────────────────────────────────────
 #  OBRAZAC ZA KONTAKT
 #
-#  Poruke šalje public/kontakt.php izravno s vašeg hostinga (PHP na cPanelu)
-#  na e-mail tvrtke. Nema vanjskog servisa, ključa ni računa.
+#  Poruke šalje servis FormSubmit (formsubmit.co) — primatelj je upisan
+#  izravno u adresu, nema računa ni ključa. Prvi put kad netko pošalje
+#  poruku, na taj e-mail stigne "Activate form" — kliknite link i od tada
+#  sve poruke stižu na njega. Promjena primatelja = promjena adrese ovdje
+#  (i nova aktivacija).
 #
-#  Primatelj je upisan u public/kontakt.php ($to) — ako se e-mail tvrtke
-#  promijeni, promijenite ga ondje i u polju email: gore.
-#
-#  Alternativa, ako ikad zatreba vanjski servis:
+#  Alternative:
 #    Web3Forms:  formEndpoint: https://api.web3forms.com/submit
 #                formAccessKey: ključ koji stigne na e-mail s web3forms.com
 #    Formspree:  formEndpoint: https://formspree.io/f/<vaš-id>, ključ prazan
 #  Dok je formEndpoint u [...] obliku, obrazac se prikazuje onemogućen.
 # ─────────────────────────────────────────────────────────────────────
-formEndpoint: "/kontakt.php"
+formEndpoint: "https://formsubmit.co/ajax/info@electronic-solution.hr"
 formAccessKey: ""
 
 # ─────────────────────────────────────────────────────────────────────

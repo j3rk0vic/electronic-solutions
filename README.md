@@ -41,19 +41,24 @@ kao običan tekst bez linka.
 > zamijenite je i ondje.
 
 ### 📨 Obrazac za kontakt
-Obrazac u podnožju šalje poruku preko `public/kontakt.php` — PHP skripte koja
-se s ostatkom stranice objavi na vaš cPanel i poruku dostavi na e-mail tvrtke.
-Nema vanjskog servisa, ključa ni računa.
+Obrazac u podnožju šalje poruku preko servisa **FormSubmit** (formsubmit.co) na
+e-mail tvrtke. Nema računa ni ključa — primatelj je adresa u `formEndpoint` u
+`src/content/settings/site.md`:
 
-- **Primatelj** je `$to` na vrhu `public/kontakt.php`. Ako se e-mail tvrtke
-  promijeni, promijenite ga ondje i u `email:` u `site.md` (podnožje, rezerva).
+```
+formEndpoint: "https://formsubmit.co/ajax/info@electronic-solution.hr"
+```
+
+- **Prvi put** kad netko pošalje poruku, na tu adresu stigne e-mail *„Activate
+  form”* — kliknite link. Od tada sve poruke stižu normalno.
 - Poruke stižu s poljima: ime, e-mail, telefon, tema, poruka. *Reply* ide
   izravno pošiljatelju.
+- Promjena primatelja: promijenite adresu u `formEndpoint` (i `email:` za
+  podnožje) — slijedi nova aktivacija na novoj adresi.
 - Ako slanje zakaže, posjetitelju se prikaže vaš e-mail (`email:`) kao rezerva.
 
-Ako ikad zatreba vanjski servis (npr. hosting bez PHP-a), u `site.md` postavite
-`formEndpoint` na Web3Forms (`https://api.web3forms.com/submit` + `formAccessKey`)
-ili Formspree (`https://formspree.io/f/<id>`); obrazac radi s oba bez promjene koda.
+Alternative bez promjene koda: Web3Forms (`https://api.web3forms.com/submit` +
+`formAccessKey`) ili Formspree (`https://formspree.io/f/<id>`).
 
 ### Dodavanje proizvoda
 1. Stavite sliku u `src/assets/products/` (bilo koji format — webp/jpg/avif;

@@ -7,19 +7,20 @@ interface Props {
 }
 const { site } = Astro.props;
 
-// The form posts to formEndpoint from site.md — by default /kontakt.php, a
-// PHP mailer that ships in public/ and runs on the owner's own cPanel, so no
-// third-party account is involved. Web3Forms/Formspree still work if the
-// endpoint is pointed at them. With no endpoint we render the fields read-only
-// with a clear notice rather than a button that silently does nothing.
+// The form posts to formEndpoint from site.md — by default FormSubmit, where
+// the recipient is the address in the URL itself, so no account or key belongs
+// to anyone. Web3Forms/Formspree still work if the endpoint is pointed at them.
+// With no endpoint we render the fields read-only with a clear notice rather
+// than a button that silently does nothing.
 const endpoint = real(site.formEndpoint);
 const accessKey = real(site.formAccessKey);
 const mail = real(site.email);
 // Web3Forms rejects any POST without a valid access_key, so an endpoint alone
 // is not enough there — the form stays disabled until the key is filled in too.
-// Formspree carries the id in the URL and needs no key.
+// Formspree and FormSubmit carry the target in the URL and need no key.
 const needsKey = Boolean(endpoint?.includes('web3forms.com'));
 const ready = Boolean(endpoint) && (!needsKey || Boolean(accessKey));
+const isFormSubmit = Boolean(endpoint?.includes('formsubmit.co'));
 
 const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', 'Servis', 'Ostalo'];
 ---
@@ -34,12 +35,26 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
 >
   {accessKey && <input type="hidden" name="access_key" value={accessKey} />}
   <input type="hidden" name="subject" value={`Nova poruka s ${site.company} web stranice`} />
+  {
+    isFormSubmit && (
+      <>
+        {/* FormSubmit reads its options from underscored fields: the subject
+            line, a table-layout e-mail and no captcha page (the JS posts to the
+            /ajax/ endpoint, which has none anyway). Reply-To is taken from the
+            `email` field automatically. */}
+        <input type="hidden" name="_subject" value={`Nova poruka s ${site.company} web stranice`} />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_captcha" value="false" />
+      </>
+    )
+  }
 
-  {/* Honeypots — real users never fill these. kontakt.php discards a submission
-      with either one filled; `botcheck` is also what Web3Forms checks and
-      `_gotcha` what Formspree checks, so the same markup serves all three. */}
+  {/* Honeypots — real users never fill these. `botcheck` is what Web3Forms
+      checks (a ticked box = silently discarded), `_gotcha` Formspree and
+      `_honey` FormSubmit, so the same markup serves all three. */}
   <input type="checkbox" name="botcheck" class="form__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
   <input type="text" name="_gotcha" class="form__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+  <input type="text" name="_honey" class="form__hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
   {
     !ready && (
@@ -117,9 +132,9 @@ const topics = ['Vrtni alat', 'Klima uređaji', 'Grijanje / dizalice topline', '
             body: new FormData(form),
             headers: { Accept: 'application/json' },
           });
-          // kontakt.php i Web3Forms vraćaju {"success": true|false}; Web3Forms zna
-          // dati i HTTP 200 uz success:false (spam). Bez ove provjere posjetitelj
-          // vidi "poslano" za poruku koja nikamo nije stigla. Servis koji ne vrati
+          // FormSubmit i Web3Forms vraćaju {"success": ...}; Web3Forms zna dati
+          // i HTTP 200 uz success:false (spam). Bez ove provjere posjetitelj vidi
+          // "poslano" za poruku koja nikamo nije stigla. Servis koji ne vrati
           // JSON prolazi na res.ok.
           const data = await res.json().catch(() => null);
           if (!res.ok || data?.success === false) throw new Error(data?.message ?? String(res.status));
