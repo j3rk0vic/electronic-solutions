@@ -99,7 +99,7 @@ const opcijeWord = d >= 2 && d <= 4 && !(dd >= 12 && dd <= 14) ? 'opcije' : 'opc
               {product.variants.map((v) => (
                 <li class="pvar">
                   <span class="pvar__label">{v.label}</span>
-                  <span class="pvar__price">{v.price}</span>
+                  {v.price && <span class="pvar__price">{v.price}</span>}
                 </li>
               ))}
             </ul>
